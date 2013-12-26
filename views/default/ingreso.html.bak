@@ -1,0 +1,6 @@
+{{extend 'layout.html'}}
+<h3>Ingrese su nombre de usuario y contraseña</h3>
+{{=form}}
+<!--
+{{=BEAUTIFY(response._vars)}}
+-->

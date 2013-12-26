@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+<p>
+    {{=A(IMG(_src=URL('static','LogoPíoIX-Nuevo.png'), _alt="<img:Logo Pío IX>"), _href=URL('default','index'))}}
+<p>
+<h1>Información</h1>
+
+<!-- {{=BEAUTIFY(response._vars)}} -->
+<p>
+Para obtener más información tenés que pasar por el Colegio!<br/>
+
+Te esperamos en Yapeyú 197, Ciudad Autónoma de Buenos Aires de 7:30 a 13:00hs.<br/>
+<br/>
+Las inscripciones para el 2015 finalizan el 20 de Septiembre de 2014.
+</p>
