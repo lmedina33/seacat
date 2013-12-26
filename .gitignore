@@ -1,5 +1,0 @@
-# Ignoring files for git repository
-.gitignore
-errors/
-sessions/
-*~
