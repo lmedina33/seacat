@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel>
+<schema name="public" protected="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<schema name="Ingresos" fill-color="#e1e1e1">
+</schema>
+
+<database name="SEACAT" encoding="UTF8">
+</database>
+
+<usertype name="date_type" configuration="enumeration">
+	<schema name="&quot;Ingresos&quot;"/>
+	<enumeration values="reunion,turno,vencimiento"/>
+</usertype>
+
+<usertype name="tel_type" configuration="enumeration">
+	<schema name="&quot;Ingresos&quot;"/>
+	<enumeration values="tercero,linea,celular"/>
+</usertype>
+
+<usertype name="carrera" configuration="enumeration">
+	<schema name="&quot;Ingresos&quot;"/>
+	<enumeration values="tecnica,comunicacion,informatica"/>
+</usertype>
+
+<table name="Addresses" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[domicilios de los objetos candidato, padres, alumnos, etc.]]></comment>
+	<position x="1586" y="46"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="address" not-null="true">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[calle del domicilio]]></comment>
+	</column>
+	<column name="building">
+		<type name="integer"/>
+		<comment><![CDATA[Edificio]]></comment>
+	</column>
+	<column name="floor">
+		<type name="varchar" length="6"/>
+		<comment><![CDATA[piso del domicilio]]></comment>
+	</column>
+	<column name="door">
+		<type name="varchar" length="15"/>
+		<comment><![CDATA[número de puerta]]></comment>
+	</column>
+	<column name="aparment">
+		<type name="varchar" length="6"/>
+		<comment><![CDATA[departamento del domicilio]]></comment>
+	</column>
+	<column name="street1">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[1er intersección de la calle del domicilio]]></comment>
+	</column>
+	<column name="street2">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[2da. intersección de la calle del domicilio]]></comment>
+	</column>
+	<column name="zip_code">
+		<type name="varchar" length="15"/>
+		<comment><![CDATA[código postal]]></comment>
+	</column>
+	<column name="loc" not-null="true">
+		<type name="varchar" length="60"/>
+		<comment><![CDATA[localidad del domicilio - extraída de tablas ???]]></comment>
+	</column>
+	<column name="prov" not-null="true">
+		<type name="varchar" length="35"/>
+		<comment><![CDATA[provincia del domicilio - tabulada en lista en el controlador]]></comment>
+	</column>
+	<column name="obs">
+		<type name="text"/>
+		<comment><![CDATA[observaciones varias respecto al domicilio]]></comment>
+	</column>
+	<column name="country" default-value="Argentina">
+		<type name="text"/>
+		<comment><![CDATA[País]]></comment>
+	</column>
+	<constraint name="claveprimaria_11" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Addresses&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="Users" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[Tabla de Usuarios del sistema]]></comment>
+	<position x="594" y="54"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="username" not-null="true">
+		<type name="varchar" length="15"/>
+		<comment><![CDATA[Nombre del usuario en el sistema]]></comment>
+	</column>
+	<column name="lastname">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[Apellido del usuario]]></comment>
+	</column>
+	<column name="last_login" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<column name="obs">
+		<type name="text"/>
+		<comment><![CDATA[Observaciones generales del usuario]]></comment>
+	</column>
+	<constraint name="PK" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Users&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="Roles" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<position x="36" y="162"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+		<comment><![CDATA[Clave Primaria]]></comment>
+	</column>
+	<column name="description" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[Nombre del rol]]></comment>
+	</column>
+	<constraint name="claveprimaria_18" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Roles&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="Users_has_one_Roles" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="5" constr-indexes="1,2"
+	 src-table="&quot;Ingresos&quot;.&quot;Roles&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Users&quot;"
+	 src-required="false" dst-required="false"/>
+
+<table name="Logs" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[registro de actividad de los usuarios]]></comment>
+	<position x="47" y="253"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[fecha del evento]]></comment>
+	</column>
+	<column name="start" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[Hora de inicio del evento]]></comment>
+	</column>
+	<column name="stop" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[hora de finalización del evento]]></comment>
+	</column>
+	<constraint name="claveprimaria_14" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Logs&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="Activities" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[tabula y codifica las funcionalidades del sistema - sólo accesible por administradores]]></comment>
+	<position x="29" y="458"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+		<comment><![CDATA[Clave primaria]]></comment>
+	</column>
+	<column name="description" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[descripción de la funcionalidad del sistema representada por este objeto]]></comment>
+	</column>
+	<column name="codigo_token">
+		<type name="char"/>
+		<comment><![CDATA[código de la funcionalidad que formará parte del token de los roles de usuario]]></comment>
+	</column>
+	<constraint name="claveprimaria_9" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Activities&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="Activities_has_many_Logs" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="4" constr-indexes="1"
+	 src-table="&quot;Ingresos&quot;.&quot;Activities&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Logs&quot;"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="Users_has_many_Logs" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="5" constr-indexes="2"
+	 src-table="&quot;Ingresos&quot;.&quot;Users&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Logs&quot;"
+	 src-required="false" dst-required="false"/>
+
+<table name="Dates" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[fechas importantes dentro del proceso de ingreso]]></comment>
+	<position x="19" y="22"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="type" not-null="true">
+		<type name="&quot;Ingresos&quot;.date_type" length="45"/>
+		<comment><![CDATA[tipo de fecha - Los tipos serán definidos en el controlador, mediante una lista]]></comment>
+	</column>
+	<column name="date" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[fecha]]></comment>
+	</column>
+	<column name="stop">
+		<type name="time"/>
+	</column>
+	<column name="start">
+		<type name="time"/>
+	</column>
+	<constraint name="claveprimaria_15" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Dates&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="Users_has_many_Dates" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="5" constr-indexes="1"
+	 src-table="&quot;Ingresos&quot;.&quot;Users&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Dates&quot;"
+	 src-required="false" dst-required="false"/>
+
+<table name="Schools" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[escuelas de procedencia de los candidatos]]></comment>
+	<position x="1575" y="491"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="razonsoc" not-null="true">
+		<type name="varchar" length="80"/>
+		<comment><![CDATA[denominación de la escuela]]></comment>
+	</column>
+	<column name="circunscripcion" not-null="true">
+		<type name="varchar" length="5"/>
+		<comment><![CDATA[circunscripción a la que pertenece la escuela]]></comment>
+	</column>
+	<column name="distrito" not-null="true">
+		<type name="varchar" length="5"/>
+		<comment><![CDATA[distrito escolar al que pertenece la escuela]]></comment>
+	</column>
+	<column name="codigo">
+		<type name="varchar" length="10"/>
+		<comment><![CDATA[código SNEP/DIPRIGEP/DGEGP]]></comment>
+	</column>
+	<column name="subvencion">
+		<type name="smallint"/>
+		<comment><![CDATA[% de subvención de la escuela]]></comment>
+	</column>
+	<column name="es_prioritaria" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[Si verdadero, indica que tiene prioridad en la selección (es Almagro, por ejemplo)]]></comment>
+	</column>
+	<column name="conveniobeca" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[Si verdadero, indica que la escuela tiene convenio de becas con la casa]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[datos de contacto y varios de la escuela]]></comment>
+	</column>
+	<constraint name="claveprimaria_10" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Schools&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="Schools_has_one_Addresses" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="9" constr-indexes="1,2"
+	 src-table="&quot;Ingresos&quot;.&quot;Addresses&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Schools&quot;"
+	 src-required="false" dst-required="false"/>
+
+<table name="Relationships" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[Tabla que describe las relaciones entre los usuarios]]></comment>
+	<position x="1035" y="387"/>
+	<column name="id">
+		<type name="serial"/>
+	</column>
+	<column name="description">
+		<type name="text"/>
+	</column>
+	<constraint name="pk" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Relationships&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="Candidates" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<position x="583" y="427"/>
+	<column name="inscription_id">
+		<type name="serial"/>
+	</column>
+	<column name="merit">
+		<type name="serial"/>
+		<comment><![CDATA[Orden de mérito]]></comment>
+	</column>
+	<column name="course">
+		<type name="varchar" length="6"/>
+		<comment><![CDATA[Curso de origen]]></comment>
+	</column>
+	<column name="career">
+		<type name="&quot;Ingresos&quot;.carrera"/>
+		<comment><![CDATA[Carrera]]></comment>
+	</column>
+	<constraint name="Pk" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;Candidates&quot;">
+		<columns names="inscription_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="Candidates_has_one_Users" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="4" constr-indexes="1,2"
+	 src-table="&quot;Ingresos&quot;.&quot;Users&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Candidates&quot;"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="Candidates_has_one_Schools" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="5" constr-indexes="3,4"
+	 src-table="&quot;Ingresos&quot;.&quot;Schools&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Candidates&quot;"
+	 src-required="false" dst-required="false"/>
+
+<usertype name="doc_type" configuration="enumeration">
+	<schema name="&quot;Ingresos&quot;"/>
+	<comment><![CDATA[Tipo de Documento]]></comment>
+	<enumeration values="DNI,LE,LC,Pasaporte,CI"/>
+</usertype>
+
+<table name="PersonalData" oids="false">
+	<schema name="&quot;Ingresos&quot;"/>
+	<position x="1049" y="14"/>
+	<column name="id">
+		<type name="serial"/>
+	</column>
+	<column name="doc">
+		<type name="integer"/>
+	</column>
+	<column name="doc_type" default-value="DNI">
+		<type name="&quot;Ingresos&quot;.doc_type"/>
+		<comment><![CDATA[Tipo de documento]]></comment>
+	</column>
+	<column name="CUIL">
+		<type name="varchar" length="11"/>
+		<comment><![CDATA[Codigo Unico de Identificacion Laboral]]></comment>
+	</column>
+	<column name="first_name">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[Primer nombre de la persona]]></comment>
+	</column>
+	<column name="middle_name">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[Segundo nombre de la persona]]></comment>
+	</column>
+	<column name="lastname">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[Apellido de la persona]]></comment>
+	</column>
+	<column name="mail1">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[Correo electronico principal de la persona]]></comment>
+	</column>
+	<column name="mail2">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[Correo electronico secundario de la persona]]></comment>
+	</column>
+	<column name="tel1">
+		<type name="varchar" length="20"/>
+		<comment><![CDATA[Telefono principal de la persona]]></comment>
+	</column>
+	<column name="tel1_type">
+		<type name="&quot;Ingresos&quot;.tel_type"/>
+		<comment><![CDATA[Tipo de telefono principal]]></comment>
+	</column>
+	<column name="tel2">
+		<type name="varchar" length="20"/>
+		<comment><![CDATA[Telefono secundario de la persona]]></comment>
+	</column>
+	<column name="tel2_type">
+		<type name="&quot;Ingresos&quot;.tel_type" length="20"/>
+		<comment><![CDATA[Tipo de telefono secundario ]]></comment>
+	</column>
+	<column name="photo">
+		<type name="bytea"/>
+		<comment><![CDATA[Foto de la persona]]></comment>
+	</column>
+	<column name="avatar">
+		<type name="bytea"/>
+		<comment><![CDATA[Imagen de usuario de la persona]]></comment>
+	</column>
+	<column name="facebook">
+		<type name="text"/>
+		<comment><![CDATA[Perfil de facebook]]></comment>
+	</column>
+	<column name="twitter">
+		<type name="text"/>
+		<comment><![CDATA[Usuario de Twitter]]></comment>
+	</column>
+	<column name="obs">
+		<type name="text"/>
+		<comment><![CDATA[Observaciones generales]]></comment>
+	</column>
+	<constraint name="PersonalDataPK" type="pk-constr" factor="10" table="&quot;Ingresos&quot;.&quot;PersonalData&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="PersonalData_has_one_Addresses" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="18" constr-indexes="1,2"
+	 src-table="&quot;Ingresos&quot;.&quot;Addresses&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;PersonalData&quot;"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="Users_has_one_PersonalData" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="6" constr-indexes="3,4"
+	 src-table="&quot;Ingresos&quot;.&quot;PersonalData&quot;"
+	 dst-table="&quot;Ingresos&quot;.&quot;Users&quot;"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>

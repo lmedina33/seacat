@@ -1,0 +1,892 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel>
+<schema name="public" protected="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<schema name="INGRESOS_2015" fill-color="#e1e1e1">
+</schema>
+
+<schema name="INGRESOS_2015_cp1" fill-color="#e1e1e1">
+</schema>
+
+<schema name="INGRESOS_2015_cp2" fill-color="#e1e1e1">
+</schema>
+
+<schema name="INGRESOS_2015_cp3" fill-color="#e1e1e1">
+</schema>
+
+<database name="ingresos">
+</database>
+
+<table name="Users">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Almacena los usuarios del sistema]]></comment>
+	<position x="450" y="0"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[Clave primaria]]></comment>
+	</column>
+	<column name="apellidos" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[Apellido del Usuario]]></comment>
+	</column>
+	<column name="nombres" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[Nombre del Usuario]]></comment>
+	</column>
+	<column name="id_roles" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[roles.id correspondiente al rol desempeñado]]></comment>
+	</column>
+	<column name="Nick" not-null="true" default-value="usuarios.apellidos">
+		<type name="varchar" length="20"/>
+		<comment><![CDATA[Usuario de acceso a la red]]></comment>
+	</column>
+	<column name="clave" not-null="true" default-value="usuarios.nombres">
+		<type name="varchar" length="15"/>
+		<comment><![CDATA[Password de acceso]]></comment>
+	</column>
+	<column name="mail">
+		<type name="varchar" length="75"/>
+		<comment><![CDATA[email del usuario]]></comment>
+	</column>
+	<column name="activo" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[Si verdadero, indica que el usuario está activo y puede utilizar el sistema]]></comment>
+	</column>
+	<column name="Ultimo_acceso">
+		<type name="timestamp"/>
+		<comment><![CDATA[Fecha y hora del último acceso al sistema (Es un DATETIME en el DAL)]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.&quot;Users&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="roles">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<position x="29" y="0"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[Clave Primaria]]></comment>
+	</column>
+	<column name="nombre" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[Nombre del rol]]></comment>
+	</column>
+	<column name="token">
+		<type name="varchar" length="255"/>
+		<comment><![CDATA[Almacena los códigos que representan a las diferentes funcionalidades del sistema (1 char c/u) a las que los usuarios pertenecientes a este rol tienen acceso]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.roles">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="turnos">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Almacena los turnos otorgados]]></comment>
+	<position x="646" y="221"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[PRIMARY KEY]]></comment>
+	</column>
+	<column name="id_mae_turno" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[mae_turno.id correspondiente al tipo de turno otorgado]]></comment>
+	</column>
+	<column name="dia" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[Fecha del turno]]></comment>
+	</column>
+	<column name="desde" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[hora de inicio del turno]]></comment>
+	</column>
+	<column name="hasta" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[Hora de finalización del turno]]></comment>
+	</column>
+	<column name="id_asignador" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[users.id del usuario que asignó el turno]]></comment>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato al que fue adjudicado el turno]]></comment>
+	</column>
+	<column name="asistio" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[Si VERDADERO, indica que el candidato asistió al turno]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.turnos">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="mae_turnos">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Tabla maestra de turnos válidos ]]></comment>
+	<position x="24" y="184"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="tipo" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[descripción del tipo de turno del que se trata]]></comment>
+	</column>
+	<column name="fecha" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[fecha del turno]]></comment>
+	</column>
+	<column name="desde_hora" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[desde que hora el día del turno se habilita para otorgar turnos]]></comment>
+	</column>
+	<column name="hasta_hora" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[hasta que hora el día del turno se habilita para otorgar turnos]]></comment>
+	</column>
+	<column name="duracion" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[duración individual de cada turno a otorgar]]></comment>
+	</column>
+	<column name="id_creador" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[users.id del usuario que creó el tipo de turno]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.mae_turnos">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="fechas">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[fechas importantes dentro del proceso de ingreso]]></comment>
+	<position x="36" y="89"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="tipo" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[tipo de fecha - Los tipos serán definidos en el controlador, mediante una lista]]></comment>
+	</column>
+	<column name="fecha" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[fecha]]></comment>
+	</column>
+	<column name="id_creador" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[users.id del usuario que estableció esta fecha]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.fechas">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="bitacora">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[registro de actividad de los usuarios]]></comment>
+	<position x="878" y="0"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="id_user" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[users.id del usuario del que se registra la actividad]]></comment>
+	</column>
+	<column name="fecha" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[fecha del evento]]></comment>
+	</column>
+	<column name="hora_inicio" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[Hora de inicio del evento]]></comment>
+	</column>
+	<column name="hora_fin" not-null="true">
+		<type name="time"/>
+		<comment><![CDATA[hora de finalización del evento]]></comment>
+	</column>
+	<column name="quehizo">
+		<type name="text"/>
+		<comment><![CDATA[descripción del evento (funcionalidad, sujetos, etc)]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.bitacora">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="candidatos">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[datos de los candidatos a ingresantes]]></comment>
+	<position x="492" y="575"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="id_responsable" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[padres.id del responsable legal del candidato]]></comment>
+	</column>
+	<column name="nroinscripcion">
+		<type name="integer"/>
+		<comment><![CDATA[número de inscripción del candidato]]></comment>
+	</column>
+	<column name="apellidos" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[apellido del candidato]]></comment>
+	</column>
+	<column name="nombres" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[nombres del candidato]]></comment>
+	</column>
+	<column name="tipodoc" not-null="true" default-value="DNI">
+		<type name="varchar" length="3"/>
+		<comment><![CDATA[tipo de documento - extraído de una lista en el controlador]]></comment>
+	</column>
+	<column name="nrodoc" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[Número de documento del candidato]]></comment>
+	</column>
+	<column name="id_domicilio" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[domicilios.id correspondiente al domicilio del candidato]]></comment>
+	</column>
+	<column name="id_escuela">
+		<type name="integer"/>
+		<comment><![CDATA[escuelas.id de la escuela de procedencia del candidato]]></comment>
+	</column>
+	<column name="curso_origen" not-null="true">
+		<type name="varchar" length="6"/>
+		<comment><![CDATA[curso en el que egresa del colegio de procedencia]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[observaciones varias]]></comment>
+	</column>
+	<column name="foto">
+		<type name="bit varying"/>
+		<comment><![CDATA[imagen de la foto del candidato - tipo "Upload" en el DAL]]></comment>
+	</column>
+	<column name="merito">
+		<type name="float"/>
+		<comment><![CDATA[Orden de mérito obtenido por el candidato para evaluar su admisión]]></comment>
+	</column>
+	<column name="admitido" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[indica si el candidato fue admitido]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.candidatos">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="padres">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Datos de los padres de los candidatos]]></comment>
+	<position x="376" y="318"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="apellidos" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[apellido del padre]]></comment>
+	</column>
+	<column name="nombres" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[nombres del padre]]></comment>
+	</column>
+	<column name="tipodoc" not-null="true" default-value="DNI">
+		<type name="varchar" length="3"/>
+		<comment><![CDATA[tipo de documento - extraído de una lista en el controlador]]></comment>
+	</column>
+	<column name="nrodoc" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[Número de documento del padre]]></comment>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato del cual el objeto es padre]]></comment>
+	</column>
+	<column name="id_domicilio" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[domicilios.id del domicilio del objeto]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[observaciones varias]]></comment>
+	</column>
+	<column name="clave_acceso">
+		<type name="varchar" length="15"/>
+		<comment><![CDATA[Clave de acceso al sistema]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.padres">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="domicilios">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[domicilios de los objetos candidato, padres, alumnos, etc.]]></comment>
+	<position x="28" y="343"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="mail1" not-null="true">
+		<type name="varchar" length="75"/>
+		<comment><![CDATA[primer mail de contacto]]></comment>
+	</column>
+	<column name="mail2">
+		<type name="varchar" length="75"/>
+		<comment><![CDATA[segundo mail de contacto]]></comment>
+	</column>
+	<column name="telefono1" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[1er telefono de contacto]]></comment>
+	</column>
+	<column name="telefono2">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[segundo telefono de contacto]]></comment>
+	</column>
+	<column name="celular">
+		<type name="varchar" length="25"/>
+		<comment><![CDATA[número de teléfono celular]]></comment>
+	</column>
+	<column name="calle" not-null="true">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[calle del domicilio]]></comment>
+	</column>
+	<column name="entre1">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[1er intersección de la calle del domicilio]]></comment>
+	</column>
+	<column name="entre2">
+		<type name="varchar" length="50"/>
+		<comment><![CDATA[2da. intersección de la calle del domicilio]]></comment>
+	</column>
+	<column name="npta">
+		<type name="varchar" length="15"/>
+		<comment><![CDATA[número de puerta]]></comment>
+	</column>
+	<column name="piso">
+		<type name="varchar" length="6"/>
+		<comment><![CDATA[piso del domicilio]]></comment>
+	</column>
+	<column name="depto">
+		<type name="varchar" length="6"/>
+		<comment><![CDATA[departamento del domicilio]]></comment>
+	</column>
+	<column name="codpos">
+		<type name="varchar" length="15"/>
+		<comment><![CDATA[código postal]]></comment>
+	</column>
+	<column name="localidad" not-null="true">
+		<type name="varchar" length="60"/>
+		<comment><![CDATA[localidad del domicilio - extraída de tablas ???]]></comment>
+	</column>
+	<column name="provincia" not-null="true">
+		<type name="varchar" length="35"/>
+		<comment><![CDATA[provincia del domicilio - tabulada en lista en el controlador]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[observaciones varias respecto al domicilio]]></comment>
+	</column>
+	<column name="facebook">
+		<type name="varchar" length="60"/>
+		<comment><![CDATA[id de facebook (para mensajería)]]></comment>
+	</column>
+	<column name="twitter">
+		<type name="varchar" length="60"/>
+		<comment><![CDATA[id de Twitter de contacto]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.domicilios">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="escuelas">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[escuelas de procedencia de los candidatos]]></comment>
+	<position x="20" y="654"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="razonsoc" not-null="true">
+		<type name="varchar" length="80"/>
+		<comment><![CDATA[denominación de la escuela]]></comment>
+	</column>
+	<column name="id_domicilio" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[domicilios.id del domicilio de la escuela]]></comment>
+	</column>
+	<column name="circunscripcion" not-null="true">
+		<type name="varchar" length="5"/>
+		<comment><![CDATA[circunscripción a la que pertenece la escuela]]></comment>
+	</column>
+	<column name="distrito" not-null="true">
+		<type name="varchar" length="5"/>
+		<comment><![CDATA[distrito escolar al que pertenece la escuela]]></comment>
+	</column>
+	<column name="codigo">
+		<type name="varchar" length="10"/>
+		<comment><![CDATA[código SNEP/DIPRIGEP/DGEGP]]></comment>
+	</column>
+	<column name="subvencion">
+		<type name="smallint"/>
+		<comment><![CDATA[% de subvención de la escuela]]></comment>
+	</column>
+	<column name="es_prioritaria" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[Si verdadero, indica que tiene prioridad en la selección (es Almagro, por ejemplo)]]></comment>
+	</column>
+	<column name="conveniobeca" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[Si verdadero, indica que la escuela tiene convenio de becas con la casa]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[datos de contacto y varios de la escuela]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.escuelas">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="roles_has_many_Users" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="9" constr-indexes="1"
+	 src-table="&quot;INGRESOS_2015&quot;.roles"
+	 dst-table="&quot;INGRESOS_2015&quot;.&quot;Users&quot;"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="10.9757" y="-57.0485"/>
+	</label>
+</relationship>
+
+<relationship name="mae_turnos_has_many_turnos" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="8" constr-indexes="1"
+	 src-table="&quot;INGRESOS_2015&quot;.mae_turnos"
+	 dst-table="&quot;INGRESOS_2015&quot;.turnos"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="6.22574" y="-56.0485"/>
+	</label>
+</relationship>
+
+<relationship name="Users_has_many_bitacora" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="6" constr-indexes="1"
+	 src-table="&quot;INGRESOS_2015&quot;.&quot;Users&quot;"
+	 dst-table="&quot;INGRESOS_2015&quot;.bitacora"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="16.7257" y="-68.0485"/>
+	</label>
+</relationship>
+
+<table name="funcionalidades">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[tabula y codifica las funcionalidades del sistema - sólo accesible por administradores]]></comment>
+	<position x="888" y="248"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[Clave primaria]]></comment>
+	</column>
+	<column name="descripcion" not-null="true">
+		<type name="varchar" length="45"/>
+		<comment><![CDATA[descripción de la funcionalidad del sistema representada por este objeto]]></comment>
+	</column>
+	<column name="codigo_token">
+		<type name="char"/>
+		<comment><![CDATA[código de la funcionalidad que formará parte del token de los roles de usuario]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.funcionalidades">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="funcionalidades_has_many_bitacora" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="7" constr-indexes="2"
+	 src-table="&quot;INGRESOS_2015&quot;.funcionalidades"
+	 dst-table="&quot;INGRESOS_2015&quot;.bitacora"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="escuelas_has_one_candidatos" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="10" constr-indexes="1,2"
+	 src-table="&quot;INGRESOS_2015&quot;.candidatos"
+	 dst-table="&quot;INGRESOS_2015&quot;.escuelas"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="domicilios_has_one_candidatos" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="18" constr-indexes="1,2"
+	 src-table="&quot;INGRESOS_2015&quot;.candidatos"
+	 dst-table="&quot;INGRESOS_2015&quot;.domicilios"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="domicilios_has_one_padres" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="19" constr-indexes="3,4"
+	 src-table="&quot;INGRESOS_2015&quot;.padres"
+	 dst-table="&quot;INGRESOS_2015&quot;.domicilios"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="many_candidatos_has_many_padres" type="relnn"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 src-table="&quot;INGRESOS_2015&quot;.candidatos"
+	 dst-table="&quot;INGRESOS_2015&quot;.padres"
+	 src-required="false" dst-required="false"	 table-name="many_candidatos_has_many_padres">
+	<label ref-type="dst-label">
+		<position x="1.80002" y="13.1174"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="8.97574" y="-53.0486"/>
+	</label>
+</relationship>
+
+<relationship name="Users_has_one_fechas" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="10" constr-indexes="2,3"
+	 src-table="&quot;INGRESOS_2015&quot;.fechas"
+	 dst-table="&quot;INGRESOS_2015&quot;.&quot;Users&quot;"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="-30.2743" y="-48.5485"/>
+	</label>
+</relationship>
+
+<relationship name="Users_has_one_mae_turnos" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="11" constr-indexes="4,5"
+	 src-table="&quot;INGRESOS_2015&quot;.mae_turnos"
+	 dst-table="&quot;INGRESOS_2015&quot;.&quot;Users&quot;"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="-5.52426" y="-28.0485"/>
+	</label>
+</relationship>
+
+<table name="Encuesta">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Donde se almacenan los resultados de la encuesta anónima]]></comment>
+	<position x="421" y="1104"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[Clave Primaria]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.&quot;Encuesta&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="pagos">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<position x="43" y="846"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato al que corresponde el pago]]></comment>
+	</column>
+	<column name="id_arancel" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[aranceles.id correspondiente al tipo de pago efectuado]]></comment>
+	</column>
+	<column name="fecha" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[Fecha del pago representado]]></comment>
+	</column>
+	<column name="importe" not-null="true">
+		<type name="float"/>
+		<comment><![CDATA[Importe abonado]]></comment>
+	</column>
+	<column name="recibo" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[tipo y número del comprobante de pago]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[Cheque, medio de pago, otras observaciones introducidas por el cajero]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.pagos">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="aranceles">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Aranceles a cobrar durante el proceso de inscripción]]></comment>
+	<position x="33" y="1093"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[Clave primaria]]></comment>
+	</column>
+	<column name="Tipo" not-null="true">
+		<type name="varchar" length="60"/>
+		<comment><![CDATA[descripcion del tipo de arancel - tabulado en listas desde el controlador]]></comment>
+	</column>
+	<column name="importe" not-null="true">
+		<type name="float"/>
+		<comment><![CDATA[importe total del arancel]]></comment>
+	</column>
+	<column name="cuotas" not-null="true">
+		<type name="smallint"/>
+		<comment><![CDATA[cantidad de cuotas admitidas]]></comment>
+	</column>
+	<column name="vencimiento">
+		<type name="date"/>
+		<comment><![CDATA[fecha de vencimiento del último pago]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.aranceles">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="aranceles_has_many_pagos" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="7" constr-indexes="1"
+	 src-table="&quot;INGRESOS_2015&quot;.aranceles"
+	 dst-table="&quot;INGRESOS_2015&quot;.pagos"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="candidatos_has_many_pagos" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="8" constr-indexes="2"
+	 src-table="&quot;INGRESOS_2015&quot;.candidatos"
+	 dst-table="&quot;INGRESOS_2015&quot;.pagos"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="-9.02426" y="-21.0485"/>
+	</label>
+</relationship>
+
+<table name="solicitudes_beca">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Donde se almacenan las solicitudes de beca recibidas]]></comment>
+	<position x="692" y="1105"/>
+</table>
+
+<table name="Comunicaciones_emitidas">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[registro de contactos con los responsables del candidato (por no concurrencia, temas varios)]]></comment>
+	<position x="814" y="612"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="id_usuario" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[users.id del usuario que tuvo a su cargo el intento de contacto]]></comment>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato sujeto de la comunicación]]></comment>
+	</column>
+	<column name="tipo_comunicación" not-null="true">
+		<type name="varchar" length="30"/>
+		<comment><![CDATA[Tipo del contacto. Tabulado en lista en el controlador (Telefónico, mail, etc)]]></comment>
+	</column>
+	<column name="fecha" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[fecha del intento de contacto con el responsable del candidato]]></comment>
+	</column>
+	<column name="hora" not-null="true">
+		<type name="smallint"/>
+		<comment><![CDATA[hora del intento de comunicación con el responsable del contacto]]></comment>
+	</column>
+	<column name="contacto_ok" not-null="true">
+		<type name="boolean"/>
+		<comment><![CDATA[Si verdadero, indica que el contacto se produjo]]></comment>
+	</column>
+	<column name="contenido" not-null="true">
+		<type name="text"/>
+		<comment><![CDATA[Detalle de lo que se quiso comunicar al responsable del candidato]]></comment>
+	</column>
+	<column name="ref_contacto">
+		<type name="varchar" length="60"/>
+		<comment><![CDATA[Detalle de la persona a la que se contactó]]></comment>
+	</column>
+	<column name="resultado">
+		<type name="text"/>
+		<comment><![CDATA[Detalle de la devolución del responsable del candidato ante la comunicación ]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.&quot;Comunicaciones_emitidas&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="boletines">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Datos del boletín que debe aportar cada candidato]]></comment>
+	<position x="869" y="863"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato al que pertenece el boletín]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[observaciones respecto al boletín]]></comment>
+	</column>
+	<column name="fecha" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[Fecha de entrega del boletín]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.boletines">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="datos_inscripcion">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Datos para la inscripción que debe aportar cada candidato]]></comment>
+	<position x="339" y="862"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato al que pertenece el boletín]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[observaciones respecto al boletín]]></comment>
+	</column>
+	<column name="fecha" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[Fecha de entrega del boletín]]></comment>
+	</column>
+	<column name="tabla_incompleta">
+		<type name="smallint"/>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.datos_inscripcion">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="examenes">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[datos de los exámenes que rinde cada candidato]]></comment>
+	<position x="852" y="412"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato al que pertenece el boletín]]></comment>
+	</column>
+	<column name="id_turno" not-null="true">
+		<type name="date"/>
+		<comment><![CDATA[turnos.id correspondiente al turno de exámen correspondiente]]></comment>
+	</column>
+	<column name="tipo" not-null="true">
+		<type name="varchar" length="30"/>
+		<comment><![CDATA[Tipo del exámen (Lengua / Matemáticas / Etc) Tabulados en lista en el controlador]]></comment>
+	</column>
+	<column name="nota">
+		<type name="varchar" length="6"/>
+		<comment><![CDATA[Nota obtenida en el exámen]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[observaciones respecto al boletín]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.examenes">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="examenes_has_one_turnos" type="rel11"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="9" constr-indexes="2,3"
+	 src-table="&quot;INGRESOS_2015&quot;.examenes"
+	 dst-table="&quot;INGRESOS_2015&quot;.turnos"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="128.476" y="-19.5486"/>
+	</label>
+</relationship>
+
+<relationship name="candidatos_has_many_examenes" type="rel1n"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="6" constr-indexes="1"
+	 src-table="&quot;INGRESOS_2015&quot;.candidatos"
+	 dst-table="&quot;INGRESOS_2015&quot;.examenes"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="-57.5243" y="-74.5485"/>
+	</label>
+</relationship>
+
+<table name="evaluaciones_EoE">
+	<schema name="&quot;INGRESOS_2015&quot;"/>
+	<comment><![CDATA[Informe de la evaluación del EoE al candidato]]></comment>
+	<position x="611" y="862"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[clave primaria]]></comment>
+	</column>
+	<column name="id_candidato" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[candidatos.id del candidato al que pertenece el boletín]]></comment>
+	</column>
+	<column name="id_turnos" not-null="true">
+		<type name="integer"/>
+		<comment><![CDATA[turnos.id del turno correspondiente a la entrevista en la que se hizo la evaluación]]></comment>
+	</column>
+	<column name="observaciones">
+		<type name="text"/>
+		<comment><![CDATA[observaciones respecto al boletín]]></comment>
+	</column>
+	<constraint name="claveprimaria" type="pk-constr" factor="10" table="&quot;INGRESOS_2015&quot;.&quot;evaluaciones_EoE&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+</dbmodel>
