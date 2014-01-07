@@ -9,8 +9,8 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-response.title = T('SEACAT')
-response.subtitle = T('v.0.0.1b')
+response.title = 'SEACAT'
+response.subtitle = 'v.0.0.1b'
 response.meta.author = 'Leandro E. Colombo Viña'
 response.meta.description = 'Sistema de Inscripciones para el Colegio Pío IX'
 response.meta.keywords = 'Inscripciones Pío IX'
@@ -36,7 +36,7 @@ def index():
         #response.flash = 'Usuario/Contraseña incorrectos'
     #else:
         #response.flash = 'Por favor, complete el formulario de inicio de sesión o seleccione un botón'
-    return dict(message=T('Sistema de Inscripciones'), form=form)
+    return dict(message='Sistema de Inscripciones', form=form)
 
 def info():
     return dict(info=info)
@@ -102,3 +102,7 @@ def data():
       LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
     """
     return dict(form=crud())
+
+def test():
+    grid =SQLFORM.smartgrid(db.auth_user)
+    return locals()

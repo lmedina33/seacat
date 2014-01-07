@@ -108,3 +108,8 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
+timestamp: 2014-01-07T11:24:54.351000
+ALTER TABLE auth_user ADD obs TEXT;
+timestamp: 2014-01-07T11:24:54.513000
+ALTER TABLE auth_user ADD last_login TIMESTAMP;
+success!

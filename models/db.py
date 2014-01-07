@@ -13,7 +13,8 @@ if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     #db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
     ## To connect to a PostgreSQL DB: postgres://username:password@server/database
-    db = DAL('postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat')
+    db = DAL('postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat',
+             check_reserved=['postgres', 'postrges_nonreserved'])
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -45,9 +46,19 @@ from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
+## Adding "last_login" and "obs" fields to 'auth_user' table
+auth.settings.extra_fields['auth_user'] = [
+                                           Field('last_login', 'datetime', label=T("Last Login")),
+                                           Field('obs', 'text', label=T("Observations"))
+                                           ]
+
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
-## Le saco el "remember me"
+
+## Changing format to 'auth_user' table:
+db.auth_user._format = '%(last_name)s, %(first_name)s'
+
+## Removing "remember me" feature at login form
 auth.settings.remember_me_form = False
 
 ## configure email

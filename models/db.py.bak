@@ -45,8 +45,20 @@ from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
+## Adding "last_login" and "obs" fields to 'auth_user' table
+auth.settings.extra_fields['auth_user'] = [
+                                           Field('last_login', 'datetime', label=T("Last Login")),
+                                           Field('obs', 'text', label=T("Observations"))
+                                           ]
+
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
+
+## Changing format to 'auth_user' table:
+db.auth_user._format = '%(last_name)s, %(first_name)s'
+
+## Removing "remember me" feature at login form
+auth.settings.remember_me_form = False
 
 ## configure email
 mail = auth.settings.mailer
