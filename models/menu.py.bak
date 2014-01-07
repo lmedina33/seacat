@@ -136,7 +136,6 @@ def _():
                 ]
          )]
 
-    ## Adding features according to user membership
     if auth.has_membership('root'):
         response.menu += [
                           (SPAN('root', _class='highlighted'), False, URL('appadmin'))

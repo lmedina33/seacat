@@ -14,7 +14,7 @@ if not request.env.web2py_runtime_gae:
     #db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
     ## To connect to a PostgreSQL DB: postgres://username:password@server/database
     db = DAL('postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat',
-             check_reserved=['postgres', 'postrges_nonreserved'])
+             check_reserved=['postgres', 'postgres_nonreserved'])
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -54,6 +54,12 @@ auth.settings.extra_fields['auth_user'] = [
 
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
+
+## Changing labels:
+#db.auth_user.last_login.label = T("Last Login")
+
+## Changing attributes:
+db.auth_group.description.readable = True
 
 ## Changing format to 'auth_user' table:
 db.auth_user._format = '%(last_name)s, %(first_name)s'

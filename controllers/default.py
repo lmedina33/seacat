@@ -14,7 +14,7 @@ response.subtitle = 'v.0.0.1b'
 response.meta.author = 'Leandro E. Colombo Viña'
 response.meta.description = 'Sistema de Inscripciones para el Colegio Pío IX'
 response.meta.keywords = 'Inscripciones Pío IX'
-response.menu = [ [ 'Página Principal', True, URL('index') ] ]
+#response.menu = [ [ 'Página Principal', True, URL('index') ] ]
 #response.logo = IMG(_src=URL('assets', 'logo-web.png'), _alt="Logo de Bitson")
 
 def index():
@@ -43,13 +43,14 @@ def info():
 
 @auth.requires_login()
 def ingreso():
+    auth.settings.actions_disabled = [ 'register' ]
     form = auth.profile()
     return dict(ingreso=ingreso, form=form)
 
 @auth.requires_membership('root')
 def start():
-     return dict(start=start)     
-     
+     return dict(start=start)
+
 def user():
     """
     exposes:
@@ -65,6 +66,7 @@ def user():
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
+    auth.settings.actions_disabled = [ 'register' ]
     return dict(form=auth())
 
 @cache.action()
@@ -104,5 +106,14 @@ def data():
     return dict(form=crud())
 
 def test():
-    grid =SQLFORM.smartgrid(db.auth_user)
+    grid = SQLFORM.smartgrid(db.auth_user)
+    return locals()
+
+@auth.requires_membership('root')
+def admin_user_groups():
+    grid = SQLFORM.grid(db.auth_group)
+    return locals()
+
+def admin_user_memberships():
+    grid = SQLFORM.smartgrid(db.auth_membership)
     return locals()
