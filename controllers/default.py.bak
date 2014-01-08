@@ -9,14 +9,6 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-response.title = 'SEACAT'
-response.subtitle = 'v.0.0.1b'
-response.meta.author = 'Leandro E. Colombo Viña'
-response.meta.description = 'Sistema de Inscripciones para el Colegio Pío IX'
-response.meta.keywords = 'Inscripciones Pío IX'
-#response.menu = [ [ 'Página Principal', True, URL('index') ] ]
-response.logo = IMG(_src=URL('static', 'Logo_seacat_mini.png'), _alt="Logo de SEACAT")
-
 def index():
     """
     example action using the internationalization operator T and flash

@@ -9,14 +9,6 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-response.title = 'SEACAT'
-response.subtitle = 'v.0.0.1b'
-response.meta.author = 'Leandro E. Colombo Viña'
-response.meta.description = 'Sistema de Inscripciones para el Colegio Pío IX'
-response.meta.keywords = 'Inscripciones Pío IX'
-#response.menu = [ [ 'Página Principal', True, URL('index') ] ]
-response.logo = A(IMG(_src=URL('static', 'Logo_seacat_mini.png'), _alt="Logo de SEACAT"), _class="brand", _href="http://www.web2py.com/")
-
 def index():
     """
     example action using the internationalization operator T and flash
@@ -36,7 +28,7 @@ def index():
         #response.flash = 'Usuario/Contraseña incorrectos'
     #else:
         #response.flash = 'Por favor, complete el formulario de inicio de sesión o seleccione un botón'
-    return dict(message='Sistema de Inscripciones', form=form)
+    return dict(message=T("Registration System"), form=form)
 
 def info():
     return dict(info=info)
