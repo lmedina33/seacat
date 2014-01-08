@@ -15,7 +15,7 @@ response.meta.author = 'Leandro E. Colombo Viña'
 response.meta.description = 'Sistema de Inscripciones para el Colegio Pío IX'
 response.meta.keywords = 'Inscripciones Pío IX'
 #response.menu = [ [ 'Página Principal', True, URL('index') ] ]
-#response.logo = IMG(_src=URL('assets', 'logo-web.png'), _alt="Logo de Bitson")
+response.logo = A(IMG(_src=URL('static', 'Logo_seacat_mini.png'), _alt="Logo de SEACAT"), _class="brand", _href="http://www.web2py.com/")
 
 def index():
     """
@@ -29,7 +29,7 @@ def index():
     if not auth.is_logged_in():
         form = auth()
     else:
-        redirect(URL('ingreso'))
+        redirect(URL('start'))
     #if form.accepts(request.vars, session):
         #redirect(URL('start'))
     #elif form.errors:

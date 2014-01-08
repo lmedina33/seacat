@@ -65,9 +65,10 @@
   {{block head}}{{end}}
 </head>
 
+
 <body>
   <!-- Navbar ================================================== -->
-    {{if auth.is_logged_in():}}
+  {{if auth.is_logged_in():}}
   <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="flash">{{=response.flash or ''}}</div>
     <div class="navbar-inner">
@@ -89,10 +90,11 @@
       </div>
     </div>
   </div><!--/top navbar -->
-    {{pass}}
+  {{pass}}
   <div class="container">
-   <!-- Para que no aparezca ese título FEO
+
       <!-- Masthead ================================================== -->
+      <!-- Para que no aparezca ese título FEO
     <header class="mastheader row" id="header">
       {{if response.title:}}
         <div class="span12">
@@ -106,7 +108,9 @@
 	{{pass}}
     </header>
     -->
-      
+    <header class="mastheader row" id="header">
+    </header>
+
     <section id="main" class="main row">
         {{if left_sidebar_enabled:}}
         <div class="span3 left-sidebar">
