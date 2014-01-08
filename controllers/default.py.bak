@@ -43,7 +43,7 @@ def info():
 
 @auth.requires_login()
 def ingreso():
-    auth.settings.actions_disabled = [ register ]
+    auth.settings.actions_disabled = [ 'register' ]
     form = auth.profile()
     return dict(ingreso=ingreso, form=form)
 

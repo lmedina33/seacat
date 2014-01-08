@@ -117,3 +117,7 @@ def admin_user_groups():
 def admin_user_memberships():
     grid = SQLFORM.smartgrid(db.auth_membership)
     return locals()
+
+def upload_image():
+    grid = SQLFORM.smartgrid(db.image)
+    return locals()

@@ -67,6 +67,12 @@ db.auth_user._format = '%(last_name)s, %(first_name)s'
 ## Removing "remember me" feature at login form
 auth.settings.remember_me_form = False
 
+## Defining new table for Images:
+db.define_table('image',
+                Field('name', label=T("Name")),
+                Field('file', 'upload', label=T("File"), required=True)
+                )
+
 ## configure email
 mail = auth.settings.mailer
 mail.settings.server = 'logging' or 'smtp.gmail.com:587'

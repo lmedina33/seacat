@@ -59,13 +59,19 @@ auth.define_tables(username=False, signature=False)
 #db.auth_user.last_login.label = T("Last Login")
 
 ## Changing attributes:
-db.auth_groups.description.readable = True
+db.auth_group.description.readable = True
 
 ## Changing format to 'auth_user' table:
 db.auth_user._format = '%(last_name)s, %(first_name)s'
 
 ## Removing "remember me" feature at login form
 auth.settings.remember_me_form = False
+
+## Defining new table for Images:
+db.define_table('image',
+                Field('name', label=T("Name")),
+                Field('file', 'upload', label=T("File"), required=True),
+                )
 
 ## configure email
 mail = auth.settings.mailer

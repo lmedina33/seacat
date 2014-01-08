@@ -1,4 +1,4 @@
-{{extend 'layout.html'}}
+{{extend './default/user.html'}}
 <h3>Probando sitio</h3>
 {{=form}}
 <!--

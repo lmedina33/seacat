@@ -113,3 +113,14 @@ ALTER TABLE auth_user ADD obs TEXT;
 timestamp: 2014-01-07T11:24:54.513000
 ALTER TABLE auth_user ADD last_login TIMESTAMP;
 success!
+timestamp: 2014-01-08T09:31:38.682000
+CREATE TABLE image(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(512),
+    file VARCHAR(512),
+    description VARCHAR(512)
+);
+success!
+timestamp: 2014-01-08T09:47:02.908000
+ALTER TABLE image DROP COLUMN description;
+success!
