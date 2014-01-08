@@ -28,19 +28,21 @@ def index():
         #response.flash = 'Usuario/Contraseña incorrectos'
     #else:
         #response.flash = 'Por favor, complete el formulario de inicio de sesión o seleccione un botón'
-    return dict(message='Sistema de Inscripciones', form=form)
+    return dict(message=T("Registration System"), form=form)
 
 def info():
     return dict(info=info)
 
-@auth.requires_login()
-def ingreso():
-    auth.settings.actions_disabled = [ 'register' ]
-    form = auth.profile()
-    return dict(ingreso=ingreso, form=form)
+#@auth.requires_login()
+#def ingreso():
+#    auth.settings.actions_disabled = [ 'register' ]
+#    form = auth.profile()
+#    return dict(ingreso=ingreso, form=form)
 
 @auth.requires_membership('root')
 def start():
+     #response.flash = T("Welcome back ") + auth.user.first_name + " " + auth.user.last_name + "!"
+     response.flash = auth.user.id
      return dict(start=start)
 
 def user():

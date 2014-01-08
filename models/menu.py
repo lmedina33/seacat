@@ -25,7 +25,7 @@ response.google_analytics_id = None
 response.logo = A(IMG(_src=URL('static', 'Logo_seacat_mini.png'), 
                       _alt="Logo de SEACAT"), 
                   _class="brand", 
-                  _href="http://www.web2py.com/")
+                  _href=URL('default', 'index'))
 response.title = 'SEACAT'
 response.subtitle = 'v.0.0.1b'
 

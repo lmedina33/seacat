@@ -21,6 +21,7 @@ def index():
     if not auth.is_logged_in():
         form = auth()
     else:
+        db.auth_user[auth.user.id]=dict(last_login=request.now)
         redirect(URL('start'))
     #if form.accepts(request.vars, session):
         #redirect(URL('start'))
@@ -33,14 +34,16 @@ def index():
 def info():
     return dict(info=info)
 
-@auth.requires_login()
-def ingreso():
-    auth.settings.actions_disabled = [ 'register' ]
-    form = auth.profile()
-    return dict(ingreso=ingreso, form=form)
+#@auth.requires_login()
+#def ingreso():
+#    auth.settings.actions_disabled = [ 'register' ]
+#    form = auth.profile()
+#    return dict(ingreso=ingreso, form=form)
 
 @auth.requires_membership('root')
 def start():
+     #response.flash = T("Welcome back ") + auth.user.first_name + " " + auth.user.last_name + "!"
+     response.flash = auth.user.id
      return dict(start=start)
 
 def user():

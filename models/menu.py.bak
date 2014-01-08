@@ -25,7 +25,7 @@ response.google_analytics_id = None
 response.logo = A(IMG(_src=URL('static', 'Logo_seacat_mini.png'), 
                       _alt="Logo de SEACAT"), 
                   _class="brand", 
-                  _href="http://www.web2py.com/")
+                  _href=URL('index'))
 response.title = 'SEACAT'
 response.subtitle = 'v.0.0.1b'
 
@@ -154,7 +154,7 @@ def _():
     ## Adding features according to user membership
     if auth.has_membership('root'):
         response.menu += [
-                          (SPAN('root', _class='highlighted'), False, URL(request.application, 'appadmin', 'index'))
+                          (SPAN(T("Root Menu"), _class='highlighted'), False, URL(request.application, 'appadmin', 'index'))
                           ]
 
 if DEVELOPMENT_MENU: _()
