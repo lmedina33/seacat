@@ -124,3 +124,67 @@ success!
 timestamp: 2014-01-08T09:47:02.908000
 ALTER TABLE image DROP COLUMN description;
 success!
+timestamp: 2014-01-09T11:07:04.639000
+CREATE TABLE images(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(512),
+    file VARCHAR(512)
+);
+success!
+timestamp: 2014-01-09T11:07:07.348000
+CREATE TABLE personal_data(
+    id SERIAL PRIMARY KEY,
+    doc_type VARCHAR(512) NOT NULL DEFAULT 'DNI',
+    doc VARCHAR(8) NOT NULL UNIQUE,
+    cuil VARCHAR(11) NOT NULL UNIQUE,
+    first_name VARCHAR(512) NOT NULL,
+    middle_name VARCHAR(512),
+    last_name VARCHAR(512) NOT NULL,
+    mail1 VARCHAR(512) NOT NULL,
+    mail2 VARCHAR(512),
+    tel1_type VARCHAR(512) NOT NULL DEFAULT 'Line',
+    tel1 VARCHAR(8) NOT NULL,
+    tel2_type VARCHAR(512),
+    tel2 VARCHAR(8),
+    photo VARCHAR(512),
+    avatar VARCHAR(512),
+    twitter VARCHAR(512),
+    facebook VARCHAR(512),
+    obs TEXT
+);
+success!
+timestamp: 2014-01-09T11:55:07.012000
+ALTER TABLE auth_user ADD middle_name VARCHAR(512);
+success!
+timestamp: 2014-01-09T11:55:57.547000
+ALTER TABLE personal_data ADD user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-09T11:55:59.447000
+ALTER TABLE personal_data DROP COLUMN first_name;
+timestamp: 2014-01-09T11:55:59.535000
+ALTER TABLE personal_data DROP COLUMN last_name;
+timestamp: 2014-01-09T11:55:59.590000
+ALTER TABLE personal_data DROP COLUMN middle_name;
+timestamp: 2014-01-09T11:55:59.655000
+ALTER TABLE personal_data DROP COLUMN mail1;
+success!
+timestamp: 2014-01-09T13:06:02.723000
+CREATE TABLE address(
+    id SERIAL PRIMARY KEY,
+    street VARCHAR(512) NOT NULL,
+    building INTEGER,
+    floor VARCHAR(512),
+    door VARCHAR(512),
+    apartment VARCHAR(512),
+    street1 VARCHAR(512),
+    street2 VARCHAR(512),
+    zip_code VARCHAR(512),
+    loc VARCHAR(512),
+    prov VARCHAR(512),
+    obs TEXT
+);
+success!
+timestamp: 2014-01-09T13:06:05.016000
+ALTER TABLE personal_data ADD nac VARCHAR(512) NOT NULL DEFAULT 'Argentina';
+timestamp: 2014-01-09T13:06:05.461000
+ALTER TABLE personal_data ADD address INTEGER REFERENCES address (id) ON DELETE CASCADE;
+success!

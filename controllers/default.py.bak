@@ -21,6 +21,9 @@ def index():
     if not auth.is_logged_in():
         form = auth()
     else:
+        ## If the user is successfully logged in we store the timestamp in the DB.
+        db.auth_user[auth.user.id]=dict(last_login=request.now)
+        ## Then we redirect to the "Start Page"
         redirect(URL('start'))
     #if form.accepts(request.vars, session):
         #redirect(URL('start'))
@@ -39,10 +42,10 @@ def info():
 #    form = auth.profile()
 #    return dict(ingreso=ingreso, form=form)
 
-@auth.requires_membership('root')
+@auth.requires_login()
 def start():
      #response.flash = T("Welcome back ") + auth.user.first_name + " " + auth.user.last_name + "!"
-     response.flash = auth.user.id
+     #response.flash = auth.user.id
      return dict(start=start)
 
 def user():
@@ -115,3 +118,31 @@ def admin_user_memberships():
 def upload_image():
     grid = SQLFORM.smartgrid(db.image)
     return locals()
+
+#@auth.requires_permission('create new father', db.auth_user)
+def new_father():
+    form = SQLFORM.factory(
+                           Field('first_name', required=True, requires=IS_NOT_EMPTY(), label=T("First Name")),
+                           Field('middle_name', label=T("Middle Name")),
+                           Field('last_name', required=True, requires=IS_NOT_EMPTY(), label=T("Last Name")),
+                           Field('email', required=True, requires=[IS_EMAIL(),
+                                                                   IS_NOT_IN_DB(db, 'auth_user.email',
+                                                                                            error_message=T("This email is already in our database, please choose another one"))],
+                                                                                            label=T("email")),
+                           Field('password', required=True, requires=[IS_MATCH('\d{8}', error_message=T("Please, only numbers")), CRYPT()], label=T("Document")),
+                           Field('obs', 'text', label=T("Observations"))
+                           )
+    if form.process().accepted:
+        new_user_id = db.auth_user.insert(first_name=form.vars.first_name,
+                                          middle_name=form.vars.middle_name,
+                                          last_name=form.vars.last_name,
+                                          email=form.vars.email,
+                                          password=form.vars.password,
+                                          obs=form.vars.obs)
+        db.auth_membership.insert(user_id=new_user_id,
+                                  group_id=db.auth_group(role='padre').id)
+        response.flash = T("new record inserted")
+        redirect(URL('start'))
+    elif form.errors:
+        response.flash = T("Form has errors")
+    return dict(form=form)

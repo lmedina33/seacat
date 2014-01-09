@@ -157,6 +157,14 @@ def _():
                           (SPAN(T("Root Menu"), _class='highlighted'), False, URL(request.application, 'appadmin', 'index'))
                           ]
 
+    if auth.has_permission('create new father', db.auth_user):
+        response.menu += [
+                          (SPAN(T("New")), False, None, [
+                                                        (T("Father"), False, URL('new_father'))
+                                                        ]
+                          )
+                         ]
+
 if DEVELOPMENT_MENU: _()
 
 #if "auth" in locals(): auth.wikimenu()
