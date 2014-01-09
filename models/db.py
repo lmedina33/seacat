@@ -149,7 +149,7 @@ db.define_table('personal_data',
                 )
 
 ## Adding permission:
-auth.add_permission(db.auth_group(role="derivaciones").id, 'create new father', db.auth_user, 0)
+#auth.add_permission(db.auth_group(role="derivaciones").id, 'create new father', db.auth_user, 0)
 
 
 ## configure email

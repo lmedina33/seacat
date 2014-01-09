@@ -146,3 +146,33 @@ def new_father():
     elif form.errors:
         response.flash = T("Form has errors")
     return dict(form=form)
+
+@auth.requires_permission('create new user', db.auth_user)
+def new_user():
+    form = SQLFORM.factory(
+                           Field('first_name', required=True, requires=IS_NOT_EMPTY(), label=T("First Name")),
+                           Field('middle_name', label=T("Middle Name")),
+                           Field('last_name', required=True, requires=IS_NOT_EMPTY(), label=T("Last Name")),
+                           Field('email', required=True, requires=[IS_EMAIL(),
+                                                                   IS_NOT_IN_DB(db, 'auth_user.email',
+                                                                                            error_message=T("This email is already in our database, please choose another one"))],
+                                                                                            label=T("email")),
+                           Field('password', required=True, requires=[IS_NOT_EMPTY(), CRYPT()], widget=SQLFORM.widgets.password.widget, label=T("Password")),
+                           Field('password_check', required=True, requires=[IS_EQUAL_TO(request.vars.password)], widget=SQLFORM.widgets.password.widget, label=T("Password Verification")),
+                           Field('role', required=True, requires=IS_IN_DB(db, 'auth_group.role', '%(description)s'), notnull=True, label=T("Role")),
+                           Field('obs', 'text', label=T("Observations"))
+                           )
+    if form.process().accepted:
+        new_user_id = db.auth_user.insert(first_name=form.vars.first_name,
+                                          middle_name=form.vars.middle_name,
+                                          last_name=form.vars.last_name,
+                                          email=form.vars.email,
+                                          password=form.vars.password,
+                                          obs=form.vars.obs)
+        db.auth_membership.insert(user_id=new_user_id,
+                                  group_id=db.auth_group(role=form.vars.role).id)
+        response.flash = T("new record inserted")
+        redirect(URL('start'))
+    elif form.errors:
+        response.flash = T("Form has errors")
+    return dict(form=form)

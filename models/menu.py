@@ -165,6 +165,14 @@ def _():
                           )
                          ]
 
+    if auth.has_permission('create new user', db.auth_user):
+        response.menu += [
+                          (SPAN(T("New")), False, None, [
+                                                        (T("User"), False, URL('new_user'))
+                                                        ]
+                          )
+                         ]
+
 if DEVELOPMENT_MENU: _()
 
 #if "auth" in locals(): auth.wikimenu()

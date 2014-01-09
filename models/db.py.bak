@@ -56,16 +56,15 @@ auth.settings.extra_fields['auth_user'] = [
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=False)
 
-## Changing labels:
-#db.auth_user.last_login.label = T("Last Login")
 
 ## Changing attributes:
 db.auth_group.description.readable = True
 
 ## Changing format to 'auth_user' table:
 db.auth_user.format = '%(last_name)s, %(first_name)s'
+
 ## Setting email to unique
-db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')]
+db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')] ## NO FUNKA!!!!!!!!!!!!!!!!!
 db.auth_user.email.unique=True
 
 ## Removing "remember me" feature at login form
@@ -148,6 +147,9 @@ db.define_table('personal_data',
                 Field('obs', 'text', label=T("Observations")),
                 format='%(doc)s'
                 )
+
+## Adding permission:
+auth.add_permission(db.auth_group(role="derivaciones").id, 'create new father', db.auth_user, 0)
 
 
 ## configure email
