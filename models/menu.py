@@ -154,8 +154,18 @@ def _():
     ## Adding features according to user membership
     if auth.has_membership('root'):
         response.menu += [
-                          (SPAN(T("Root Menu"), _class='highlighted'), False, URL(request.application, 'appadmin', 'index'))
-                          ]
+                          (SPAN(T("Root Menu"), _class='highlighted'), False, None, [
+                                                                                     (T("Admin"), False, None, [
+                                                                                                                (T("Database"), False, URL(request.application, 'appadmin', 'index')),
+                                                                                                                (T("Users"), False, URL('admin_users')),
+                                                                                                                (T("Users Groups"), False, URL('admin_user_groups')),
+                                                                                                                (T("Users Memberships"), False, URL('admin_user_memberships')),
+                                                                                                                (T("Users Permissions"), False, URL('admin_user_permissions'))
+                                                                                                                ]
+                                                                                     )
+                                                                                    ]
+                          )
+                         ]
 
     if auth.has_permission('create new father', db.auth_user):
         response.menu += [

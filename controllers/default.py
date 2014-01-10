@@ -102,19 +102,51 @@ def data():
     """
     return dict(form=crud())
 
-def test():
-    grid = SQLFORM.smartgrid(db.auth_user)
+@auth.requires_membership('root')
+def admin_users():
+    grid = SQLFORM.smartgrid(db.auth_user,
+                             fields=[db.auth_user.id, db.auth_user.first_name, db.auth_user.middle_name, db.auth_user.last_name, db.auth_user.email, db.auth_user.obs],
+                             maxtextlengths={'auth_user.email': 50},
+                             showbuttontext=False,
+                             orderby='auth_user.last_name',
+                             paginate=50,
+                             links_in_grid=False,
+                             exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True))
     return locals()
 
 @auth.requires_membership('root')
 def admin_user_groups():
-    grid = SQLFORM.grid(db.auth_group)
+    grid = SQLFORM.grid(db.auth_group,
+                        maxtextlengths={'auth_group.description': 50},
+                        showbuttontext=False,
+                        orderby='auth_group.role',
+                        paginate=50,
+                        links_in_grid=False,
+                        exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True))
     return locals()
 
+@auth.requires_membership('root')
 def admin_user_memberships():
-    grid = SQLFORM.smartgrid(db.auth_membership)
+    grid = SQLFORM.smartgrid(db.auth_membership,
+                             maxtextlengths={'auth_membership.user_id': 50},
+                             showbuttontext=False,
+                             #orderby=db.auth_user.last_name,
+                             paginate=50,
+                             links_in_grid=False,
+                             exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True))
     return locals()
 
+@auth.requires_membership('root')
+def admin_user_permissions():
+    grid = SQLFORM.smartgrid(db.auth_permission,
+                             maxtextlengths={'auth_permission.name': 50},
+                             showbuttontext=False,
+                             paginate=50,
+                             links_in_grid=False,
+                             exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True))
+    return locals()
+
+@auth.requires_membership('root')
 def upload_image():
     grid = SQLFORM.smartgrid(db.image)
     return locals()
