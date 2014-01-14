@@ -1,3 +1,22 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+{{=form}}
+<script>
+    jQuery(document).ready(function(){
+        jQuery('#no_table_children_name__row').hide();
+        jQuery('#no_table_children_in_school').change(function(){
+            if(jQuery('#no_table_children_in_school').prop('checked'))
+                jQuery('#no_table_children_name__row').show();
+            else jQuery('#no_table_children_name__row').hide();});
+    });
+</script>
+<script>
+    jQuery(document).ready(function(){
+        jQuery('#no_table_student_schoool__row').hide();
+        jQuery('#no_table_student_network').change(function(){
+            if(jQuery('#no_table_student_network').prop('checked'))
+                jQuery('#no_table_student_school__row').show();
+            else jQuery('#no_table_student_school__row').hide();});
+    });
+</script>
 <!--{{=BEAUTIFY(response._vars)}}-->

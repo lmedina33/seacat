@@ -161,6 +161,7 @@ def upload_image():
 
 @auth.requires_permission('create new father', db.auth_user)
 def new_father():
+    salesianas = ["San Francisco de Sales", "San Antonio", "San Pedro", "San Juan Evangelista"]
     form = SQLFORM.factory(
                            Field('first_name', required=True, requires=IS_NOT_EMPTY(), label=T("First Name")),
                            Field('middle_name', label=T("Middle Name")),
@@ -170,6 +171,10 @@ def new_father():
                                                                                             error_message=T("This email is already in our database, please choose another one"))],
                                                                                             label=T("email")),
                            Field('password', required=True, requires=[IS_MATCH('\d{8}', error_message=T("Please, only numbers")), CRYPT()], label=T("Document")),
+                           Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
+                           Field('children_name', label=T("Children name")),
+                           Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
+                           Field('student_school', requires=IS_IN_SET(salesianas), label=T("Choose your school")),
                            Field('obs', 'text', label=T("Observations"))
                            )
     if form.process().accepted:
@@ -190,19 +195,10 @@ def new_father():
 
 @auth.requires_permission('create new user', db.auth_user)
 def new_user():
-    form = SQLFORM.factory(
-                           Field('first_name', required=True, requires=IS_NOT_EMPTY(), label=T("First Name")),
-                           Field('middle_name', label=T("Middle Name")),
-                           Field('last_name', required=True, requires=IS_NOT_EMPTY(), label=T("Last Name")),
-                           Field('email', required=True, requires=[IS_EMAIL(),
-                                                                   IS_NOT_IN_DB(db, 'auth_user.email',
-                                                                                            error_message=T("This email is already in our database, please choose another one"))],
-                                                                                            label=T("email")),
-                           Field('password', required=True, requires=[IS_NOT_EMPTY(), CRYPT()], widget=SQLFORM.widgets.password.widget, label=T("Password")),
-                           Field('password_check', required=True, requires=[IS_EQUAL_TO(request.vars.password)], widget=SQLFORM.widgets.password.widget, label=T("Password Verification")),
-                           Field('role', required=True, requires=IS_IN_DB(db, 'auth_group.role', '%(description)s'), notnull=True, label=T("Role")),
-                           Field('obs', 'text', label=T("Observations"))
-                           )
+    form = SQLFORM.factory(db.auth_user,
+                           Field('role', required=True, requires=IS_IN_DB(db, 'auth_group.role', '%(description)s'), notnull=True, label=T("Role"))
+                          )
+
     if form.process().accepted:
         new_user_id = db.auth_user.insert(first_name=form.vars.first_name,
                                           middle_name=form.vars.middle_name,
@@ -212,6 +208,7 @@ def new_user():
                                           obs=form.vars.obs)
         db.auth_membership.insert(user_id=new_user_id,
                                   group_id=db.auth_group(role=form.vars.role).id)
+
         db.auth_user[new_user_id]=dict(created_on=request.now)
         response.flash = T("new record inserted")
         redirect(URL('start'))
