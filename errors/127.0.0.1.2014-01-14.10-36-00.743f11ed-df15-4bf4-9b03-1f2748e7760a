@@ -1,0 +1,324 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.AttributeError'> 'DAL' object has no attribute 'auth_user'"
+p3
+sS'layer'
+p4
+S'/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/models/db.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\n\n#########################################################################\n## This scaffolding model makes your app work on Google App Engine too\n## File is released under public domain and you can use without limitations\n#########################################################################\n\n## if SSL/HTTPS is properly configured and you want all HTTP requests to\n## be redirected to HTTPS, uncomment the line below:\n# request.requires_https()\n\nif not request.env.web2py_runtime_gae:\n    ## if NOT running on Google App Engine use SQLite or other DB\n    #db = DAL(\'sqlite://storage.sqlite\',pool_size=1,check_reserved=[\'all\'])\n    ## To connect to a PostgreSQL DB: postgres://username:password@server/database\n    db = DAL(\'postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat\',\n             check_reserved=[\'postgres\'])\nelse:\n    ## connect to Google BigTable (optional \'google:datastore://namespace\')\n    db = DAL(\'google:datastore\')\n    ## store sessions and tickets there\n    session.connect(request, response, db=db)\n    ## or store session in Memcache, Redis, etc.\n    ## from gluon.contrib.memdb import MEMDB\n    ## from google.appengine.api.memcache import Client\n    ## session.connect(request, response, db = MEMDB(Client()))\n\n## by default give a view/generic.extension to all actions from localhost\n## none otherwise. a pattern can be \'controller/function.extension\'\nresponse.generic_patterns = [\'*\'] if request.is_local else []\n## (optional) optimize handling of static files\n# response.optimize_css = \'concat,minify,inline\'\n# response.optimize_js = \'concat,minify,inline\'\n\n#########################################################################\n## Here is sample code if you need for\n## - email capabilities\n## - authentication (registration, login, logout, ... )\n## - authorization (role based authorization)\n## - services (xml, csv, json, xmlrpc, jsonrpc, amf, rss)\n## - old style crud actions\n## (more options discussed in gluon/tools.py)\n#########################################################################\n\nfrom gluon.tools import Auth, Crud, Service, PluginManager, prettydate\nauth = Auth(db)\ncrud, service, plugins = Crud(db), Service(), PluginManager()\n\n## Adding "last_login" and "obs" fields to \'auth_user\' table\nauth.settings.extra_fields[\'auth_user\'] = [\n                                           Field(\'middle_name\', label=T("Middle Name")),\n                                           Field(\'last_login\', \'datetime\', label=T("Last Login"), writable=False, readable=False),\n                                           Field(\'obs\', \'text\', label=T("Observations")),\n                                           Field(\'personal_data_id\', writable=False, readable=False, requires=IS_IN_DB(db, \'personal_data.id\'), label=T("Personal Data ID")),\n                                           Field(\'address_id\', writable=False, readable=False, requires=IS_IN_DB(db, \'address.id\'), label=T("Address ID"))\n                                           ]\n## Changing format to \'auth_user\' table:\ndb.auth_user.format = \'%(last_name)s, %(first_name)s\'\n\n## Setting email to unique\ndb.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, \'auth_user.email\')]\ndb.auth_user.email.unique=True\n\n## create all tables needed by auth if not custom tables\nauth.define_tables(username=False, signature=False)\n\n## Changing attributes:\ndb.auth_group.description.readable = True\n\n## Removing "remember me" feature at login form\nauth.settings.remember_me_form = False\n\n## Defining new table for Images:\ndb.define_table(\'images\',\n                Field(\'name\', label=T("Name")),\n                Field(\'file\', \'upload\', label=T("File"), required=True)\n                )\n\n## Defining new table for address:\nprovinces = ["Buenos Aires",\n             "Catamarca",\n             "Ciudad Aut\xc3\xb3noma de Buenos Aires",\n             "Chaco",\n             "Chubut",\n             "Corrientes",\n             "C\xc3\xb3rdoba",\n             "Entre R\xc3\xados",\n             "Formosa",\n             "Jujuy",\n             "La Pampa",\n             "La Rioja",\n             "Mendoza",\n             "Misiones",\n             "Neuqu\xc3\xa9n",\n             "R\xc3\xado Negro",\n             "Salta",\n             "San Juan",\n             "San Luis",\n             "Santa Cruz",\n             "Santa Fe",\n             "Santiago del Estero",\n             "Tierra del Fuego, Ant\xc3\xa1rtida e Islas del Atl\xc3\xa1ntico Sur",\n             "Tucum\xc3\xa1n"\n             ]\ndb.define_table(\'address\',\n                Field(\'street\', required=True, notnull=True, label=T("Street")),\n                Field(\'building\', \'integer\', label=T("Building")),\n                Field(\'floor\', label=T("Floor")),\n                Field(\'door\', label=T("Door")),\n                Field(\'apartment\', label=T("Apartment")),\n                Field(\'street1\', label=T("Street 1")),\n                Field(\'street2\', label=T("Street 2")),\n                Field(\'zip_code\', label=T("ZIP Code")),\n                Field(\'loc\', default=provinces[2], label=T("Locality")),\n                Field(\'prov\', requires=IS_IN_SET(provinces), default=provinces[2], label=T("Province")),\n                Field(\'obs\', \'text\', label=T("Observations")),\n                format=\'%(street)s\'+" "+\'%(building)s\'+" "+\'%(floor)s\'+" "+\'%(door)s\'+" "+\'%(apartment)s\'\n                )\n\n## Defining new table for personal data\ndoc_type_set = [\'DNI\', \'LE\', \'LC\', T("PASSPORT")]\ntel_type_set = [T("Line"), T("Cell Phone"), T("Other")]\nvalid_image_extensions = (\'jpeg\', \'jpg\', \'png\')\nphoto_size = (640, 480)\navatar_size = (200, 200)\ndb.define_table(\'personal_data\',\n                Field(\'doc_type\', required=True, requires=IS_IN_SET(doc_type_set), notnull=True, default=doc_type_set[0], label=T("Document Type")),\n                Field(\'doc\', \'string\', length=8, required=True, requires=IS_MATCH(\'\\d{8}\'), notnull=True, unique=True, label=T("Document")),\n                Field(\'nac\', required=True, notnull=True, default="Argentina", label=T("Nacionality")),\n                Field(\'cuil\', \'string\', length=11, requires=IS_MATCH(\'\\d{11}\'), notnull=True, unique=True, label="CUIL"),\n                ## Commented because they are in \'auth_user\' table:\n                #Field(\'first_name\', required=True, notnull=True, label=T("First Name")),\n                #Field(\'middle_name\', label=T("Middle Name")),\n                #Field(\'last_name\', required=True, notnull=True, label=T("Last Name")),\n                #Field(\'mail1\', required=True, requires=IS_EMAIL(), notnull=True, label=T("email 1")),\n                Field(\'mail2\', requires=IS_EMAIL(), label=T("email 2")),\n                Field(\'tel1_type\', required=True, requires=IS_IN_SET(tel_type_set), notnull=True, default=tel_type_set[0], label=T("Phone Type 1")),\n                Field(\'tel1\', length=8, required=True, requires=IS_MATCH(\'\\d{8}\'), notnull=True, label=T("Phone Number 1")),\n                Field(\'tel2_type\', requires=IS_IN_SET(tel_type_set), default=tel_type_set[0], label=T("Phone Type 2")),\n                Field(\'tel2\', length=8, requires=IS_MATCH(\'\\d{8}\'), label=T("Phone Number 2")),\n                Field(\'photo\', \'upload\', requires=IS_IMAGE(extensions=valid_image_extensions, maxsize=photo_size), label=T("Photo")),\n                Field(\'avatar\', \'upload\', requires=IS_IMAGE(extensions=valid_image_extensions, maxsize=avatar_size), label=T("Avatar")),\n                Field(\'twitter\', requires=IS_URL(), label=T("Twitter Profile")),\n                Field(\'facebook\', requires=IS_URL(), label=T("Facebook Profile")),\n                Field(\'obs\', \'text\', label=T("Observations")),\n                format=\'%(doc)s\'\n                )\n\n## Adding permission:\n#auth.add_permission(db.auth_group(role="derivaciones").id, \'create new father\', db.auth_user, 0)\n\n\n## configure email\nmail = auth.settings.mailer\nmail.settings.server = \'logging\' or \'smtp.gmail.com:587\'\nmail.settings.sender = \'soportetecnico@pioix.edu.ar\'\nmail.settings.login = \'soportetecnico:deagostini\'\n\n## configure auth policy\nauth.settings.registration_requires_verification = True\nauth.settings.registration_requires_approval = True\nauth.settings.reset_password_requires_verification = True\n\n## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.\n## register with janrain.com, write your domain:api_key in private/janrain.key\nfrom gluon.contrib.login_methods.rpx_account import use_janrain\nuse_janrain(auth, filename=\'private/janrain.key\')\n\n#########################################################################\n## Define your tables below (or better in another model file) for example\n##\n## >>> db.define_table(\'mytable\',Field(\'myfield\',\'string\'))\n##\n## Fields can be \'string\',\'text\',\'password\',\'integer\',\'double\',\'boolean\'\n##       \'date\',\'time\',\'datetime\',\'blob\',\'upload\', \'reference TABLENAME\'\n## There is an implicit \'id integer autoincrement\' field\n## Consult manual for more options, validators, etc.\n##\n## More API examples for controllers:\n##\n## >>> db.mytable.insert(myfield=\'value\')\n## >>> rows=db(db.mytable.myfield==\'value\').select(db.mytable.ALL)\n## >>> for row in rows: print row.id, row.myfield\n#########################################################################\n\n## after defining tables, uncomment below to enable auditing\n# auth.enable_record_versioning(db)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__hash__'
+p12
+S"<method-wrapper '__hash__' of exceptions.AttributeError object>"
+p13
+sS'__setattr__'
+p14
+S"<method-wrapper '__setattr__' of exceptions.AttributeError object>"
+p15
+sS'__reduce_ex__'
+p16
+S'<built-in method __reduce_ex__ of exceptions.AttributeError object>'
+p17
+sS'__getslice__'
+p18
+S"<method-wrapper '__getslice__' of exceptions.AttributeError object>"
+p19
+sS'__getitem__'
+p20
+S"<method-wrapper '__getitem__' of exceptions.AttributeError object>"
+p21
+sS'__setstate__'
+p22
+S'<built-in method __setstate__ of exceptions.AttributeError object>'
+p23
+sS'args'
+p24
+S'("\'DAL\' object has no attribute \'auth_user\'",)'
+p25
+sS'__reduce__'
+p26
+S'<built-in method __reduce__ of exceptions.AttributeError object>'
+p27
+sS'__str__'
+p28
+S"<method-wrapper '__str__' of exceptions.AttributeError object>"
+p29
+sS'__format__'
+p30
+S'<built-in method __format__ of exceptions.AttributeError object>'
+p31
+sS'__getattribute__'
+p32
+S"<method-wrapper '__getattribute__' of exceptions.AttributeError object>"
+p33
+sS'__class__'
+p34
+S"<type 'exceptions.AttributeError'>"
+p35
+sS'__unicode__'
+p36
+S'<built-in method __unicode__ of exceptions.AttributeError object>'
+p37
+sS'__delattr__'
+p38
+S"<method-wrapper '__delattr__' of exceptions.AttributeError object>"
+p39
+sS'__subclasshook__'
+p40
+S'<built-in method __subclasshook__ of type object>'
+p41
+sS'__repr__'
+p42
+S"<method-wrapper '__repr__' of exceptions.AttributeError object>"
+p43
+sS'__dict__'
+p44
+S'{}'
+p45
+sS'__sizeof__'
+p46
+S'<built-in method __sizeof__ of exceptions.AttributeError object>'
+p47
+sS'__doc__'
+p48
+S"'Attribute not found.'"
+p49
+sS'__init__'
+p50
+S"<method-wrapper '__init__' of exceptions.AttributeError object>"
+p51
+sS'__new__'
+p52
+S'<built-in method __new__ of type object>'
+p53
+ssS'evalue'
+p54
+S"'DAL' object has no attribute 'auth_user'"
+p55
+sS'request'
+p56
+cgluon.html
+XML_unpickle
+p57
+(S'sf[\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">ajax</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">application</td><td style="vertical-align:top;">:</td><td><div>SEACAT_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cid</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">controller</td><td style="vertical-align:top;">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_admin</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-56ae1ba5-b1aa-4509-b819-ba0369a4ede1<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_seacat_ingresos</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-a4eff687-ec1c-4de7-a6af-95e0688fe505<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_welcome</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-b04fe521-e201-45e6-bc04-34b424a2e276<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">env</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_ENCODING</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_LANGUAGE</td><td style="vertical-align:top;">:</td><td><div>es-ar,en-us;q=0.7,en;q=0.3</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CACHE_CONTROL</td><td style="vertical-align:top;">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONNECTION</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_COOKIE</td><td style="vertical-align:top;">:</td><td><div>__utma=96992031.431411581.1385420967.1385420967.1387379970.2; __utmz=96992031.1385420967.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); session_id_welcome=127.0.0.1-b04fe521-e201-45e6-bc04-34b424a2e276; session_id_admin=127.0.0.1-56ae1ba5-b1aa-4509-b819-ba0369a4ede1; session_id_seacat_ingresos=127.0.0.1-a4eff687-ec1c-4de7-a6af-95e0688fe505</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_HOST</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_USER_AGENT</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_INFO</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/new_personal_data</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">QUERY_STRING</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_ADDR</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_PORT</td><td style="vertical-align:top;">:</td><td><div>34538</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_METHOD</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_NAME</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_NAME</td><td style="vertical-align:top;">:</td><td><div>larrea-lmde</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PORT</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PROTOCOL</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_SOFTWARE</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/&#x27;, &#x27;/home/leo/Dropbox/web2py/applications/admin/&#x27;, &#x27;/home/leo/Dropbox/web2py/applications/welcome/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/leo/Dropbox/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x213bcb0: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [&#x27;127.0.1.1&#x27;], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;larrea-lmde&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/leo/Dropbox/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;&lt;ask&gt;&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/leo/Dropbox/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_encoding</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_language</td><td style="vertical-align:top;">:</td><td><div>es-ar,en-us;q=0.7,en;q=0.3</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cache_control</td><td style="vertical-align:top;">:</td><td><div>max-age=0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_connection</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cookie</td><td style="vertical-align:top;">:</td><td><div>__utma=96992031.431411581.1385420967.1385420967.1387379970.2; __utmz=96992031.1385420967.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); session_id_welcome=127.0.0.1-b04fe521-e201-45e6-bc04-34b424a2e276; session_id_admin=127.0.0.1-56ae1ba5-b1aa-4509-b819-ba0369a4ede1; session_id_seacat_ingresos=127.0.0.1-a4eff687-ec1c-4de7-a6af-95e0688fe505</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_host</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_user_agent</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>larrea-lmde</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_info</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/new_personal_data</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">query_string</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_addr</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_port</td><td style="vertical-align:top;">:</td><td><div>34538</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_method</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_uri</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/new_personal_data</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_name</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_name</td><td style="vertical-align:top;">:</td><td><div>larrea-lmde</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_port</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_protocol</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_software</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_path</td><td style="vertical-align:top;">:</td><td><div>/home/leo/Dropbox/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.7.4-stable+timestamp.2013.10.14.15.16.29</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x7f73efa511e0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x20a8390&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0x7f73cc382250&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x7f73efa511e0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x20a8390&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0x7f73cc382250&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">extension</td><td style="vertical-align:top;">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">folder</td><td style="vertical-align:top;">:</td><td><div>/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">function</td><td style="vertical-align:top;">:</td><td><div>new_personal_data</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">global_settings</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/&#x27;, &#x27;/home/leo/Dropbox/web2py/applications/admin/&#x27;, &#x27;/home/leo/Dropbox/web2py/applications/welcome/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/leo/Dropbox/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x213bcb0: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [&#x27;127.0.1.1&#x27;], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;larrea-lmde&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/leo/Dropbox/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;&lt;ask&gt;&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/leo/Dropbox/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>larrea-lmde</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.7.4-stable+timestamp.2013.10.14.15.16.29</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_https</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_local</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_restful</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">now</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2014, 1, 14, 10, 36, 0, 474269)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_args</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_extension</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">url</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/new_personal_data</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">utcnow</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2014, 1, 14, 13, 36, 0, 474297)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">uuid</td><td style="vertical-align:top;">:</td><td><div>SEACAT_ingresos/127.0.0.1.2014-01-14.10-36-00.743f11ed-df15-4bf4-9b03-1f2748e7760a</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi</td><td style="vertical-align:top;">:</td><td><div>&lt;gluon.main.LazyWSGI object at 0x7f73d4485b90&gt;</div></td></tr></table></div>'
+tRp58
+sS'frames'
+p59
+(lp60
+(dp61
+S'file'
+p62
+S'/home/leo/Dropbox/web2py/gluon/restricted.py'
+p63
+sS'dump'
+p64
+(dp65
+S'environment'
+p66
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, ...}"
+p67
+sS'ccode'
+p68
+S'<code object <module> at 0x7f73bd194230, file "/...lications/SEACAT_ingresos/models/db.py", line 12>'
+p69
+ssS'lnum'
+p70
+I217
+sS'lines'
+p71
+(dp72
+I212
+S'    try:'
+p73
+sI213
+S'        if isinstance(code, types.CodeType):'
+p74
+sI214
+S'            ccode = code'
+p75
+sI215
+S'        else:'
+p76
+sI216
+S'            ccode = compile2(code, layer)'
+p77
+sI217
+S'        exec ccode in environment'
+p78
+sI218
+S'    except HTTP:'
+p79
+sI219
+S'        raise'
+p80
+sI220
+S'    except RestrictedError:'
+p81
+sI221
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p82
+ssS'call'
+p83
+S"(code='# -*- coding: utf-8 -*-\\n\\n#######################...ble auditing\\n# auth.enable_record_versioning(db)\\n', environment={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, ...}, layer='/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/models/db.py')"
+p84
+sS'func'
+p85
+S'restricted'
+p86
+sa(dp87
+g62
+S'/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/models/db.py'
+p88
+sg64
+(dp89
+S'db.auth_user'
+p90
+S'undefined'
+p91
+sS'db'
+p92
+S'<DAL uri="postgres:******@wspio1.pioix.edu.ar/seacat">'
+p93
+ssg70
+I58
+sg71
+(dp94
+I53
+S'                                           Field(\'obs\', \'text\', label=T("Observations")),'
+p95
+sI54
+S'                                           Field(\'personal_data_id\', writable=False, readable=False, requires=IS_IN_DB(db, \'personal_data.id\'), label=T("Personal Data ID")),'
+p96
+sI55
+S'                                           Field(\'address_id\', writable=False, readable=False, requires=IS_IN_DB(db, \'address.id\'), label=T("Address ID"))'
+p97
+sI56
+S'                                           ]'
+p98
+sI57
+S"## Changing format to 'auth_user' table:"
+p99
+sI58
+S"db.auth_user.format = '%(last_name)s, %(first_name)s'"
+p100
+sI59
+S''
+sI60
+S'## Setting email to unique'
+p101
+sI61
+S"db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')]"
+p102
+sI62
+S'db.auth_user.email.unique=True'
+p103
+ssg83
+S'()'
+p104
+sg85
+S'<module>'
+p105
+sa(dp106
+g62
+S'/home/leo/Dropbox/web2py/gluon/dal.py'
+p107
+sg64
+(dp108
+S'self'
+p109
+S'<DAL uri="postgres:******@wspio1.pioix.edu.ar/seacat">'
+p110
+sS'global ogetattr'
+p111
+S"<slot wrapper '__getattribute__' of 'object' objects>"
+p112
+sS'key'
+p113
+S"'auth_user'"
+p114
+ssg70
+I8041
+sg71
+(dp115
+I8036
+S'    def __getattr__(self, key):'
+p116
+sI8037
+S"        if ogetattr(self,'_lazy_tables') and \\"
+p117
+sI8038
+S"                key in ogetattr(self,'_LAZY_TABLES'):"
+p118
+sI8039
+S'            tablename, fields, args = self._LAZY_TABLES.pop(key)'
+p119
+sI8040
+S'            return self.lazy_define_table(tablename,*fields,**args)'
+p120
+sI8041
+S'        return ogetattr(self, key)'
+p121
+sI8042
+S''
+sI8043
+S'    def __setitem__(self, key, value):'
+p122
+sI8044
+S'        osetattr(self, str(key), value)'
+p123
+sI8045
+S''
+ssg83
+S'(self=<DAL uri="postgres:******@wspio1.pioix.edu.ar/seacat">, key=\'auth_user\')'
+p124
+sg85
+S'__getattr__'
+p125
+sasS'pyver'
+p126
+S'Python 2.7.5+: /usr/bin/python (prefix: /usr)'
+p127
+sS'session'
+p128
+g57
+(S's\xcf\x0b\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">auth</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">expiration</td><td style="vertical-align:top;">:</td><td><div>3600</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">hmac_key</td><td style="vertical-align:top;">:</td><td><div>7933f495-306c-498f-a942-5343bee8364e</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_visit</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2014, 1, 14, 10, 33, 50, 586784)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remember</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">email</td><td style="vertical-align:top;">:</td><td><div>colomboleandro@pioix.edu.ar</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">first_name</td><td style="vertical-align:top;">:</td><td><div>Leandro</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">id</td><td style="vertical-align:top;">:</td><td><div>1L</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_login</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2014, 1, 10, 17, 58, 38)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_name</td><td style="vertical-align:top;">:</td><td><div>Colombo Vi\xc3\xb1a</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">middle_name</td><td style="vertical-align:top;">:</td><td><div>Enrique</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">obs</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_id</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">reset_password_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user_groups</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">1</td><td style="vertical-align:top;">:</td><td><div>root</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_orderby</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_query</td><td style="vertical-align:top;">:</td><td><div>db.personal_data.id&gt;0</div></td></tr></table></div>'
+tRp129
+sS'etype'
+p130
+S"<type 'exceptions.AttributeError'>"
+p131
+sS'date'
+p132
+S'Tue Jan 14 10:36:00 2014'
+p133
+sS'response'
+p134
+g57
+(S's\x1d\x17\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">body</td><td style="vertical-align:top;">:</td><td><div>&lt;cStringIO.StringO object at 0x7f73bc466c00&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_seacat_ingresos</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-a4eff687-ec1c-4de7-a6af-95e0688fe505<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">delimiters</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">files</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generic_patterns</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">headers</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">X-Powered-By</td><td style="vertical-align:top;">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">menu</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">meta</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">models_to_run</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/new_personal_data/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">postprocessing</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_compression_level</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_expires</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_key</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_data_name</td><td style="vertical-align:top;">:</td><td><div>session_data_seacat_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_file</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/sessions/127.0.0.1-a4eff687-ec1c-4de7-a6af-95e0688fe505&#x27;, mode &#x27;rb+&#x27; at 0x7f73d44959c0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_filename</td><td style="vertical-align:top;">:</td><td><div>/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/sessions/127.0.0.1-a4eff687-ec1c-4de7-a6af-95e0688fe505</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_hash</td><td style="vertical-align:top;">:</td><td><div>0bae491936b109f8a65179d3a7bf76d2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-a4eff687-ec1c-4de7-a6af-95e0688fe505</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_name</td><td style="vertical-align:top;">:</td><td><div>session_id_seacat_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_locked</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_masterapp</td><td style="vertical-align:top;">:</td><td><div>SEACAT_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_new</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_storage_type</td><td style="vertical-align:top;">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">status</td><td style="vertical-align:top;">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">view</td><td style="vertical-align:top;">:</td><td><div>default/new_personal_data.html</div></td></tr></table></div>'
+tRp135
+sS'locals'
+p136
+(dp137
+S'self'
+p138
+S'<DAL uri="postgres:******@wspio1.pioix.edu.ar/seacat">'
+p139
+sS'key'
+p140
+S"'auth_user'"
+p141
+sssS'traceback'
+p142
+S'Traceback (most recent call last):\n  File "/home/leo/Dropbox/web2py/gluon/restricted.py", line 217, in restricted\n    exec ccode in environment\n  File "/home/leo/Dropbox/web2py/applications/SEACAT_ingresos/models/db.py", line 58, in <module>\n    db.auth_user.format = \'%(last_name)s, %(first_name)s\'\n  File "/home/leo/Dropbox/web2py/gluon/dal.py", line 8041, in __getattr__\n    return ogetattr(self, key)\nAttributeError: \'DAL\' object has no attribute \'auth_user\'\n'
+p143
+s.

@@ -49,23 +49,24 @@ crud, service, plugins = Crud(db), Service(), PluginManager()
 ## Adding "last_login" and "obs" fields to 'auth_user' table
 auth.settings.extra_fields['auth_user'] = [
                                            Field('middle_name', label=T("Middle Name")),
+                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=False),
                                            Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=False),
-                                           Field('obs', 'text', label=T("Observations"))
+                                           Field('obs', 'text', label=T("Observations")),
+                                           Field('personal_data_id', 'reference personal_data', writable=False, readable=False, requires=IS_IN_DB(db, 'personal_data.id'), label=T("Personal Data ID")),
+                                           Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID"))
                                            ]
-
 ## create all tables needed by auth if not custom tables
-auth.define_tables(username=False, signature=False)
+auth.define_tables(username=False, signature=True)
 
+## Changing format to 'auth_user' table:
+db.auth_user._format = '%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)s'
+
+## Setting email to unique
+db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')]
+db.auth_user.email.unique=True
 
 ## Changing attributes:
 db.auth_group.description.readable = True
-
-## Changing format to 'auth_user' table:
-db.auth_user.format = '%(last_name)s, %(first_name)s'
-
-## Setting email to unique
-db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')] ## NO FUNKA!!!!!!!!!!!!!!!!!
-db.auth_user.email.unique=True
 
 ## Removing "remember me" feature at login form
 auth.settings.remember_me_form = False
@@ -122,12 +123,10 @@ doc_type_set = ['DNI', 'LE', 'LC', T("PASSPORT")]
 tel_type_set = [T("Line"), T("Cell Phone"), T("Other")]
 valid_image_extensions = ('jpeg', 'jpg', 'png')
 photo_size = (640, 480)
-avatar_size = (200, 200)
+avatar_size = (300, 300)
 db.define_table('personal_data',
-                Field('user_id', db.auth_user),
-                Field('address', db.address),
                 Field('doc_type', required=True, requires=IS_IN_SET(doc_type_set), notnull=True, default=doc_type_set[0], label=T("Document Type")),
-                Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, unique=True, label=T("Document")),
+                Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, unique=True, label=T("Document"), comment=T("Insert only numbers without dots. i.e.: 12654897")),
                 Field('nac', required=True, notnull=True, default="Argentina", label=T("Nacionality")),
                 Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), notnull=True, unique=True, label="CUIL"),
                 ## Commented because they are in 'auth_user' table:
@@ -135,11 +134,11 @@ db.define_table('personal_data',
                 #Field('middle_name', label=T("Middle Name")),
                 #Field('last_name', required=True, notnull=True, label=T("Last Name")),
                 #Field('mail1', required=True, requires=IS_EMAIL(), notnull=True, label=T("email 1")),
-                Field('mail2', requires=IS_EMAIL(), label=T("email 2")),
-                Field('tel1_type', required=True, requires=IS_IN_SET(tel_type_set), notnull=True, default=tel_type_set[0], label=T("Phone Type 1")),
-                Field('tel1', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, label=T("Phone Number 1")),
-                Field('tel2_type', requires=IS_IN_SET(tel_type_set), default=tel_type_set[0], label=T("Phone Type 2")),
-                Field('tel2', length=8, requires=IS_MATCH('\d{8}'), label=T("Phone Number 2")),
+                Field('mail2', requires=IS_EMAIL(), label=T("Alternative email"), comment=T("Another contact mail")),
+                Field('tel1_type', required=True, requires=IS_IN_SET(tel_type_set), notnull=True, default=tel_type_set[0], label=T("Principal Phone Type")),
+                Field('tel1', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, label=T("Principal Phone Number")),
+                Field('tel2_type', requires=IS_IN_SET(tel_type_set), default=tel_type_set[0], label=T("Alternative Phone Type")),
+                Field('tel2', length=8, requires=IS_MATCH('\d{8}'), label=T("Alternative Phone Number")),
                 Field('photo', 'upload', requires=IS_IMAGE(extensions=valid_image_extensions, maxsize=photo_size), label=T("Photo")),
                 Field('avatar', 'upload', requires=IS_IMAGE(extensions=valid_image_extensions, maxsize=avatar_size), label=T("Avatar")),
                 Field('twitter', requires=IS_URL(), label=T("Twitter Profile")),

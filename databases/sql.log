@@ -188,3 +188,63 @@ ALTER TABLE personal_data ADD nac VARCHAR(512) NOT NULL DEFAULT 'Argentina';
 timestamp: 2014-01-09T13:06:05.461000
 ALTER TABLE personal_data ADD address INTEGER REFERENCES address (id) ON DELETE CASCADE;
 success!
+timestamp: 2014-01-14T09:57:16.906309
+ALTER TABLE personal_data ADD address_id INTEGER REFERENCES address (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T09:57:17.009621
+ALTER TABLE personal_data DROP COLUMN address;
+success!
+timestamp: 2014-01-14T10:26:53.958160
+ALTER TABLE auth_user ADD address_id VARCHAR(512);
+timestamp: 2014-01-14T10:26:53.999626
+ALTER TABLE auth_user ADD personal_data_id VARCHAR(512);
+success!
+timestamp: 2014-01-14T10:26:54.156687
+ALTER TABLE personal_data DROP COLUMN address_id;
+timestamp: 2014-01-14T10:26:54.260054
+ALTER TABLE personal_data DROP COLUMN user_id;
+success!
+timestamp: 2014-01-14T14:32:11.156427
+ALTER TABLE auth_user ADD created_on TIMESTAMP;
+success!
+timestamp: 2014-01-14T14:48:03.387434
+ALTER TABLE auth_user ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T14:48:03.440362
+ALTER TABLE auth_user ADD is_active CHAR(1);
+timestamp: 2014-01-14T14:48:03.490323
+ALTER TABLE auth_user ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T14:48:03.576128
+ALTER TABLE auth_user ADD modified_on TIMESTAMP;
+success!
+timestamp: 2014-01-14T14:48:03.658252
+ALTER TABLE auth_group ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T14:48:03.746783
+ALTER TABLE auth_group ADD is_active CHAR(1);
+timestamp: 2014-01-14T14:48:03.784931
+ALTER TABLE auth_group ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T14:48:03.825862
+ALTER TABLE auth_group ADD created_on TIMESTAMP;
+timestamp: 2014-01-14T14:48:03.864664
+ALTER TABLE auth_group ADD modified_on TIMESTAMP;
+success!
+timestamp: 2014-01-14T14:48:04.000810
+ALTER TABLE auth_membership ADD is_active CHAR(1);
+timestamp: 2014-01-14T14:48:04.084409
+ALTER TABLE auth_membership ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T14:48:04.127507
+ALTER TABLE auth_membership ADD created_on TIMESTAMP;
+timestamp: 2014-01-14T14:48:04.166173
+ALTER TABLE auth_membership ADD modified_on TIMESTAMP;
+timestamp: 2014-01-14T14:48:04.201196
+ALTER TABLE auth_membership ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+success!
+timestamp: 2014-01-14T14:48:04.324143
+ALTER TABLE auth_permission ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T14:48:04.419025
+ALTER TABLE auth_permission ADD is_active CHAR(1);
+timestamp: 2014-01-14T14:48:04.455225
+ALTER TABLE auth_permission ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-14T14:48:04.509780
+ALTER TABLE auth_permission ADD created_on TIMESTAMP;
+timestamp: 2014-01-14T14:48:04.549802
+ALTER TABLE auth_permission ADD modified_on TIMESTAMP;
+success!
