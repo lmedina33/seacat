@@ -61,9 +61,18 @@ auth.define_tables(username=False, signature=True)
 ## Changing format to 'auth_user' table:
 db.auth_user._format = '%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)s'
 
+## Settings for 'first_name' field:
+db.auth_user.first_name.required=True
+db.auth_user.first_name.requires=[IS_NOT_EMPTY(), IS_ALPHANUMERIC()]
+
+## Settings for 'last_name' field:
+db.auth_user.last_name.required=True
+db.auth_user.last_name.requires=IS_NOT_EMPTY()
+
 ## Setting email to unique
 db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')]
 db.auth_user.email.unique=True
+db.auth_user.email.error_message=T("This email is already in our database, please choose another one")
 
 ## Changing attributes:
 db.auth_group.description.readable = True
@@ -146,6 +155,16 @@ db.define_table('personal_data',
                 Field('obs', 'text', label=T("Observations")),
                 format='%(doc)s'
                 )
+
+## Defining new table for Priority Fathers.
+salesianas = ["San Francisco de Sales", "San Antonio", "San Pedro", "San Juan Evangelista"]
+db.define_table('priority_father',
+                Field('father_id', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
+                Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
+                Field('children_name', label=T("Children name")),
+                Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
+                Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(salesianas)), label=T("Choose your school"))
+               )
 
 ## Adding permission:
 #auth.add_permission(db.auth_group(role="derivaciones").id, 'create new father', db.auth_user, 0)

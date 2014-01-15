@@ -1,11 +1,28 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
-{{=form}}
+<!--{{=form}}-->
+{{=form.custom.begin}}
+    {{=DIV(TABLE(
+                 TR(TD(T("First Name")+":"), TD(form.custom.widget.first_name)),
+                 TR(TD(T("Middle Name")+":"), TD(form.custom.widget.middle_name)),
+                 TR(TD(T("Last Name")+":"), TD(form.custom.widget.last_name)),
+                 TR(TD(T("email")+":"), TD(form.custom.widget.email)),
+                 TR(TD(T("Document")+":"), TD(INPUT(_name='password', _type='text', required=True, requires=[IS_MATCH('\d{8}', error_message=T("Please, only numbers")), CRYPT()]))),
+                 TR(TD(T("Do you have children in our school?")+":"), TD(form.custom.widget.children_in_school), _id='no_table_children_in_school__row'),
+                 TR(TD(T("Children name")+":"), TD(form.custom.widget.children_name), _id='no_table_children_name__row'),
+                 TR(TD(T("Does your son goes to a school in our network?")+":"), TD(form.custom.widget.student_network), _id='no_table_student_network__row'),
+                 TR(TD(T("Choose your school")+":"), TD(form.custom.widget.student_school), _id='no_table_student_school__row'),
+                 TR(TD(T("Observations")+":"), TD(form.custom.widget.obs)),
+                 TR(TD(), TD(form.custom.submit)),
+                )
+          )
+    }}
+{{=form.custom.end}}
 <script>
     jQuery(document).ready(function(){
         jQuery('#no_table_children_name__row').hide();
         jQuery('#no_table_children_in_school').change(function(){
-            if(jQuery('#no_table_children_in_school').prop('checked'))
+            if(jQuery('#no_table_children_in_school').is(':checked'))
                 jQuery('#no_table_children_name__row').show();
             else jQuery('#no_table_children_name__row').hide();});
     });
@@ -14,7 +31,7 @@
     jQuery(document).ready(function(){
         jQuery('#no_table_student_school__row').hide();
         jQuery('#no_table_student_network').change(function(){
-            if(jQuery('#no_table_student_network').prop('checked'))
+            if(jQuery('#no_table_student_network').is(':checked'))
                 jQuery('#no_table_student_school__row').show();
             else jQuery('#no_table_student_school__row').hide();});
     });

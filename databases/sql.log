@@ -248,3 +248,13 @@ ALTER TABLE auth_permission ADD created_on TIMESTAMP;
 timestamp: 2014-01-14T14:48:04.549802
 ALTER TABLE auth_permission ADD modified_on TIMESTAMP;
 success!
+timestamp: 2014-01-15T09:23:27.493745
+CREATE TABLE priority_father(
+    id SERIAL PRIMARY KEY,
+    father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    children_in_school CHAR(1),
+    children_name VARCHAR(512),
+    student_network CHAR(1),
+    student_school VARCHAR(512)
+);
+success!
