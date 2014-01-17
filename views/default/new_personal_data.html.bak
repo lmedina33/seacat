@@ -1,7 +1,7 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
 <p>
-    {{=T("Please fill out the form")}}
+    {{=T("Please fill out the form.")}}
 </p>
 <h3>{{=user}}</h3>
 {{=form}}

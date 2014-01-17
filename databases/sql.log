@@ -258,3 +258,41 @@ CREATE TABLE priority_father(
     student_school VARCHAR(512)
 );
 success!
+timestamp: 2014-01-17T17:13:02.311776
+ALTER TABLE auth_user ADD gender VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:14:51.579854
+ALTER TABLE auth_user ADD gender VARCHAR(512);
+success!
+timestamp: 2014-01-17T17:14:53.896915
+ALTER TABLE personal_data ADD dob DATE NOT NULL;
+timestamp: 2014-01-17T17:15:14.033271
+ALTER TABLE personal_data ADD dob DATE NOT NULL;
+timestamp: 2014-01-17T17:15:40.923223
+ALTER TABLE personal_data ADD dob DATE NOT NULL;
+timestamp: 2014-01-17T17:16:25.276335
+ALTER TABLE personal_data ADD dob DATE;
+success!
+timestamp: 2014-01-17T17:17:42.952201
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:18:19.196789
+ALTER TABLE personal_data ADD dob__tmp DATE NOT NULL;
+UPDATE personal_data SET dob__tmp=dob;
+ALTER TABLE personal_data DROP COLUMN dob;
+ALTER TABLE personal_data ADD dob DATE NOT NULL;
+UPDATE personal_data SET dob=dob__tmp;
+ALTER TABLE personal_data DROP COLUMN dob__tmp;
+success!
+timestamp: 2014-01-17T17:29:07.900026
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:29:32.677610
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:29:35.036726
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:29:41.760376
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:31:19.816009
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:31:34.463195
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-17T17:32:28.217835
+ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;

@@ -1,7 +1,7 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
-<!--{{=form}}-->
-<!--{{=BEAUTIFY(response._vars)}}-->
+{{=form}}
+<!--{{=BEAUTIFY(response._vars)}}
 {{=form.custom.begin}}
     {{=DIV(TABLE(
                  TR(TD(T("First Name")+":"), TD(form.custom.widget.first_name)),
@@ -10,10 +10,11 @@
                  TR(TD(T("email")+":"), TD(form.custom.widget.email)),
                  TR(TD(T("Password")+":"), TD(form.custom.widget.password)),
                  TR(TD(T("Password Verification")+":"), TD(INPUT(_type='password', required=True, requires=[IS_EQUAL_TO(request.vars.password)]))),
-                 TR(TD(T("Role")+":"), TD(role_form.custom.widget.role)),
+                 TR(TD(T("Gender")+":"), TD(form.custom.widget.gender)),
+                 TR(TD(T("Role")+":"), TD(form.custom.widget.role)),
                  TR(TD(T("Observations")+":"), TD(form.custom.widget.obs)),
-                 TR(TD(), TD(form.custom.submit and role_form.custom.submit)),
+                 TR(TD(), TD(form.custom.submit)),
                 )
           )
     }}
-{{=form.custom.end}}
+{{=form.custom.end}}-->

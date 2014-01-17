@@ -106,14 +106,14 @@ def data():
 def admin_users():
     grid = SQLFORM.smartgrid(db.auth_user,
                              fields=[db.auth_user.id,
+                                     db.auth_user.gender,
                                      db.auth_user.first_name,
                                      db.auth_user.middle_name,
                                      db.auth_user.last_name,
                                      db.auth_user.email,
                                      db.auth_user.obs,
                                      db.auth_user.last_login,
-                                     db.auth_user.personal_data_id,
-                                     db.auth_user.address_id],
+                                     db.auth_user.created_on],
                              maxtextlengths={'auth_user.email': 50},
                              showbuttontext=False,
                              orderby='auth_user.last_name',
@@ -176,8 +176,15 @@ def new_father():
 
 @auth.requires_permission('create new user', db.auth_user)
 def new_user():
-    form = SQLFORM.factory(db.auth_user,
-                           Field('role', required=True, requires=IS_IN_DB(db, 'auth_group.role', '%(description)s'), notnull=True, label=T("Role"))
+    form = SQLFORM.factory(db.auth_user.first_name,
+                           db.auth_user.middle_name,
+                           db.auth_user.last_name,
+                           db.auth_user.gender,
+                           db.auth_user.email,
+                           db.auth_user.password,
+                           Field('password_check', required=True, requires=[IS_EQUAL_TO(request.vars.password)], widget=SQLFORM.widgets.password.widget, label=T("Password Verification")),
+                           Field('role', required=True, requires=IS_IN_DB(db, 'auth_group.role', '%(description)s'), notnull=True, label=T("Role")),
+                           db.auth_user.obs
                           )
 
     if form.process().accepted:
@@ -196,36 +203,31 @@ def new_user():
 
 def new_personal_data():
     username = auth.user.last_name + ", " + auth.user.first_name + " " + auth.user.middle_name
-    form = SQLFORM.factory(
-                           Field('first_name', required=True, notnull=True, label=T("First Name"), writable=False, default=auth.user.first_name),
-                           Field('middle_name', label=T("Middle Name"), writable=False, default=auth.user.middle_name),
-                           Field('last_name', required=True, notnull=True, label=T("Last Name"), writable=False, default=auth.user.last_name),
-                           Field('mail1', required=True, requires=IS_EMAIL(), notnull=True, label=T("Principal email"), writable=False, default=auth.user.email),
-                           Field('doc_type', required=True, requires=IS_IN_SET(doc_type_set), notnull=True, default=doc_type_set[0], label=T("Document Type")),
-                           Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, unique=True, label=T("Document"), comment=T("Insert only numbers without dots. i.e.: 12654897")),
-                           Field('nac', required=True, notnull=True, default="Argentina", label=T("Nacionality")),
-                           Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), notnull=True, unique=True, label="CUIL"),
-                           Field('mail2', requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Alternative email"), comment=T("Another contact mail")),
-                           Field('tel1_type', required=True, requires=IS_IN_SET(tel_type_set), notnull=True, default=tel_type_set[0], label=T("Principal Phone Type")),
-                           Field('tel1', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, label=T("Principal Phone Number")),
-                           Field('tel2_type', requires=IS_IN_SET(tel_type_set), default=tel_type_set[0], label=T("Alternative Phone Type")),
-                           Field('tel2', length=8, requires=IS_MATCH('\d{8}'), label=T("Alternative Phone Number")),
-                           Field('street', required=True, notnull=True, label=T("Street")),
-                           Field('building', 'integer', label=T("Building")),
-                           Field('floor', label=T("Floor")),
-                           Field('door', label=T("Door")),
-                           Field('apartment', label=T("Apartment")),
-                           Field('street1', label=T("Street 1")),
-                           Field('street2', label=T("Street 2")),
-                           Field('zip_code', label=T("ZIP Code")),
-                           Field('loc', default=provinces[2], label=T("Locality")),
-                           Field('prov', requires=IS_IN_SET(provinces), default=provinces[2], label=T("Province")),
-                           Field('obs', 'text', label=T("Observations")),
-                           Field('photo', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=valid_image_extensions, maxsize=photo_size)), label=T("Photo")),
-                           Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=valid_image_extensions, maxsize=avatar_size)), label=T("Avatar")),
-                           Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile")),
-                           Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile")),
-                           Field('obs', 'text', label=T("Observations")),
+    form = SQLFORM.factory(db.personal_data.dob,
+                           db.personal_data.doc_type,
+                           db.personal_data.doc,
+                           db.personal_data.nac,
+                           db.personal_data.cuil,
+                           db.personal_data.mail2,
+                           db.personal_data.tel1_type,
+                           db.personal_data.tel1,
+                           db.personal_data.tel2_type,
+                           db.personal_data.tel2,
+                           db.address.street,
+                           db.address.building,
+                           db.address.floor,
+                           db.address.door,
+                           db.address.apartment,
+                           db.address.street1,
+                           db.address.street2,
+                           db.address.zip_code,
+                           db.address.loc,
+                           db.address.prov,
+                           db.personal_data.obs,
+                           db.personal_data.photo,
+                           db.personal_data.avatar,
+                           db.personal_data.twitter,
+                           db.personal_data.facebook,
                           )
     if form.process().accepted:
         data_id = db.personal_data.insert(**db.personal_data._filter_fields(form.vars))

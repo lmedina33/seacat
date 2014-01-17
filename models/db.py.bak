@@ -49,8 +49,10 @@ crud, service, plugins = Crud(db), Service(), PluginManager()
 ## Adding "last_login" and "obs" fields to 'auth_user' table
 auth.settings.extra_fields['auth_user'] = [
                                            Field('middle_name', label=T("Middle Name")),
-                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=False),
-                                           Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=False),
+                                           # Falta agregar notnull...
+                                           Field('gender', required=True, requires=IS_IN_SET([T("Male"), T("Female")]), label=T("Gender")),
+                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=True),
+                                           Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
                                            Field('obs', 'text', label=T("Observations")),
                                            Field('personal_data_id', 'reference personal_data', writable=False, readable=False, requires=IS_IN_DB(db, 'personal_data.id'), label=T("Personal Data ID")),
                                            Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID"))
@@ -63,7 +65,7 @@ db.auth_user._format = '%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)
 
 ## Settings for 'first_name' field:
 db.auth_user.first_name.required=True
-db.auth_user.first_name.requires=[IS_NOT_EMPTY(), IS_ALPHANUMERIC()]
+db.auth_user.first_name.requires=IS_NOT_EMPTY()
 
 ## Settings for 'last_name' field:
 db.auth_user.last_name.required=True
@@ -138,23 +140,25 @@ db.define_table('personal_data',
                 Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, unique=True, label=T("Document"), comment=T("Insert only numbers without dots. i.e.: 12654897")),
                 Field('nac', required=True, notnull=True, default="Argentina", label=T("Nacionality")),
                 Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), notnull=True, unique=True, label="CUIL"),
+                Field('dob', 'date', required=True, requires=IS_DATE(format=('%d-%m-%Y')), notnull=True, label=T("Day of Birth")),
                 ## Commented because they are in 'auth_user' table:
                 #Field('first_name', required=True, notnull=True, label=T("First Name")),
                 #Field('middle_name', label=T("Middle Name")),
                 #Field('last_name', required=True, notnull=True, label=T("Last Name")),
                 #Field('mail1', required=True, requires=IS_EMAIL(), notnull=True, label=T("email 1")),
-                Field('mail2', requires=IS_EMAIL(), label=T("Alternative email"), comment=T("Another contact mail")),
+                Field('mail2', requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Alternative email"), comment=T("Another contact mail")),
                 Field('tel1_type', required=True, requires=IS_IN_SET(tel_type_set), notnull=True, default=tel_type_set[0], label=T("Principal Phone Type")),
                 Field('tel1', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, label=T("Principal Phone Number")),
                 Field('tel2_type', requires=IS_IN_SET(tel_type_set), default=tel_type_set[0], label=T("Alternative Phone Type")),
                 Field('tel2', length=8, requires=IS_MATCH('\d{8}'), label=T("Alternative Phone Number")),
-                Field('photo', 'upload', requires=IS_IMAGE(extensions=valid_image_extensions, maxsize=photo_size), label=T("Photo")),
-                Field('avatar', 'upload', requires=IS_IMAGE(extensions=valid_image_extensions, maxsize=avatar_size), label=T("Avatar")),
-                Field('twitter', requires=IS_URL(), label=T("Twitter Profile")),
-                Field('facebook', requires=IS_URL(), label=T("Facebook Profile")),
+                Field('photo', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=valid_image_extensions, maxsize=photo_size)), label=T("Photo")),
+                Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=valid_image_extensions, maxsize=avatar_size)), label=T("Avatar")),
+                Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile")),
+                Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile")),
                 Field('obs', 'text', label=T("Observations")),
                 format='%(doc)s'
                 )
+db.personal_data.age = Field.Virtual(lambda row: (request.now-row.personal_data.dob).years)
 
 ## Defining new table for Priority Fathers.
 salesianas = ["San Francisco de Sales", "San Antonio", "San Pedro", "San Juan Evangelista"]
