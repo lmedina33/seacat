@@ -234,10 +234,33 @@ def new_personal_data():
         response.flash = T("Record inserted")
     return dict(form=form, user=username)
 
-@auth.requires_permission('view fathers list', db.auth_user)
-def fathers_list():
-    father_group_id = db.auth_group(role='padre').id
-    user_ids = db(db.auth_membership.group_id==father_group_id).select('user_id')
-    for user_id in user_ids:
-        fathers = db(db.auth_user.id==user_id).select()
-    return locals()
+@auth.requires(auth.has('view fathers list', db.auth_user) or auth.has_permission('view users list', db.auth_user))
+def users_list():
+    form = SQLFORM.factory(Field('role', requires=IS_IN_DB(db, 'auth_group.role', '%(description)s'), label=T("Role")))
+    query = (db.auth_membership.group_id==db.auth_group.id)&(db.auth_membership.user_id==db.auth_user.id)&(db.auth_group.role==request.vars.role)
+    fields = [db.auth_user.id,
+              db.auth_user.first_name,
+              db.auth_user.middle_name,
+              db.auth_user.last_name,
+              db.auth_user.email,
+              db.auth_user.created_on,
+              db.auth_user.last_login,
+              db.auth_group.description]
+    #rows = db(query).select()
+    grid = SQLFORM.grid(query,
+                        fields=fields,
+                        maxtextlengths={'auth_user.id': 5,
+                                        'auth_user.first_name': 20,
+                                        'auth_user.middle_name': 20,
+                                        'auth_user.last_name': 20,
+                                        'auth_user.email': 50,
+                                        'auth_user.created_on': 20,
+                                        'auth_user.last_login': 20},
+                        create=False,
+                        deletable=False,
+                        details=False,
+                        editable=False,
+                        searchable=False,
+                        csv=False,
+                        paginate=50)
+    return dict(form=form, grid=grid)

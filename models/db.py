@@ -49,8 +49,8 @@ crud, service, plugins = Crud(db), Service(), PluginManager()
 ## Adding "last_login" and "obs" fields to 'auth_user' table
 auth.settings.extra_fields['auth_user'] = [
                                            Field('middle_name', label=T("Middle Name")),
-                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=False),
-                                           Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=False),
+                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=True),
+                                           Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
                                            Field('obs', 'text', label=T("Observations")),
                                            Field('personal_data_id', 'reference personal_data', writable=False, readable=False, requires=IS_IN_DB(db, 'personal_data.id'), label=T("Personal Data ID")),
                                            Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID"))

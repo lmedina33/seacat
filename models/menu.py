@@ -38,11 +38,40 @@ response.meta.generator = 'Web2py Web Framework'
 ## this is the main application menu add/remove items as required
 #########################################################################
 
+## Top level Menu:
 response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
+                 [T('Home'), False, URL('default', 'index'), []],
+                 [T('New'), False, None, []],
+                 [T('View'), False, None, []],
+                 [T('Help'), False, URL('default', 'help'), []],
 ]
 
-DEVELOPMENT_MENU = True
+## EXAMPLES:
+#response.menu.insert(2, [T('TEST'), False, None, []])
+#response.menu[2][3].insert(0, [T('test1'), False, None, []])
+#response.menu[2][3].insert(1, [T('test2'), False, None, []])
+if auth.has_permission('create new father', db.auth_user):
+    response.menu[1][3].insert(0, [T("Father"), False, URL('new_father')])
+
+if auth.has_permission('view users list', db.auth_user):
+    response.menu[2][3].insert(0, [T("Users List"), False, URL('users_list')])
+
+if auth.has_permission('view fathers list', db.auth_user):
+    response.menu[2][3].insert(0, [T("Fathers List"), False, URL('users_list', vars={'role': 'padre'})])
+
+if auth.has_permission('create new user', db.auth_user):
+    response.menu[1][3].append([T("User"), False, URL('new_user')])
+
+if auth.has_membership('root'):
+    response.menu.insert(2, [SPAN(T("Admin"), _class='highlighted'), False, None, [
+                                                       [T("Database"), False, URL(request.application, 'appadmin', 'index')],
+                                                       [T("Users"), False, URL('admin_users')],
+                                                       [T("Users Groups"), False, URL('admin_user_groups')],
+                                                       [T("Users Memberships"), False, URL('admin_user_memberships')],
+                                                       [T("Users Permissions"), False, URL('admin_user_permissions')],
+                                                       ]])
+
+DEVELOPMENT_MENU = False
 
 #########################################################################
 ## provide shortcuts for development. remove in production
@@ -150,46 +179,6 @@ def _():
                         ])
                 ]
          )]
-
-    ## Adding features according to user membership
-    if auth.has_membership('root'):
-        response.menu += [
-                          (SPAN(T("Root Menu"), _class='highlighted'), False, None, [
-                                                                                     (T("Admin"), False, None, [
-                                                                                                                (T("Database"), False, URL(request.application, 'appadmin', 'index')),
-                                                                                                                (T("Users"), False, URL('admin_users')),
-                                                                                                                (T("Users Groups"), False, URL('admin_user_groups')),
-                                                                                                                (T("Users Memberships"), False, URL('admin_user_memberships')),
-                                                                                                                (T("Users Permissions"), False, URL('admin_user_permissions'))
-                                                                                                                ]
-                                                                                     )
-                                                                                    ]
-                          )
-                         ]
-
-    if auth.has_permission('create new father', db.auth_user):
-        response.menu += [
-                          (SPAN(T("New")), False, None, [
-                                                        (T("Father"), False, URL('new_father'))
-                                                        ]
-                          )
-                         ]
-
-    if auth.has_permission('view fathers list', db.auth_user):
-        response.menu += [
-                          (SPAN(T("View")), False, None, [
-                                                        (T("Fathers List"), False, URL('fathers_list'))
-                                                        ]
-                          )
-                         ]
-
-    if auth.has_permission('create new user', db.auth_user):
-        response.menu += [
-                          (SPAN(T("New")), False, None, [
-                                                        (T("User"), False, URL('new_user'))
-                                                        ]
-                          )
-                         ]
 
 if DEVELOPMENT_MENU: _()
 
