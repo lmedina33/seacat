@@ -13,8 +13,8 @@ if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     #db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
     ## To connect to a PostgreSQL DB: postgres://username:password@server/database
-    db = DAL('postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat',
-             check_reserved=['postgres'])
+    ## DBURI contains the string to configure de DB it's stored in 0.py
+    db = DAL(DBURI, check_reserved=[DB_ENGINE])
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')

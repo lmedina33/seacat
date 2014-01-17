@@ -233,3 +233,11 @@ def new_personal_data():
         db.auth_user[auth.user.id]=dict(personal_data_id=data_id, address_id=addr_id)
         response.flash = T("Record inserted")
     return dict(form=form, user=username)
+
+@auth.requires_permission('view fathers list', db.auth_user)
+def fathers_list():
+    father_group_id = db.auth_group(role='padre').id
+    user_ids = db(db.auth_membership.group_id==father_group_id).select('user_id')
+    #for user_id in user_ids:
+    #    fathers = db(db.auth_user.id==user_id).select()
+    return locals()

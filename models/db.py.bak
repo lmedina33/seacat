@@ -13,8 +13,8 @@ if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     #db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
     ## To connect to a PostgreSQL DB: postgres://username:password@server/database
-    db = DAL('postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat',
-             check_reserved=['postgres'])
+    ## DBURI contains the string to configure de DB it's stored in 0.py
+    db = DAL(DBURI, check_reserved=[DBTYPE])
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -163,7 +163,7 @@ db.define_table('priority_father',
                 Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
                 Field('children_name', label=T("Children name")),
                 Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
-                Field('student_school', requires=IS_IN_SET(salesianas), label=T("Choose your school"))
+                Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(salesianas)), label=T("Choose your school"))
                )
 
 ## Adding permission:

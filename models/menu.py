@@ -175,6 +175,14 @@ def _():
                           )
                          ]
 
+    if auth.has_permission('view fathers list', db.auth_user):
+        response.menu += [
+                          (SPAN(T("View")), False, None, [
+                                                        (T("Fathers List"), False, URL('fathers_list'))
+                                                        ]
+                          )
+                         ]
+
     if auth.has_permission('create new user', db.auth_user):
         response.menu += [
                           (SPAN(T("New")), False, None, [

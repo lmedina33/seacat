@@ -298,7 +298,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="Relationships" oids="false">
 	<schema name="&quot;Ingresos&quot;"/>
 	<comment><![CDATA[Tabla que describe las relaciones entre los usuarios]]></comment>
-	<position x="1035" y="387"/>
+	<position x="785" y="275"/>
 	<column name="id">
 		<type name="serial"/>
 	</column>
@@ -312,7 +312,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <table name="Candidates" oids="false">
 	<schema name="&quot;Ingresos&quot;"/>
-	<position x="583" y="427"/>
+	<position x="413" y="430"/>
 	<column name="inscription_id">
 		<type name="serial"/>
 	</column>

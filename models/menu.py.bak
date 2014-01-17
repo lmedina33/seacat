@@ -161,6 +161,8 @@ def _():
                                                                                                                 (T("Users Groups"), False, URL('admin_user_groups')),
                                                                                                                 (T("Users Memberships"), False, URL('admin_user_memberships')),
                                                                                                                 (T("Users Permissions"), False, URL('admin_user_permissions'))
+                                                                                                                ]
+                                                                                     )
                                                                                     ]
                           )
                          ]
@@ -172,7 +174,13 @@ def _():
                                                         ]
                           )
                          ]
-
+    if auth.has_permission('view list of fathers', db.auth_user):
+        response.menu += [
+                          (SPAN(T("View")), False, None, [
+                                                        (T("Fathers List"), False, URL('fathers_list'))
+                                                        ]
+                          )
+                         ]
     if auth.has_permission('create new user', db.auth_user):
         response.menu += [
                           (SPAN(T("New")), False, None, [
