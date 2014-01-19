@@ -54,21 +54,22 @@ if auth.has_permission('create new father', db.auth_user):
     response.menu[1][3].insert(0, [T("Father"), False, URL('new_father')])
 
 if auth.has_permission('view users list', db.auth_user):
-    response.menu[2][3].insert(0, [T("Users List"), False, URL('users_list')])
+    response.menu[2][3].insert(0, [T("Users List"), False, URL(request.application, 'admin', 'users_list')])
 
 if auth.has_permission('view fathers list', db.auth_user):
-    response.menu[2][3].insert(0, [T("Fathers List"), False, URL('users_list', vars={'role': 'padre'})])
+    response.menu[2][3].insert(0, [T("Fathers List"), False, URL('fathers_list')])
 
 if auth.has_permission('create new user', db.auth_user):
-    response.menu[1][3].append([T("User"), False, URL('new_user')])
+    response.menu[1][3].append([T("User"), False, URL(request.application, 'admin', 'new_user')])
 
 if auth.has_membership('root'):
     response.menu.insert(2, [SPAN(T("Admin"), _class='highlighted'), False, None, [
                                                        [T("Database"), False, URL(request.application, 'appadmin', 'index')],
-                                                       [T("Users"), False, URL('admin_users')],
-                                                       [T("Users Groups"), False, URL('admin_user_groups')],
-                                                       [T("Users Memberships"), False, URL('admin_user_memberships')],
-                                                       [T("Users Permissions"), False, URL('admin_user_permissions')],
+                                                       [T("Upload Image"), False, URL(request.application, 'admin', 'upload_image')],
+                                                       [T("Users"), False, URL(request.application, 'admin', 'admin_users')],
+                                                       [T("Users Groups"), False, URL(request.application, 'admin', 'admin_user_groups')],
+                                                       [T("Users Memberships"), False, URL(request.application, 'admin', 'admin_user_memberships')],
+                                                       [T("Users Permissions"), False, URL(request.application, 'admin', 'admin_user_permissions')],
                                                        ]])
 
 DEVELOPMENT_MENU = False

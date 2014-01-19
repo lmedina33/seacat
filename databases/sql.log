@@ -296,3 +296,24 @@ timestamp: 2014-01-17T17:31:34.463195
 ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
 timestamp: 2014-01-17T17:32:28.217835
 ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
+timestamp: 2014-01-19T16:41:45.646432
+ALTER TABLE personal_data ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-19T16:41:45.852680
+ALTER TABLE personal_data ADD is_active CHAR(1);
+timestamp: 2014-01-19T16:41:45.903411
+ALTER TABLE personal_data ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+timestamp: 2014-01-19T16:41:45.970268
+ALTER TABLE personal_data ADD created_on TIMESTAMP;
+timestamp: 2014-01-19T16:41:46.019425
+ALTER TABLE personal_data ADD modified_on TIMESTAMP;
+success!
+timestamp: 2014-01-19T16:49:42.307156
+CREATE TABLE father(
+    id SERIAL PRIMARY KEY,
+    father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    children_in_school CHAR(1),
+    children_name VARCHAR(512),
+    student_network CHAR(1),
+    student_school VARCHAR(512)
+);
+success!

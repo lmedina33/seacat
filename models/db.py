@@ -137,12 +137,13 @@ db.define_table('personal_data',
                 Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile")),
                 Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile")),
                 Field('obs', 'text', label=T("Observations")),
+                auth.signature,
                 format='%(doc)s'
                 )
 #db.personal_data.age = Field.Virtual(lambda row: (request.now-row.personal_data.dob).years)
 
 ## Defining new table for Priority Fathers.
-db.define_table('priority_father',
+db.define_table('father',
                 Field('father_id', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
                 Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
                 Field('children_name', label=T("Children name")),

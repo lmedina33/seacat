@@ -109,7 +109,7 @@ db.define_table('address',
                 Field('street1', label=T("Street 1")),
                 Field('street2', label=T("Street 2")),
                 Field('zip_code', label=T("ZIP Code")),
-                Field('loc', default=PROVINCES_LIST_LIST[2], label=T("Locality")),
+                Field('loc', default=PROVINCES_LIST[2], label=T("Locality")),
                 Field('prov', requires=IS_IN_SET(PROVINCES_LIST), default=PROVINCES_LIST[2], label=T("Province")),
                 Field('obs', 'text', label=T("Observations")),
                 format='%(street)s'+" "+'%(building)s'+" "+'%(floor)s'+" "+'%(door)s'+" "+'%(apartment)s'
@@ -137,6 +137,7 @@ db.define_table('personal_data',
                 Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile")),
                 Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile")),
                 Field('obs', 'text', label=T("Observations")),
+                auth.signature,
                 format='%(doc)s'
                 )
 #db.personal_data.age = Field.Virtual(lambda row: (request.now-row.personal_data.dob).years)

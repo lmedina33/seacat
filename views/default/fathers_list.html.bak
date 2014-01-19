@@ -1,0 +1,3 @@
+{{extend 'layout.html'}}
+<h1>Esta es la plantilla default/fathers_list.html</h1>
+{{=BEAUTIFY(response._vars)}}
