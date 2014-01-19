@@ -3,4 +3,4 @@
 #errors/
 #sessions/
 *~
-models/0.py*
+models/app_settings.py*

@@ -44,9 +44,9 @@ def info():
 
 @auth.requires_login()
 def start():
-     #response.flash = T("Welcome back ") + auth.user.first_name + " " + auth.user.last_name + "!"
-     #response.flash = auth.user.id
-     return dict(start=start)
+    #response.flash = T("Welcome back ") + auth.user.first_name + " " + auth.user.last_name + "!"
+    #response.flash = auth.user.id
+    return dict()
 
 def user():
     """

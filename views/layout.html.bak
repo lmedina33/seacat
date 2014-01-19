@@ -80,7 +80,13 @@
           <span class="icon-bar"></span>
         </button>
 	{{=response.logo or ''}}
-        <ul id="navbar" class="nav pull-right">{{='auth' in globals() and auth.navbar(mode="dropdown") or ''}}</ul>
+          <!-- {{#If the language is Spanish and the user is Female we say "Bienvenida", else "Bienvenido"}} -->
+          {{navbar = auth.navbar(mode="dropdown")}}
+          {{if T.accepted_language == 'es' and auth.user.gender == T("Female"):}}
+          {{navbar = auth.navbar(prefix='Bienvenida', mode="dropdown")}}
+          {{pass}}
+          <<!-- {{# end of navbar spanish personalization}} -->
+          <ul id="navbar" class="nav pull-right">{{='auth' in globals() and navbar or ''}}</ul>
         <div class="nav-collapse">
           {{is_mobile=request.user_agent().is_mobile}}
           {{if response.menu:}}
@@ -94,9 +100,9 @@
   <div class="container">
 
       <!-- Masthead ================================================== -->
-      <!-- Para que no aparezca ese título FEO
     <header class="mastheader row" id="header">
-      {{if response.title:}}
+      <!-- Para que no aparezca ese título FEO
+        {{if response.title:}}
         <div class="span12">
             <div class="page-header">
                 <h1>
@@ -106,10 +112,9 @@
             </div>
         </div>
 	{{pass}}
+-->
     </header>
-    -->
-    <header class="mastheader row" id="header">
-    </header>
+
 
     <section id="main" class="main row">
         {{if left_sidebar_enabled:}}
