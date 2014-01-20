@@ -20,6 +20,13 @@
 {{=form.custom.end}}-->
 <script>
     jQuery(document).ready(function(){
+        jQuery('#no_table_password__row').show();
+        jQuery('#no_table_doc').change(function(){
+            jQuery('#no_table_password__row').prop('password', '#no_table_doc')});
+    });
+</script>
+<script>
+    jQuery(document).ready(function(){
         jQuery('#no_table_children_name__row').hide();
         jQuery('#no_table_children_in_school').change(function(){
             if(jQuery('#no_table_children_in_school').is(':checked'))

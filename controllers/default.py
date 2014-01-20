@@ -88,7 +88,14 @@ def data():
 
 @auth.requires_permission('create new father', db.auth_user)
 def new_father():
-    form = SQLFORM.factory(db.auth_user, db.father)
+    form = SQLFORM.factory(db.auth_user.first_name,
+                           db.auth_user.middle_name,
+                           db.auth_user.last_name,
+                           db.auth_user.gender,
+                           db.auth_user.email,
+                           Field('password', required=True, requires=[IS_MATCH('\d{8}'), CRYPT()], label=T("Document")),
+                           db.father,
+                           )
     if form.process().accepted:
         new_user_id = db.auth_user.insert(**db.auth_user._filter_fields(form.vars))
         db.auth_membership.insert(user_id=new_user_id,

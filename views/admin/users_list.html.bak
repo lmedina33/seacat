@@ -2,4 +2,4 @@
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
 {{=form}}
 {{=grid}}
-{{=MENU([['One', False, 'link1', [['Two', False, 'link2']]]]}}
+{{=BEAUTIFY(response._vars)}}

@@ -88,8 +88,12 @@ def upload_image():
 
 @auth.requires(auth.has_permission('view fathers list', db.auth_user) or auth.has_permission('view users list', db.auth_user))
 def users_list():
-    form = SQLFORM.factory(Field('role', requires=IS_IN_DB(db, 'auth_group.role', '%(description)s'), label=T("Role")))
-    query = (db.auth_membership.group_id==db.auth_group.id)&(db.auth_membership.user_id==db.auth_user.id)&(db.auth_group.role==request.vars.role)
+    form = SQLFORM.factory(Field('role', requires=IS_EMPTY_OR(IS_IN_DB(db, 'auth_group.role', '%(description)s', zero=T("All"))), label=T("Filter")))
+    query =  (db.auth_membership.group_id==db.auth_group.id)&(db.auth_membership.user_id==db.auth_user.id)
+    if form.process().accepted:
+        if form.vars.role != None:
+            query &= (db.auth_group.role==request.vars.role)
+        response.flash = ""
     fields = [db.auth_user.id,
               db.auth_user.first_name,
               db.auth_user.middle_name,

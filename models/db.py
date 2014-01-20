@@ -148,7 +148,8 @@ db.define_table('father',
                 Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
                 Field('children_name', label=T("Children name")),
                 Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
-                Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school"))
+                Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
+                format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                )
 
 ## Adding permission:

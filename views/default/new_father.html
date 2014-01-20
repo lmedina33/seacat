@@ -1,7 +1,7 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
-<!--{{=form}}-->
-{{=form.custom.begin}}
+{{=form}}
+<!--{{=form.custom.begin}}
     {{=DIV(TABLE(
                  TR(TD(T("First Name")+":"), TD(form.custom.widget.first_name)),
                  TR(TD(T("Middle Name")+":"), TD(form.custom.widget.middle_name)),
@@ -17,7 +17,7 @@
                 )
           )
     }}
-{{=form.custom.end}}
+{{=form.custom.end}}-->
 <script>
     jQuery(document).ready(function(){
         jQuery('#no_table_children_name__row').hide();
