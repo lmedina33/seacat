@@ -68,3 +68,9 @@ VALID_IMG_EXTENSION_SET = ('jpeg', 'jpg', 'png')
 MAX_PHOTO_SIZE = (640, 480)
 
 MAX_AVATAR_SIZE = (300, 300)
+
+DATE_TYPE = [T("meeting"), T("turn"), T("expiration"), T("exam"), T("opening")]
+
+DATE_FORMAT = '%d-%m-%Y'
+
+TIME_FORMAT = '%H:%M:%S'

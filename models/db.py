@@ -19,17 +19,19 @@ if SUSPEND_SERVICE:
     message += "</p></body></html>"
     raise HTTP(503, message)
 
-if not request.env.web2py_runtime_gae:
+db = DAL(DBURI, check_reserved=[DB_ENGINE])
+
+#if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
     #db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
     ## To connect to a PostgreSQL DB: postgres://username:password@server/database
     ## DBURI contains the string to configure de DB it's stored in 0.py
-    db = DAL(DBURI, check_reserved=[DB_ENGINE])
-else:
+#    db = DAL(DBURI, check_reserved=[DB_ENGINE])
+#else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
-    db = DAL('google:datastore')
+#    db = DAL('google:datastore')
     ## store sessions and tickets there
-    session.connect(request, response, db=db)
+#   session.connect(request, response, db=db)
     ## or store session in Memcache, Redis, etc.
     ## from gluon.contrib.memdb import MEMDB
     ## from google.appengine.api.memcache import Client
@@ -60,15 +62,15 @@ crud, service, plugins = Crud(db), Service(), PluginManager()
 auth.settings.extra_fields['auth_user'] = [
                                            Field('middle_name', label=T("Middle Name")),
                                            # Falta agregar notnull...
-                                           Field('gender', required=True, requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
+                                           Field('gender', requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
                                            Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=True),
                                            Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
                                            Field('obs', 'text', label=T("Observations")),
-                                           Field('personal_data_id', 'reference personal_data', writable=False, readable=False, requires=IS_IN_DB(db, 'personal_data.id'), label=T("Personal Data ID")),
-                                           Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID"))
+                                           #Field('personal_data_id', 'reference personal_data', writable=False, readable=False, requires=IS_IN_DB(db, 'personal_data.id'), label=T("Personal Data ID")),
+                                           #Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID"))
                                            ]
 ## create all tables needed by auth if not custom tables
-auth.define_tables(username=False, signature=True)
+auth.define_tables(username=False, signature=True, migrate=True)
 
 ## Changing format to 'auth_user' table:
 db.auth_user._format = '%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)s'
@@ -95,12 +97,13 @@ auth.settings.remember_me_form = False
 ## Defining new table for Images:
 db.define_table('images',
                 Field('name', label=T("Name")),
-                Field('file', 'upload', label=T("File"), required=True)
+                Field('file', 'upload', label=T("File"), required=True),
+                auth.signature
                 )
 
 ## Defining new table for address:
-
 db.define_table('address',
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("User ID")),
                 Field('street', required=True, notnull=True, label=T("Street")),
                 Field('building', 'integer', label=T("Building")),
                 Field('floor', label=T("Floor")),
@@ -112,11 +115,13 @@ db.define_table('address',
                 Field('loc', default=PROVINCES_LIST[2], label=T("Locality")),
                 Field('prov', requires=IS_IN_SET(PROVINCES_LIST), default=PROVINCES_LIST[2], label=T("Province")),
                 Field('obs', 'text', label=T("Observations")),
+                auth.signature,
                 format='%(street)s'+" "+'%(building)s'+" "+'%(floor)s'+" "+'%(door)s'+" "+'%(apartment)s'
                 )
 
 ## Defining new table for personal data
 db.define_table('personal_data',
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auht_user.id'), label=T("User ID")),
                 Field('doc_type', required=True, requires=IS_IN_SET(DOC_TYPE_SET), notnull=True, default=DOC_TYPE_SET[0], label=T("Document Type")),
                 Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, unique=True, label=T("Document"), comment=T("Insert only numbers without dots. i.e.: 12654897")),
                 Field('nac', required=True, notnull=True, default="Argentina", label=T("Nacionality")),
@@ -142,19 +147,25 @@ db.define_table('personal_data',
                 )
 #db.personal_data.age = Field.Virtual(lambda row: (request.now-row.personal_data.dob).years)
 
-## Defining new table for Priority Fathers.
+## Defining new table for Fathers.
 db.define_table('father',
                 Field('father_id', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
                 Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
                 Field('children_name', label=T("Children name")),
                 Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
                 Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
+                auth.signature,
                 format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                )
 
-## Adding permission:
-#auth.add_permission(db.auth_group(role="derivaciones").id, 'create new father', db.auth_user, 0)
-
+db.define_table('date',
+                Field('type', required=True, requires=IS_IN_SET(DATE_TYPE), label=T("Date Type")),
+                Field('date', 'date', required=True, requires=IS_DATE(DATE_FORMAT), label=T("Date")),
+                Field('start_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("Start Time")),
+                Field('end_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("End Time")),
+                Field('description', label=T("Description")),
+                auth.signature
+                )
 
 ## configure email
 mail = auth.settings.mailer
@@ -163,9 +174,13 @@ mail.settings.sender = 'soportetecnico@pioix.edu.ar'
 mail.settings.login = 'soportetecnico:deagostini'
 
 ## configure auth policy
-auth.settings.registration_requires_verification = True
-auth.settings.registration_requires_approval = True
+auth.settings.registration_requires_verification = False
+auth.settings.registration_requires_approval = False
 auth.settings.reset_password_requires_verification = True
+if not db().select(db.auth_user.ALL):
+    auth.settings.actions_disabled = []
+else:
+    auth.settings.actions_disabled = ['register']
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 ## register with janrain.com, write your domain:api_key in private/janrain.key

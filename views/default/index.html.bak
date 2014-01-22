@@ -56,3 +56,4 @@
 
 <h4>Inicio de Sesión para Usuarios Registrados</h4>
 {{=form}}
+{{=BEAUTIFY(response._vars)}}

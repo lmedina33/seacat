@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
 #########################################################################
@@ -26,6 +26,43 @@ def index():
         redirect(URL('start'))
     return dict(message=T("Registration System"), form=form)
 
+@auth.requires_login()
+@auth.requires_permission('not allowed', db.auth_user)
+def set_up():
+    ########################################################
+    # No funciona, preguntarle a Mariano o a la Comunidad!
+    ########################################################
+#    if not SETTED_UP:
+#    setting_up()
+#    else:
+#        redirect(URL('index'))
+    db.auth_group.insert(role='root', description='Superadministrador')
+    db.auth_group.insert(role='empleado', description='Empleado de la Casa')
+    db.auth_group.insert(role='soporte', description='Soporte Técnico')
+    db.auth_group.insert(role='directivo', description='Directivo')
+    db.auth_group.insert(role='director', description='Director General')
+    db.auth_group.insert(role='rector', description='Rector del Colegio')
+    db.auth_group.insert(role='secretaria', description='Secretaría')
+    db.auth_group.insert(role='secretario', description='Secretario')
+    db.auth_group.insert(role='derivaciones', description='Oficina de Derivaciones')
+    db.auth_group.insert(role='eoe', description='Equipo de Orientación Escolar')
+    db.auth_group.insert(role='administracion', description='Administración')
+    db.auth_group.insert(role='administrador', description='Administrador')
+    db.auth_group.insert(role='caja', description='Caja')
+    db.auth_group.insert(role='padre', description='Padre o Madre')
+    db.auth_group.insert(role='candidato', description='Ingresante')
+    ## And then the membership on root Group to First User:
+    auth.add_membership(1,1)
+    ## Later we add permissions:
+    auth.add_permission(db.auth_group(role='root').id, 'create', db.auth_user, 0)
+    auth.add_permission(db.auth_group(role='root').id, 'read', db.auth_user, 0)
+    auth.add_permission(db.auth_group(role='root').id, 'update', db.auth_user, 0)
+    auth.add_permission(db.auth_group(role='root').id, 'delete', db.auth_user, 0)
+
+    auth.add_permission(db.auth_group(role="derivaciones").id, 'create new father', db.auth_user, 0)
+    auth.add_permission(db.auth_group(role="derivaciones").id, 'view fathers list', db.auth_user, 0)
+    return dict(message="SETTED_UP")
+
 def info():
     return locals()
 
@@ -42,13 +79,16 @@ def user():
     http://..../[app]/default/user/profile
     http://..../[app]/default/user/retrieve_password
     http://..../[app]/default/user/change_password
-    http://..../[app]/default/user/manage_users (requires membership in 
+    http://..../[app]/default/user/manage_users (requires membership in
     use @auth.requires_login()
         @auth.requires_membership('group name')
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
-    auth.settings.actions_disabled = [ 'register' ]
+    ## Deactivating the user group creation on registration
+    auth.settings.create_user_groups = None
+    ## The line below is commented because is effective on admin/setting_up controller.
+    #auth.settings.actions_disabled.append('register')
     return dict(form=auth())
 
 @cache.action()
@@ -93,7 +133,7 @@ def new_father():
                            db.auth_user.last_name,
                            db.auth_user.gender,
                            db.auth_user.email,
-                           Field('password', required=True, requires=[IS_NUMERIC(), CRYPT()], label=T("Document")),
+                           Field('password', required=True, requires=[IS_MATCH('\d{8}'), CRYPT()], label=T("Document")),
                            db.father,
                            )
     if form.process().accepted:
@@ -172,3 +212,11 @@ def fathers_list():
                         csv=False,
                         paginate=50)
     return dict(grid=grid)
+
+@auth.requires_permission('create', db.date)
+def new_date():
+    form = SQLFORM(db.date)
+    if form.process().accepted:
+        db.date.insert(**db.date._filter_fields(form.vars))
+        response.flash = T("Record inserted")
+    return dict(form=form)

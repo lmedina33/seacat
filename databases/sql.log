@@ -1,59 +1,4 @@
-timestamp: 2013-10-09T12:12:36.838979
-CREATE TABLE auth_user(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    first_name CHAR(128),
-    last_name CHAR(128),
-    email CHAR(512),
-    password CHAR(512),
-    registration_key CHAR(512),
-    reset_password_key CHAR(512),
-    registration_id CHAR(512)
-);
-success!
-timestamp: 2013-10-09T12:12:36.904430
-CREATE TABLE auth_group(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    role CHAR(512),
-    description TEXT
-);
-success!
-timestamp: 2013-10-09T12:12:36.962985
-CREATE TABLE auth_membership(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
-);
-success!
-timestamp: 2013-10-09T12:12:37.035111
-CREATE TABLE auth_permission(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
-    name CHAR(512),
-    table_name CHAR(512),
-    record_id INTEGER
-);
-success!
-timestamp: 2013-10-09T12:12:37.102098
-CREATE TABLE auth_event(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    time_stamp TIMESTAMP,
-    client_ip CHAR(512),
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    origin CHAR(512),
-    description TEXT
-);
-success!
-timestamp: 2013-10-09T12:12:37.173329
-CREATE TABLE auth_cas(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    created_on TIMESTAMP,
-    service CHAR(512),
-    ticket CHAR(512),
-    renew CHAR(1)
-);
-success!
-timestamp: 2013-10-30T12:41:52.701659
+timestamp: 2014-01-22T15:11:49.351954
 CREATE TABLE auth_user(
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(128),
@@ -62,33 +7,57 @@ CREATE TABLE auth_user(
     password VARCHAR(512),
     registration_key VARCHAR(512),
     reset_password_key VARCHAR(512),
-    registration_id VARCHAR(512)
+    registration_id VARCHAR(512),
+    middle_name VARCHAR(512),
+    gender VARCHAR(512),
+    created_on TIMESTAMP,
+    last_login TIMESTAMP,
+    obs TEXT,
+    is_active CHAR(1),
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2013-10-30T12:41:52.815905
+timestamp: 2014-01-22T15:11:49.793358
 CREATE TABLE auth_group(
     id SERIAL PRIMARY KEY,
     role VARCHAR(512),
-    description TEXT
+    description TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2013-10-30T12:41:52.915633
+timestamp: 2014-01-22T15:11:50.139678
 CREATE TABLE auth_membership(
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2013-10-30T12:41:53.009256
+timestamp: 2014-01-22T15:11:50.446122
 CREATE TABLE auth_permission(
     id SERIAL PRIMARY KEY,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
     name VARCHAR(512),
     table_name VARCHAR(512),
-    record_id INTEGER
+    record_id INTEGER,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2013-10-30T12:41:53.135207
+timestamp: 2014-01-22T15:11:50.799336
 CREATE TABLE auth_event(
     id SERIAL PRIMARY KEY,
     time_stamp TIMESTAMP,
@@ -98,7 +67,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2013-10-30T12:41:53.246450
+timestamp: 2014-01-22T15:11:51.108497
 CREATE TABLE auth_cas(
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
@@ -108,68 +77,22 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2014-01-07T11:24:54.351000
-ALTER TABLE auth_user ADD obs TEXT;
-timestamp: 2014-01-07T11:24:54.513000
-ALTER TABLE auth_user ADD last_login TIMESTAMP;
-success!
-timestamp: 2014-01-08T09:31:38.682000
-CREATE TABLE image(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(512),
-    file VARCHAR(512),
-    description VARCHAR(512)
-);
-success!
-timestamp: 2014-01-08T09:47:02.908000
-ALTER TABLE image DROP COLUMN description;
-success!
-timestamp: 2014-01-09T11:07:04.639000
+timestamp: 2014-01-22T15:11:51.451428
 CREATE TABLE images(
     id SERIAL PRIMARY KEY,
     name VARCHAR(512),
-    file VARCHAR(512)
+    file VARCHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2014-01-09T11:07:07.348000
-CREATE TABLE personal_data(
-    id SERIAL PRIMARY KEY,
-    doc_type VARCHAR(512) NOT NULL DEFAULT 'DNI',
-    doc VARCHAR(8) NOT NULL UNIQUE,
-    cuil VARCHAR(11) NOT NULL UNIQUE,
-    first_name VARCHAR(512) NOT NULL,
-    middle_name VARCHAR(512),
-    last_name VARCHAR(512) NOT NULL,
-    mail1 VARCHAR(512) NOT NULL,
-    mail2 VARCHAR(512),
-    tel1_type VARCHAR(512) NOT NULL DEFAULT 'Line',
-    tel1 VARCHAR(8) NOT NULL,
-    tel2_type VARCHAR(512),
-    tel2 VARCHAR(8),
-    photo VARCHAR(512),
-    avatar VARCHAR(512),
-    twitter VARCHAR(512),
-    facebook VARCHAR(512),
-    obs TEXT
-);
-success!
-timestamp: 2014-01-09T11:55:07.012000
-ALTER TABLE auth_user ADD middle_name VARCHAR(512);
-success!
-timestamp: 2014-01-09T11:55:57.547000
-ALTER TABLE personal_data ADD user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-09T11:55:59.447000
-ALTER TABLE personal_data DROP COLUMN first_name;
-timestamp: 2014-01-09T11:55:59.535000
-ALTER TABLE personal_data DROP COLUMN last_name;
-timestamp: 2014-01-09T11:55:59.590000
-ALTER TABLE personal_data DROP COLUMN middle_name;
-timestamp: 2014-01-09T11:55:59.655000
-ALTER TABLE personal_data DROP COLUMN mail1;
-success!
-timestamp: 2014-01-09T13:06:02.723000
+timestamp: 2014-01-22T15:11:52.806915
 CREATE TABLE address(
     id SERIAL PRIMARY KEY,
+    uid INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
     street VARCHAR(512) NOT NULL,
     building INTEGER,
     floor VARCHAR(512),
@@ -180,140 +103,92 @@ CREATE TABLE address(
     zip_code VARCHAR(512),
     loc VARCHAR(512),
     prov VARCHAR(512),
-    obs TEXT
+    obs TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2014-01-09T13:06:05.016000
-ALTER TABLE personal_data ADD nac VARCHAR(512) NOT NULL DEFAULT 'Argentina';
-timestamp: 2014-01-09T13:06:05.461000
-ALTER TABLE personal_data ADD address INTEGER REFERENCES address (id) ON DELETE CASCADE;
-success!
-timestamp: 2014-01-14T09:57:16.906309
-ALTER TABLE personal_data ADD address_id INTEGER REFERENCES address (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T09:57:17.009621
-ALTER TABLE personal_data DROP COLUMN address;
-success!
-timestamp: 2014-01-14T10:26:53.958160
-ALTER TABLE auth_user ADD address_id VARCHAR(512);
-timestamp: 2014-01-14T10:26:53.999626
-ALTER TABLE auth_user ADD personal_data_id VARCHAR(512);
-success!
-timestamp: 2014-01-14T10:26:54.156687
-ALTER TABLE personal_data DROP COLUMN address_id;
-timestamp: 2014-01-14T10:26:54.260054
-ALTER TABLE personal_data DROP COLUMN user_id;
-success!
-timestamp: 2014-01-14T14:32:11.156427
-ALTER TABLE auth_user ADD created_on TIMESTAMP;
-success!
-timestamp: 2014-01-14T14:48:03.387434
-ALTER TABLE auth_user ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T14:48:03.440362
-ALTER TABLE auth_user ADD is_active CHAR(1);
-timestamp: 2014-01-14T14:48:03.490323
-ALTER TABLE auth_user ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T14:48:03.576128
-ALTER TABLE auth_user ADD modified_on TIMESTAMP;
-success!
-timestamp: 2014-01-14T14:48:03.658252
-ALTER TABLE auth_group ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T14:48:03.746783
-ALTER TABLE auth_group ADD is_active CHAR(1);
-timestamp: 2014-01-14T14:48:03.784931
-ALTER TABLE auth_group ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T14:48:03.825862
-ALTER TABLE auth_group ADD created_on TIMESTAMP;
-timestamp: 2014-01-14T14:48:03.864664
-ALTER TABLE auth_group ADD modified_on TIMESTAMP;
-success!
-timestamp: 2014-01-14T14:48:04.000810
-ALTER TABLE auth_membership ADD is_active CHAR(1);
-timestamp: 2014-01-14T14:48:04.084409
-ALTER TABLE auth_membership ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T14:48:04.127507
-ALTER TABLE auth_membership ADD created_on TIMESTAMP;
-timestamp: 2014-01-14T14:48:04.166173
-ALTER TABLE auth_membership ADD modified_on TIMESTAMP;
-timestamp: 2014-01-14T14:48:04.201196
-ALTER TABLE auth_membership ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-success!
-timestamp: 2014-01-14T14:48:04.324143
-ALTER TABLE auth_permission ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T14:48:04.419025
-ALTER TABLE auth_permission ADD is_active CHAR(1);
-timestamp: 2014-01-14T14:48:04.455225
-ALTER TABLE auth_permission ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-14T14:48:04.509780
-ALTER TABLE auth_permission ADD created_on TIMESTAMP;
-timestamp: 2014-01-14T14:48:04.549802
-ALTER TABLE auth_permission ADD modified_on TIMESTAMP;
-success!
-timestamp: 2014-01-15T09:23:27.493745
-CREATE TABLE priority_father(
+timestamp: 2014-01-22T15:11:53.913426
+CREATE TABLE personal_data(
     id SERIAL PRIMARY KEY,
-    father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    children_in_school CHAR(1),
-    children_name VARCHAR(512),
-    student_network CHAR(1),
-    student_school VARCHAR(512)
+    uid INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    doc_type VARCHAR(512) NOT NULL DEFAULT 'DNI',
+    doc VARCHAR(8) NOT NULL UNIQUE,
+    nac VARCHAR(512) NOT NULL DEFAULT 'Argentina',
+    cuil VARCHAR(11) NOT NULL UNIQUE,
+    dob DATE NOT NULL,
+    mail2 VARCHAR(512),
+    tel1_type VARCHAR(512) NOT NULL DEFAULT 'Línea',
+    tel1 VARCHAR(8) NOT NULL,
+    tel2_type VARCHAR(512),
+    tel2 VARCHAR(8),
+    photo VARCHAR(512),
+    avatar VARCHAR(512),
+    twitter VARCHAR(512),
+    facebook VARCHAR(512),
+    obs TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2014-01-17T17:13:02.311776
-ALTER TABLE auth_user ADD gender VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:14:51.579854
-ALTER TABLE auth_user ADD gender VARCHAR(512);
-success!
-timestamp: 2014-01-17T17:14:53.896915
-ALTER TABLE personal_data ADD dob DATE NOT NULL;
-timestamp: 2014-01-17T17:15:14.033271
-ALTER TABLE personal_data ADD dob DATE NOT NULL;
-timestamp: 2014-01-17T17:15:40.923223
-ALTER TABLE personal_data ADD dob DATE NOT NULL;
-timestamp: 2014-01-17T17:16:25.276335
-ALTER TABLE personal_data ADD dob DATE;
-success!
-timestamp: 2014-01-17T17:17:42.952201
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:18:19.196789
-ALTER TABLE personal_data ADD dob__tmp DATE NOT NULL;
-UPDATE personal_data SET dob__tmp=dob;
-ALTER TABLE personal_data DROP COLUMN dob;
-ALTER TABLE personal_data ADD dob DATE NOT NULL;
-UPDATE personal_data SET dob=dob__tmp;
-ALTER TABLE personal_data DROP COLUMN dob__tmp;
-success!
-timestamp: 2014-01-17T17:29:07.900026
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:29:32.677610
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:29:35.036726
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:29:41.760376
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:31:19.816009
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:31:34.463195
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-17T17:32:28.217835
-ALTER TABLE auth_user ADD gender__tmp VARCHAR(512) NOT NULL;
-timestamp: 2014-01-19T16:41:45.646432
-ALTER TABLE personal_data ADD modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-19T16:41:45.852680
-ALTER TABLE personal_data ADD is_active CHAR(1);
-timestamp: 2014-01-19T16:41:45.903411
-ALTER TABLE personal_data ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
-timestamp: 2014-01-19T16:41:45.970268
-ALTER TABLE personal_data ADD created_on TIMESTAMP;
-timestamp: 2014-01-19T16:41:46.019425
-ALTER TABLE personal_data ADD modified_on TIMESTAMP;
-success!
-timestamp: 2014-01-19T16:49:42.307156
+timestamp: 2014-01-22T15:11:55.392412
 CREATE TABLE father(
     id SERIAL PRIMARY KEY,
     father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
     children_in_school CHAR(1),
     children_name VARCHAR(512),
     student_network CHAR(1),
-    student_school VARCHAR(512)
+    student_school VARCHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-01-22T17:20:48.372003
+CREATE TABLE date(
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(512),
+    date VARCHAR(512),
+    start_time VARCHAR(512),
+    end_time VARCHAR(512),
+    description VARCHAR(512)
+);
+success!
+timestamp: 2014-01-22T17:42:51.692483
+ALTER TABLE date ADD start_time__tmp TIME;
+UPDATE date SET start_time__tmp=start_time;
+timestamp: 2014-01-22T17:43:08.062837
+ALTER TABLE date ADD start_time__tmp TIME;
+UPDATE date SET start_time__tmp=start_time;
+timestamp: 2014-01-22T17:45:31.597766
+CREATE TABLE date(
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(512),
+    date DATE,
+    start_time TIME,
+    end_time TIME,
+    description VARCHAR(512)
+);
+timestamp: 2014-01-22T17:46:30.082463
+CREATE TABLE date(
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(512),
+    date DATE,
+    start_time TIME,
+    end_time TIME,
+    description VARCHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!

@@ -53,13 +53,19 @@ response.menu = [
 if auth.has_permission('create new father', db.auth_user):
     response.menu[1][3].insert(0, [T("Father"), False, URL('new_father')])
 
-if auth.has_permission('view users list', db.auth_user):
+if auth.has_permission('create', db.date):
+    response.menu[1][3].append([T("Date"), False, URL('new_date')])
+
+if auth.has_permission('read', db.auth_user):
     response.menu[2][3].insert(0, [T("Users List"), False, URL(request.application, 'admin', 'users_list')])
+
+if auth.has_permission('read', db.date):
+    response.menu[2][3].append([T("Dates List"), False, URL('admin','dates_list')])
 
 if auth.has_permission('view fathers list', db.auth_user):
     response.menu[2][3].insert(0, [T("Fathers List"), False, URL('fathers_list')])
 
-if auth.has_permission('create new user', db.auth_user):
+if auth.has_permission('create', db.auth_user):
     response.menu[1][3].append([T("User"), False, URL(request.application, 'admin', 'new_user')])
 
 if auth.has_membership('root'):

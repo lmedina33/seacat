@@ -8,12 +8,12 @@ import datetime
 ## DB Settings
 ####################################################################################################
 
-#DBURI='\'postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat\', check_reserved=[\'postgres\']'
-DB_ENGINE='postgres'
-DB_USER='leo'
-DB_PASSWORD='47alfatango'
-DB_HOST='wspio1.pioix.edu.ar'
-DB_DB='seacat'
+#DBURI='\'postgres://user:password@host/database\', check_reserved=[\'postgres\']'
+DB_ENGINE=''
+DB_USER=''
+DB_PASSWORD=''
+DB_HOST=''
+DB_DB=''
 DBURI=DB_ENGINE+'://'+DB_USER+':'+DB_PASSWORD+'@'+DB_HOST+'/'+DB_DB
 
 ####################################################################################################
@@ -68,3 +68,7 @@ VALID_IMG_EXTENSION_SET = ('jpeg', 'jpg', 'png')
 MAX_PHOTO_SIZE = (640, 480)
 
 MAX_AVATAR_SIZE = (300, 300)
+
+DATE_TYPE = [T("meeting"), T("turn"), T("expiration"), T("exam"), T("opening")]
+
+DATE_FORMAT = '%d-%m-%Y'
