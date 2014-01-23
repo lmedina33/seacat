@@ -4,3 +4,4 @@
 #sessions/
 *~
 models/app_settings.py*
+.netrc
