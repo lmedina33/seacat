@@ -54,7 +54,7 @@ if auth.has_permission('create new father', db.auth_user):
     response.menu[1][3].insert(0, [T("Father"), False, URL('new_father')])
 
 if auth.has_permission('create', db.date):
-    response.menu[1][3].append([T("Date"), False, URL('new_date')])
+    response.menu[1][3].append([T("Date"), False, URL('default','new_date')])
 
 if auth.has_permission('read', db.auth_user):
     response.menu[2][3].insert(0, [T("Users List"), False, URL(request.application, 'admin', 'users_list')])

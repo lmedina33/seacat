@@ -160,7 +160,7 @@ db.define_table('father',
 
 db.define_table('date',
                 Field('type', required=True, requires=IS_IN_SET(DATE_TYPE), label=T("Date Type")),
-                Field('date', 'date', required=True, requires=IS_DATE(), label=T("Date")),
+                Field('date', 'date', required=True, requires=IS_DATE(DATE_FORMAT), label=T("Date")),
                 Field('start_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("Start Time")),
                 Field('end_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("End Time")),
                 Field('description', label=T("Description")),
