@@ -23,7 +23,7 @@ def index():
         ## If the user is successfully logged in we store the timestamp in the 'auth_user' table.
         db.auth_user[auth.user.id]=dict(last_login=request.now)
         usernameid = {'uid': auth.user.id, 'first_name': auth.user.first_name, 'last_name': auth.user.last_name}
-        auth.log_event(origin=request.env.http_host, description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in", usernameid))
+        auth.log_event(origin=request.env.http_host, description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in" % usernameid))
         ## Then we redirect to the "Start Page"
         redirect(URL('start'))
     return dict(message=T("Registration System"), form=form)

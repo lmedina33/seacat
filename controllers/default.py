@@ -222,3 +222,5 @@ def new_date():
         #db.date.insert(**db.date._filter_fields(form.vars))
         response.flash = T("Record inserted")
     return dict(form=form)
+
+# Comment for test MS Git features, by Marcelo Yakimavicius
