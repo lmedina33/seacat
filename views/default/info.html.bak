@@ -1,14 +1,24 @@
 {{extend 'layout.html'}}
+<!--<p>
+    {{=A(IMG(_src=URL('static','LogoPioIX-Nuevo.png'), _alt="<img:Logo Pío IX>"), _href=URL('default','index'))}}
 <p>
-    {{=A(IMG(_src=URL('static','LogoPíoIX-Nuevo.png'), _alt="<img:Logo Pío IX>"), _href=URL('default','index'))}}
-<p>
+-->
 <h1>Información</h1>
-
+    {{=IMG(_src=URL('default', 'download', args=logo), _alt="<img:Logo Pío IX Nuevo 250x245>", _id="logo")}}
 <!-- {{=BEAUTIFY(response._vars)}} -->
 <p>
 Para obtener más información tenés que pasar por el Colegio!<br/>
 Te esperamos en Yapeyú 197, Ciudad Autónoma de Buenos Aires de 7:30 a 13:00hs.<br/>
 <br/>
-Las inscripciones para el 2015 finalizan el 20 de Septiembre de 2014.
+    {{DATE_FORMAT_LONG="%A %d de %B de %Y"}}
+    El período de inscripción para el año {{=request.now.year + 1}} es desde el {{=B(translate_date(openning_date.strftime(DATE_FORMAT_LONG)))}} hasta el {{=B(translate_date(closing_date.strftime(DATE_FORMAT_LONG)))}}.
+    Probando fecha {{=openning_date.strftime(DATE_FORMAT_LONG)}}
 </p>
 {{=A(T("Go Back"), _href=URL('index'), _class='btn', _style='margin-top: 1em;')}}
+
+<!-- The following jQuery script is for reducing the logo to 40% of it's size -->
+<script>
+    $('#logo').each(function(){
+        $(this).width($(this).width() * 0.4);
+    });
+</script>

@@ -1,0 +1,918 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.NameError'> name 'openning_date' is not defined"
+p3
+sS'layer'
+p4
+S'D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\views\\default/info.html'
+p5
+sS'code'
+p6
+S'response.write(\'<!--[if HTML5]><![endif]-->\\r\\n<!DOCTYPE html>\\r\\n<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->\\r\\n<!--[if lt IE 7]><html class="ie ie6 ie-lte9 ie-lte8 ie-lte7 no-js" lang="\', escape=False)\nresponse.write(T.accepted_language or \'en\')\nresponse.write(\'"> <![endif]-->\\r\\n<!--[if IE 7]><html class="ie ie7 ie-lte9 ie-lte8 ie-lte7 no-js" lang="\', escape=False)\nresponse.write(T.accepted_language or \'en\')\nresponse.write(\'"> <![endif]-->\\r\\n<!--[if IE 8]><html class="ie ie8 ie-lte9 ie-lte8 no-js" lang="\', escape=False)\nresponse.write(T.accepted_language or \'en\')\nresponse.write(\'"> <![endif]-->\\r\\n<!--[if IE 9]><html class="ie9 ie-lte9 no-js" lang="\', escape=False)\nresponse.write(T.accepted_language or \'en\')\nresponse.write(\'"> <![endif]-->\\r\\n<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="\', escape=False)\nresponse.write(T.accepted_language or \'en\')\nresponse.write(\'"> <!--<![endif]-->\\r\\n<head>\\r\\n<title>\', escape=False)\nresponse.write(response.title or request.application)\nresponse.write(\'</title>\\r\\n  <!--[if !HTML5]>\\r\\n      <meta http-equiv="X-UA-Compatible" content="IE=edge\', escape=False)\nresponse.write(not request.is_local and \',chrome=1\' or \'\')\nresponse.write(\'">\\r\\n  <![endif]-->\\r\\n  <!-- www.phpied.com/conditional-comments-block-downloads/ -->\\r\\n  <!-- Always force latest IE rendering engine\\r\\n       (even in intranet) & Chrome Frame\\r\\n       Remove this if you use the .htaccess -->\\r\\n\\t   \\r\\n  <meta charset="utf-8" />\\r\\n\\r\\n  <!-- http://dev.w3.org/html5/markup/meta.name.html -->\\r\\n  <meta name="application-name" content="\', escape=False)\nresponse.write(request.application)\nresponse.write(\'" />\\r\\n\\r\\n  <!-- Speaking of Google, don\\\'t forget to set your site up:\\r\\n       http://google.com/webmasters -->\\r\\n  <meta name="google-site-verification" content="" />\\r\\n\\r\\n  <!--  Mobile Viewport Fix\\r\\n        j.mp/mobileviewport & davidbcalhoun.com/2010/viewport-metatag\\r\\n        device-width: Occupy full width of the screen in its current orientation\\r\\n        initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height\\r\\n        user-scalable = yes allows the user to zoom in -->\\r\\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\\r\\n\\r\\n  <link rel="shortcut icon" href="\', escape=False)\nresponse.write(URL(\'static\',\'images/favicon.ico\'))\nresponse.write(\'" type="image/x-icon">\\r\\n  <link rel="apple-touch-icon" href="\', escape=False)\nresponse.write(URL(\'static\',\'images/favicon.png\'))\nresponse.write(\'">\\r\\n\\r\\n  <!-- All JavaScript at the bottom, except for Modernizr which enables\\r\\n       HTML5 elements & feature detects -->\\r\\n  <script src="\', escape=False)\nresponse.write(URL(\'static\',\'js/modernizr.custom.js\'))\nresponse.write(\'"></script>\\r\\n\\r\\n  <!-- include stylesheets -->\\r\\n  \', escape=False)\nresponse.files.append(URL(\'static\',\'css/web2py.css\'))\nresponse.files.append(URL(\'static\',\'css/bootstrap.min.css\'))\nresponse.files.append(URL(\'static\',\'css/bootstrap-responsive.min.css\'))\nresponse.files.append(URL(\'static\',\'css/web2py_bootstrap.css\'))\nresponse.write(\'\\r\\n\\r\\n  \', escape=False)\nresponse.write(\'<script type="text/javascript"><!--\\n    // These variables are used by the web2py_ajax_init function in web2py_ajax.js (which is loaded below).\\n    var w2p_ajax_confirm_message = "\', escape=False)\nresponse.write(T(\'Are you sure you want to delete this object?\'))\nresponse.write(\'";\\n    var w2p_ajax_date_format = "\', escape=False)\nresponse.write(DATE_FORMAT)\nresponse.write(\'";\\n    var w2p_ajax_datetime_format = "\', escape=False)\nresponse.write(TIME_FORMAT+" "+DATE_FORMAT)\nresponse.write(\'";\\n    var ajax_error_500 = \\\'\', escape=False)\nresponse.write(XML(T(\'An error occured, please %s the page\') % A(T(\'reload\'), _href=URL(args=request.args, vars=request.get_vars))))\nresponse.write("\'\\n    //--></script>\\n", escape=False)\nresponse.files.insert(0,URL(\'static\',\'js/jquery.js\'))\nresponse.files.insert(1,URL(\'static\',\'css/calendar.css\'))\nresponse.files.insert(2,URL(\'static\',\'js/calendar.js\'))\nresponse.files.insert(3,URL(\'static\',\'js/web2py.js\'))\nresponse.include_meta()\nresponse.include_files()\nresponse.write(\'\\n\', escape=False)\nresponse.write(\'\\r\\n\\r\\n  \', escape=False)\n# using sidebars need to know what sidebar you want to use\nleft_sidebar_enabled = globals().get(\'left_sidebar_enabled\',False)\nright_sidebar_enabled = globals().get(\'right_sidebar_enabled\',False)\nmiddle_columns = {0:\'span12\',1:\'span9\',2:\'span6\'}[\n(left_sidebar_enabled and 1 or 0)+(right_sidebar_enabled and 1 or 0)]\nresponse.write(\'\\r\\n\\r\\n  <!-- uncomment here to load jquery-ui\\r\\n       <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" type="text/css" media="all" />\\r\\n       <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>\\r\\n       uncomment to load jquery-ui //-->\\r\\n  <noscript><link href="\', escape=False)\nresponse.write(URL(\'static\', \'css/web2py_bootstrap_nojs.css\'))\nresponse.write(\'" rel="stylesheet" type="text/css" /></noscript>\\r\\n  \', escape=False)\nresponse.write(\'\\r\\n</head>\\r\\n\\r\\n\\r\\n<body>\\r\\n  <!-- Navbar ================================================== -->\\r\\n  <!--\', escape=False)\n#if auth.is_logged_in():\nresponse.write(\'-->\\r\\n  <div class="navbar navbar-inverse navbar-fixed-top">\\r\\n    <div class="flash">\', escape=False)\nresponse.write(response.flash or \'\')\nresponse.write(\'</div>\\r\\n    <div class="navbar-inner">\\r\\n      <div class="container">\\r\\n        <!-- the next tag is necessary for bootstrap menus, do not remove -->\\r\\n        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">\\r\\n          <span class="icon-bar"></span>\\r\\n          <span class="icon-bar"></span>\\r\\n          <span class="icon-bar"></span>\\r\\n        </button>\\r\\n\\t\', escape=False)\nresponse.write(response.logo or \'\')\nresponse.write(\'\\r\\n          <!-- \', escape=False)\n#If the language is Spanish and the user is Female we say "Bienvenida", else "Bienvenido"\nresponse.write(\' -->\\r\\n          \', escape=False)\nnavbar = auth.navbar(mode="default")\nresponse.write(\'\\r\\n          \', escape=False)\nif auth.is_logged_in() and T.accepted_language == \'es\' and auth.user.gender == T("Female"):\n    response.write(\'\\r\\n          \', escape=False)\n    navbar = auth.navbar(prefix=\'Bienvenida\', mode="dropdown")\n    response.write(\'\\r\\n          \', escape=False)\nelse:\n    response.write(\'\\r\\n          \', escape=False)\n    navbar = auth.navbar(mode="dropdown")\n    response.write(\'\\r\\n          \', escape=False)\n    pass\nresponse.write(\'\\r\\n          <!-- \', escape=False)\n# end of navbar spanish personalization\nresponse.write(\' -->\\r\\n          <ul id="navbar" class="nav pull-right">\', escape=False)\nresponse.write(\'auth\' in globals() and navbar or \'\')\nresponse.write(\'</ul>\\r\\n        <div class="nav-collapse">\\r\\n          \', escape=False)\nis_mobile=request.user_agent().is_mobile\nresponse.write(\'\\r\\n          \', escape=False)\nif response.menu:\n    response.write(\'\\r\\n          \', escape=False)\n    response.write(MENU(response.menu, _class=\'mobile-menu nav\' if is_mobile else \'nav\',mobile=is_mobile,li_class=\'dropdown\',ul_class=\'dropdown-menu\'))\n    response.write(\'\\r\\n          \', escape=False)\n    pass\nresponse.write(\'\\r\\n        </div><!--/.nav-collapse -->\\r\\n      </div>\\r\\n    </div>\\r\\n  </div><!--/top navbar -->\\r\\n  <!--\', escape=False)\n#pass\nresponse.write(\'-->\\r\\n  <div class="container">\\r\\n\\r\\n      <!-- Masthead ================================================== -->\\r\\n    <header class="mastheader row" id="header">\\r\\n      <!-- Para que no aparezca ese t\\xc3\\xadtulo FEO\\r\\n        \', escape=False)\nif response.title:\n    response.write(\'\\r\\n        <div class="span12">\\r\\n            <div class="page-header">\\r\\n                <h1>\\r\\n                    \', escape=False)\n    response.write(response.title)\n    response.write(\'\\r\\n                    <small>\', escape=False)\n    response.write(response.subtitle or \'\')\n    response.write(\'</small>\\r\\n                </h1>\\r\\n            </div>\\r\\n        </div>\\r\\n\\t\', escape=False)\n    pass\nresponse.write(\'\\r\\n-->\\r\\n    </header>\\r\\n\\r\\n\\r\\n    <section id="main" class="main row">\\r\\n        \', escape=False)\nif left_sidebar_enabled:\n    response.write(\'\\r\\n        <div class="span3 left-sidebar">\\r\\n            \', escape=False)\n    response.write(\'\\r\\n            <h3>Left Sidebar</h3>\\r\\n            <p></p>\\r\\n            \', escape=False)\n    response.write(\'\\r\\n        </div>\\r\\n        \', escape=False)\n    pass\nresponse.write(\'\\r\\n\\r\\n        <div class="\', escape=False)\nresponse.write(middle_columns)\nresponse.write(\'">\\r\\n            \', escape=False)\nresponse.write(\'\\r\\n            \', escape=False)\nresponse.write(\'\\r\\n<!--<p>\\r\\n    \', escape=False)\nresponse.write(A(IMG(_src=URL(\'static\',\'LogoPioIX-Nuevo.png\'), _alt="<img:Logo P\xc3\xado IX>"), _href=URL(\'default\',\'index\')))\nresponse.write(\'\\r\\n<p>\\r\\n-->\\r\\n<h1>Informaci\\xc3\\xb3n</h1>\\r\\n    \', escape=False)\nresponse.write(IMG(_src=URL(\'default\', \'download\', args=logo), _alt="<img:Logo P\xc3\xado IX Nuevo 250x245>", _id="logo"))\nresponse.write(\'\\r\\n<!-- \', escape=False)\nresponse.write(BEAUTIFY(response._vars))\nresponse.write(\' -->\\r\\n<p>\\r\\nPara obtener m\\xc3\\xa1s informaci\\xc3\\xb3n ten\\xc3\\xa9s que pasar por el Colegio!<br/>\\r\\nTe esperamos en Yapey\\xc3\\xba 197, Ciudad Aut\\xc3\\xb3noma de Buenos Aires de 7:30 a 13:00hs.<br/>\\r\\n<br/>\\r\\n    El per\\xc3\\xadodo de inscripci\\xc3\\xb3n para el a\\xc3\\xb1o \', escape=False)\nrequest.now.year + 1\nresponse.write(\' es desde el \', escape=False)\nresponse.write(openning_date)\nresponse.write(\' hasta el \', escape=False)\nresponse.write(closing_date)\nresponse.write(\'.\\r\\n</p>\\r\\n\', escape=False)\nresponse.write(A(T("Go Back"), _href=URL(\'index\'), _class=\'btn\', _style=\'margin-top: 1em;\'))\nresponse.write("\\r\\n\\r\\n<!-- The following jQuery script is for reducing the logo to 40% of it\'s size -->\\r\\n<script>\\r\\n    $(\'#logo\').each(function(){\\r\\n        $(this).width($(this).width() * 0.4);\\r\\n    });\\r\\n</script>\\r\\n", escape=False)\nresponse.write(\'\\r\\n            \', escape=False)\nresponse.write(\'\\r\\n        </div>\\r\\n\\r\\n        \', escape=False)\nif right_sidebar_enabled:\n    response.write(\'\\r\\n        <div class="span3">\\r\\n            \', escape=False)\n    response.write(\'\\r\\n            <h3>Right Sidebar</h3>\\r\\n            <p></p>\\r\\n            \', escape=False)\n    response.write(\'\\r\\n        </div>\\r\\n        \', escape=False)\n    pass\nresponse.write(\'\\r\\n    </section><!--/main-->\\r\\n\\r\\n    <!-- Footer ================================================== -->\\r\\n    <div class="row">\\r\\n        <footer class="footer span12" id="footer">\\r\\n            <div class="footer-content">\\r\\n                \', escape=False)\nresponse.write(\' <!-- this is default footer -->\\r\\n                <div class="copyright pull-left">\', escape=False)\nresponse.write(T(\'Copyright\'))\nresponse.write(\' &#169; \', escape=False)\nresponse.write(request.now.year)\nresponse.write(\'</div>\\r\\n                <div id="poweredBy" class="pull-right">\\r\\n                    \', escape=False)\nresponse.write(T(\'Powered by\'))\nresponse.write(\'\\r\\n                    <a href="http://www.web2py.com/">web2py</a>\\r\\n                </div>\\r\\n                \', escape=False)\nresponse.write(\'\\r\\n            </div>\\r\\n        </footer>\\r\\n    </div>\\r\\n\\r\\n  </div> <!-- /container -->\\r\\n\\r\\n  <!-- The javascript =============================================\\r\\n       (Placed at the end of the document so the pages load faster) -->\\r\\n  <script src="\', escape=False)\nresponse.write(URL(\'static\',\'js/bootstrap.min.js\'))\nresponse.write(\'"></script>\\r\\n  <script src="\', escape=False)\nresponse.write(URL(\'static\',\'js/web2py_bootstrap.js\'))\nresponse.write(\'"></script>\\r\\n  <!--[if lt IE 7 ]>\\r\\n      <script src="\', escape=False)\nresponse.write(URL(\'static\',\'js/dd_belatedpng.js\'))\nresponse.write(\'"></script>\\r\\n      <script> DD_belatedPNG.fix(\\\'img, .png_bg\\\'); //fix any <img> or .png_bg background-images </script>\\r\\n      <![endif]-->\\r\\n  \\r\\n  \', escape=False)\nif response.google_analytics_id:\n    response.write(\'\\r\\n  <script src="\', escape=False)\n    response.write(URL(\'static\',\'js/analytics.min.js\'))\n    response.write(\'"></script>\\r\\n  <script type="text/javascript">\\r\\n  analytics.initialize({\\r\\n    \\\'Google Analytics\\\':{trackingId:\\\'\', escape=False)\n    response.write(response.google_analytics_id)\n    response.write("\'} \\r\\n  });</script>\\r\\n  ", escape=False)\n    pass\nresponse.write(\'\\r\\n  <script src="\', escape=False)\nresponse.write(URL(\'static\',\'js/share.js\',vars=dict(static=URL(\'static\',\'images\'))))\nresponse.write(\'"></script>\\r\\n</body>\\r\\n</html>\\r\\n\', escape=False)'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__hash__'
+p12
+S"<method-wrapper '__hash__' of exceptions.NameError object>"
+p13
+sS'__setattr__'
+p14
+S"<method-wrapper '__setattr__' of exceptions.NameError object>"
+p15
+sS'__reduce_ex__'
+p16
+S'<built-in method __reduce_ex__ of exceptions.NameError object>'
+p17
+sS'__getslice__'
+p18
+S"<method-wrapper '__getslice__' of exceptions.NameError object>"
+p19
+sS'__getitem__'
+p20
+S"<method-wrapper '__getitem__' of exceptions.NameError object>"
+p21
+sS'__setstate__'
+p22
+S'<built-in method __setstate__ of exceptions.NameError object>'
+p23
+sS'__reduce__'
+p24
+S'<built-in method __reduce__ of exceptions.NameError object>'
+p25
+sS'__str__'
+p26
+S"<method-wrapper '__str__' of exceptions.NameError object>"
+p27
+sS'__format__'
+p28
+S'<built-in method __format__ of exceptions.NameError object>'
+p29
+sS'__getattribute__'
+p30
+S"<method-wrapper '__getattribute__' of exceptions.NameError object>"
+p31
+sS'__class__'
+p32
+S"<type 'exceptions.NameError'>"
+p33
+sS'__unicode__'
+p34
+S'<built-in method __unicode__ of exceptions.NameError object>'
+p35
+sS'__delattr__'
+p36
+S"<method-wrapper '__delattr__' of exceptions.NameError object>"
+p37
+sS'__subclasshook__'
+p38
+S'<built-in method __subclasshook__ of type object>'
+p39
+sS'__repr__'
+p40
+S"<method-wrapper '__repr__' of exceptions.NameError object>"
+p41
+sS'__dict__'
+p42
+S'{}'
+p43
+sS'args'
+p44
+S'("name \'openning_date\' is not defined",)'
+p45
+sS'__sizeof__'
+p46
+S'<built-in method __sizeof__ of exceptions.NameError object>'
+p47
+sS'__doc__'
+p48
+S"'Name not found globally.'"
+p49
+sS'__init__'
+p50
+S"<method-wrapper '__init__' of exceptions.NameError object>"
+p51
+sS'__new__'
+p52
+S'<built-in method __new__ of type object>'
+p53
+ssS'evalue'
+p54
+S"name 'openning_date' is not defined"
+p55
+sS'request'
+p56
+cgluon.html
+XML_unpickle
+p57
+(S's\x85l\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">ajax</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">application</td><td style="vertical-align:top;">:</td><td><div>SEACAT_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cid</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">controller</td><td style="vertical-align:top;">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_admin</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-2abfc62f-0f6d-4ccc-b456-340b1710e441<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_isbp</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-3bbfd61a-b2cb-4952-ba4d-97e6cf2298bb<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_pascal</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-b573f09c-6029-43ef-a764-74f4ef606e80<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_seacat_ingresos</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-8b6d1c8b-27b8-47e8-946e-c7f76143e5d1<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_welcome</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-984ccaf9-a7a2-46ff-9a8a-1d376b719d16<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">env</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_ENCODING</td><td style="vertical-align:top;">:</td><td><div>gzip,deflate,sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_LANGUAGE</td><td style="vertical-align:top;">:</td><td><div>es,es-419;q=0.8,en-US;q=0.6,en;q=0.4</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONNECTION</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_COOKIE</td><td style="vertical-align:top;">:</td><td><div>session_id_pascal=127.0.0.1-b573f09c-6029-43ef-a764-74f4ef606e80; __utma=96992031.1651434611.1390026416.1390026416.1390026416.1; __utmc=96992031; __utmz=96992031.1390026416.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); session_id_isbp=127.0.0.1-3bbfd61a-b2cb-4952-ba4d-97e6cf2298bb; session_id_welcome=127.0.0.1-984ccaf9-a7a2-46ff-9a8a-1d376b719d16; session_id_admin=127.0.0.1-2abfc62f-0f6d-4ccc-b456-340b1710e441; session_id_seacat_ingresos=127.0.0.1-8b6d1c8b-27b8-47e8-946e-c7f76143e5d1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_HOST</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_REFERER</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000/SEACAT_ingresos/default/index/login</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_USER_AGENT</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.76 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_INFO</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/info</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">QUERY_STRING</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_ADDR</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_PORT</td><td style="vertical-align:top;">:</td><td><div>52946</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_METHOD</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_NAME</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_NAME</td><td style="vertical-align:top;">:</td><td><div>Larrea-W7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PORT</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PROTOCOL</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_SOFTWARE</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py\\\\applications\\\\welcome\\\\&#x27;, &#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py\\\\applications\\\\admin\\\\&#x27;, &#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py\\\\applications\\\\SEACAT_ingresos\\\\&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x33e7d88: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [&#x27;fe80::2121:4df9:cfc2:896b%20&#x27;, &#x27;192.168.62.1&#x27;, &#x27;fe80::c00d:daa6:7e9b:759a%10&#x27;, &#x27;192.168.150.1&#x27;, &#x27;10.0.0.19&#x27;, &#x27;fe80::d86d:56c0:a307:313b%19&#x27;, &#x27;fe80::991a:a3f3:d9a1:8cb2%17&#x27;, &#x27;192.168.56.1&#x27;], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;Larrea-W7&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;&lt;ask&gt;&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_encoding</td><td style="vertical-align:top;">:</td><td><div>gzip,deflate,sdch</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_language</td><td style="vertical-align:top;">:</td><td><div>es,es-419;q=0.8,en-US;q=0.6,en;q=0.4</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_connection</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cookie</td><td style="vertical-align:top;">:</td><td><div>session_id_pascal=127.0.0.1-b573f09c-6029-43ef-a764-74f4ef606e80; __utma=96992031.1651434611.1390026416.1390026416.1390026416.1; __utmc=96992031; __utmz=96992031.1390026416.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); session_id_isbp=127.0.0.1-3bbfd61a-b2cb-4952-ba4d-97e6cf2298bb; session_id_welcome=127.0.0.1-984ccaf9-a7a2-46ff-9a8a-1d376b719d16; session_id_admin=127.0.0.1-2abfc62f-0f6d-4ccc-b456-340b1710e441; session_id_seacat_ingresos=127.0.0.1-8b6d1c8b-27b8-47e8-946e-c7f76143e5d1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_host</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_referer</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000/SEACAT_ingresos/default/index/login</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_user_agent</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.76 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>fe80::2121:4df9:cfc2:896b%20</div></td></tr><tr><td><div>192.168.62.1</div></td></tr><tr><td><div>fe80::c00d:daa6:7e9b:759a%10</div></td></tr><tr><td><div>192.168.150.1</div></td></tr><tr><td><div>Larrea-W7</div></td></tr><tr><td><div>10.0.0.19</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>fe80::d86d:56c0:a307:313b%19</div></td></tr><tr><td><div>fe80::991a:a3f3:d9a1:8cb2%17</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>192.168.56.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_info</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/info</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">query_string</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_addr</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_port</td><td style="vertical-align:top;">:</td><td><div>52946</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_method</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_uri</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/info</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_name</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_name</td><td style="vertical-align:top;">:</td><td><div>Larrea-W7</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_port</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_protocol</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_software</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_path</td><td style="vertical-align:top;">:</td><td><div>D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.8.2-stable+timestamp.2013.11.28.13.54.07</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x0000000001D661E0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x000000000337B5E8&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0x0000000008BFD660&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0x0000000001D661E0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x000000000337B5E8&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0x0000000008BFD660&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">extension</td><td style="vertical-align:top;">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">folder</td><td style="vertical-align:top;">:</td><td><div>D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">function</td><td style="vertical-align:top;">:</td><td><div>info</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">global_settings</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py\\\\applications\\\\welcome\\\\&#x27;, &#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py\\\\applications\\\\admin\\\\&#x27;, &#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py\\\\applications\\\\SEACAT_ingresos\\\\&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x33e7d88: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [&#x27;fe80::2121:4df9:cfc2:896b%20&#x27;, &#x27;192.168.62.1&#x27;, &#x27;fe80::c00d:daa6:7e9b:759a%10&#x27;, &#x27;192.168.150.1&#x27;, &#x27;10.0.0.19&#x27;, &#x27;fe80::d86d:56c0:a307:313b%19&#x27;, &#x27;fe80::991a:a3f3:d9a1:8cb2%17&#x27;, &#x27;192.168.56.1&#x27;], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;Larrea-W7&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: False, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;D:\\\\Usuarios\\\\Leo\\\\Mis Documentos\\\\Dropbox\\\\web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;minthreads&#x27;: None, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;&lt;ask&gt;&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;import_models&#x27;: False, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>fe80::2121:4df9:cfc2:896b%20</div></td></tr><tr><td><div>192.168.62.1</div></td></tr><tr><td><div>fe80::c00d:daa6:7e9b:759a%10</div></td></tr><tr><td><div>192.168.150.1</div></td></tr><tr><td><div>Larrea-W7</div></td></tr><tr><td><div>10.0.0.19</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>fe80::d86d:56c0:a307:313b%19</div></td></tr><tr><td><div>fe80::991a:a3f3:d9a1:8cb2%17</div></td></tr><tr><td><div>127.0.0.1</div></td></tr><tr><td><div>192.168.56.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.8.2-stable+timestamp.2013.11.28.13.54.07</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_https</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_local</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_restful</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">now</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2014, 1, 24, 11, 40, 32, 118000)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_args</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_extension</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">url</td><td style="vertical-align:top;">:</td><td><div>/SEACAT_ingresos/default/info</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">utcnow</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2014, 1, 24, 14, 40, 32, 118000)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">uuid</td><td style="vertical-align:top;">:</td><td><div>SEACAT_ingresos/127.0.0.1.2014-01-24.11-40-32.68b085bc-dfd2-4579-894e-4298c6b7b09d</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi</td><td style="vertical-align:top;">:</td><td><div>&lt;gluon.main.LazyWSGI object at 0x00000000090978D0&gt;</div></td></tr></table></div>'
+tRp58
+sS'frames'
+p59
+(lp60
+(dp61
+S'file'
+p62
+S'D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\gluon\\restricted.py'
+p63
+sS'dump'
+p64
+(dp65
+S'environment'
+p66
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, ...}"
+p67
+sS'ccode'
+p68
+S'<code object <module> at 00000000090AEC30, file ...SEACAT_ingresos\\views\\default/info.html", line 1>'
+p69
+ssS'lnum'
+p70
+I217
+sS'lines'
+p71
+(dp72
+I212
+S'    try:'
+p73
+sI213
+S'        if isinstance(code, types.CodeType):'
+p74
+sI214
+S'            ccode = code'
+p75
+sI215
+S'        else:'
+p76
+sI216
+S'            ccode = compile2(code, layer)'
+p77
+sI217
+S'        exec ccode in environment'
+p78
+sI218
+S'    except HTTP:'
+p79
+sI219
+S'        raise'
+p80
+sI220
+S'    except RestrictedError:'
+p81
+sI221
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p82
+ssS'call'
+p83
+S'(code=r"response.write(\'<!--[if HTML5]><![endif]-->\\r\\n<...script>\\r\\n</body>\\r\\n</html>\\r\\n\', escape=False)", environment={\'A\': <class \'gluon.html.A\'>, \'ANY_OF\': <class \'gluon.validators.ANY_OF\'>, \'Auth\': <class \'gluon.tools.Auth\'>, \'B\': <class \'gluon.html.B\'>, \'BEAUTIFY\': <class \'gluon.html.BEAUTIFY\'>, \'BODY\': <class \'gluon.html.BODY\'>, \'BR\': <class \'gluon.html.BR\'>, \'BUTTON\': <class \'gluon.html.BUTTON\'>, \'CAT\': <class \'gluon.html.CAT\'>, \'CENTER\': <class \'gluon.html.CENTER\'>, ...}, layer=r\'D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\views\\default/info.html\')'
+p84
+sS'func'
+p85
+S'restricted'
+p86
+sa(dp87
+g62
+S'D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\views\\default\\info.html'
+p88
+sg64
+(dp89
+sg70
+I115
+sg71
+(dp90
+I106
+S"response.write('\\r\\n<!--<p>\\r\\n    ', escape=False)"
+p91
+sI107
+S'response.write(A(IMG(_src=URL(\'static\',\'LogoPioIX-Nuevo.png\'), _alt="<img:Logo P\xc3\xado IX>"), _href=URL(\'default\',\'index\')))'
+p92
+sI108
+S"response.write('\\r\\n<p>\\r\\n-->\\r\\n<h1>Informaci\\xc3\\xb3n</h1>\\r\\n    ', escape=False)"
+p93
+sI109
+S'response.write(IMG(_src=URL(\'default\', \'download\', args=logo), _alt="<img:Logo P\xc3\xado IX Nuevo 250x245>", _id="logo"))'
+p94
+sI110
+S"response.write('\\r\\n<!-- ', escape=False)"
+p95
+sI111
+S'response.write(BEAUTIFY(response._vars))'
+p96
+sI112
+S"response.write(' -->\\r\\n<p>\\r\\nPara obtener m\\xc3\\xa1s informaci\\xc3\\xb3n ten\\xc3\\xa9s que pasar por el Colegio!<br/>\\r\\nTe esperamos en Yapey\\xc3\\xba 197, Ciudad Aut\\xc3\\xb3noma de Buenos Aires de 7:30 a 13:00hs.<br/>\\r\\n<br/>\\r\\n    El per\\xc3\\xadodo de inscripci\\xc3\\xb3n para el a\\xc3\\xb1o ', escape=False)"
+p97
+sI113
+S'request.now.year + 1'
+p98
+sI114
+S"response.write(' es desde el ', escape=False)"
+p99
+sI115
+S'response.write(openning_date)'
+p100
+sI116
+S"response.write(' hasta el ', escape=False)"
+p101
+sI117
+S'response.write(closing_date)'
+p102
+sI118
+S"response.write('.\\r\\n</p>\\r\\n', escape=False)"
+p103
+sI119
+S'response.write(A(T("Go Back"), _href=URL(\'index\'), _class=\'btn\', _style=\'margin-top: 1em;\'))'
+p104
+sI120
+S'response.write("\\r\\n\\r\\n<!-- The following jQuery script is for reducing the logo to 40% of it\'s size -->\\r\\n<script>\\r\\n    $(\'#logo\').each(function(){\\r\\n        $(this).width($(this).width() * 0.4);\\r\\n    });\\r\\n</script>\\r\\n", escape=False)'
+p105
+sI121
+S"response.write('\\r\\n            ', escape=False)"
+p106
+sI122
+S"response.write('\\r\\n        </div>\\r\\n\\r\\n        ', escape=False)"
+p107
+sI123
+S'if right_sidebar_enabled:'
+p108
+sI124
+S'    response.write(\'\\r\\n        <div class="span3">\\r\\n            \', escape=False)'
+p109
+sI125
+S"    response.write('\\r\\n            <h3>Right Sidebar</h3>\\r\\n            <p></p>\\r\\n            ', escape=False)"
+p110
+ssg83
+S'()'
+p111
+sg85
+S'<module>'
+p112
+sasS'pyver'
+p113
+S'Python 2.7.3: C:\\Python27\\python.exe (prefix: C:\\Python27)'
+p114
+sS'session'
+p115
+g57
+(S's\xb7\x01\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_orderby</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_query</td><td style="vertical-align:top;">:</td><td><div>db.date.id&gt;0</div></td></tr></table></div>'
+tRp116
+sS'etype'
+p117
+S"<type 'exceptions.NameError'>"
+p118
+sS'date'
+p119
+S'Fri Jan 24 11:40:33 2014'
+p120
+sS'response'
+p121
+g57
+(S's\xe3\x1e\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">body</td><td style="vertical-align:top;">:</td><td><div>&lt;cStringIO.StringO object at 0x0000000009097B20&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_seacat_ingresos</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-8b6d1c8b-27b8-47e8-946e-c7f76143e5d1<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">delimiters</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">files</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>/SEACAT_ingresos/static/js/jquery.js</div></td></tr><tr><td><div>/SEACAT_ingresos/static/css/calendar.css</div></td></tr><tr><td><div>/SEACAT_ingresos/static/js/calendar.js</div></td></tr><tr><td><div>/SEACAT_ingresos/static/js/web2py.js</div></td></tr><tr><td><div>/SEACAT_ingresos/static/css/web2py.css</div></td></tr><tr><td><div>/SEACAT_ingresos/static/css/bootstrap.min.css</div></td></tr><tr><td><div>/SEACAT_ingresos/static/css/bootstrap-responsive.min.css</div></td></tr><tr><td><div>/SEACAT_ingresos/static/css/web2py_bootstrap.css</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generic_patterns</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">google_analytics_id</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">headers</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">X-Powered-By</td><td style="vertical-align:top;">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">logo</td><td style="vertical-align:top;">:</td><td><div><a class="brand" data-w2p_disable_with="default" href="/SEACAT_ingresos/default/index"><img alt="Logo de SEACAT" src="/SEACAT_ingresos/static/Logo_seacat_mini.png" /></a></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">menu</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">meta</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">author</td><td style="vertical-align:top;">:</td><td><div>Leandro E. Colombo Vi\xc3\xb1a &lt;colomboleandro@pioix.edu.ar&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">description</td><td style="vertical-align:top;">:</td><td><div>Sistema de Inscripciones para el Colegio P\xc3\xado IX</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generator</td><td style="vertical-align:top;">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">keywords</td><td style="vertical-align:top;">:</td><td><div>Inscripciones, P\xc3\xado IX, Ingresantes, SEACAT</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">models_to_run</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/info/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">postprocessing</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_compression_level</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_expires</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_key</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_data_name</td><td style="vertical-align:top;">:</td><td><div>session_data_seacat_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_file</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\sessions\\127.0.0.1-8b6d1c8b-27b8-47e8-946e-c7f76143e5d1&#x27;, mode &#x27;rb+&#x27; at 0x00000000086CF150&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_filename</td><td style="vertical-align:top;">:</td><td><div>D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\sessions\\127.0.0.1-8b6d1c8b-27b8-47e8-946e-c7f76143e5d1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_hash</td><td style="vertical-align:top;">:</td><td><div>b5110f8e8705f21c48413dde63bdb089</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-8b6d1c8b-27b8-47e8-946e-c7f76143e5d1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_name</td><td style="vertical-align:top;">:</td><td><div>session_id_seacat_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_locked</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_masterapp</td><td style="vertical-align:top;">:</td><td><div>SEACAT_ingresos</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_new</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_storage_type</td><td style="vertical-align:top;">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">status</td><td style="vertical-align:top;">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">subtitle</td><td style="vertical-align:top;">:</td><td><div>v.0.0.1b</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">title</td><td style="vertical-align:top;">:</td><td><div>SEACAT</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">view</td><td style="vertical-align:top;">:</td><td><div>default/info.html</div></td></tr></table></div>'
+tRp122
+sS'locals'
+p123
+(dp124
+S'Service'
+p125
+S"<class 'gluon.tools.Service'>"
+p126
+sS'DATE_TYPE'
+p127
+S"[<lazyT 'meeting'>, <lazyT 'turn'>, <lazyT 'expiration'>, <lazyT 'exam'>, <lazyT 'opening'>]"
+p128
+sS'OBJECT'
+p129
+S"<class 'gluon.html.OBJECT'>"
+p130
+sS'SQLDB'
+p131
+S"<class 'gluon.dal.DAL'>"
+p132
+sg115
+S"<Storage {'last_query': 'db.date.id>0', '_user_a...18c8c', 'fbafa103-eb1d-4d99-bcd4-19124f3bbfa3']}>"
+p133
+sS'LINK'
+p134
+S"<class 'gluon.html.LINK'>"
+p135
+sS'BR'
+p136
+S"<class 'gluon.html.BR'>"
+p137
+sS'local_import'
+p138
+S'<function <lambda>>'
+p139
+sS'OPTGROUP'
+p140
+S"<class 'gluon.html.OPTGROUP'>"
+p141
+sS'__package__'
+p142
+S'None'
+p143
+sS'PRE'
+p144
+S"<class 'gluon.html.PRE'>"
+p145
+sS'IS_INT_IN_RANGE'
+p146
+S"<class 'gluon.validators.IS_INT_IN_RANGE'>"
+p147
+sS'left_sidebar_enabled'
+p148
+S'False'
+p149
+sS'IS_LOWER'
+p150
+S"<class 'gluon.validators.IS_LOWER'>"
+p151
+sS'IS_STRONG'
+p152
+S"<class 'gluon.validators.IS_STRONG'>"
+p153
+sS'cache'
+p154
+S'<gluon.cache.Cache object>'
+p155
+sS'IS_IN_DB'
+p156
+S"<class 'gluon.validators.IS_IN_DB'>"
+p157
+sS'TAG'
+p158
+S'<gluon.html.__TAG__ object>'
+p159
+sS'SQLField'
+p160
+S"<class 'gluon.dal.Field'>"
+p161
+sS'mail'
+p162
+S'<gluon.tools.Mail object>'
+p163
+sS'BODY'
+p164
+S"<class 'gluon.html.BODY'>"
+p165
+sS'IS_DATE_IN_RANGE'
+p166
+S"<class 'gluon.validators.IS_DATE_IN_RANGE'>"
+p167
+sS'IFRAME'
+p168
+S"<class 'gluon.html.IFRAME'>"
+p169
+sS'URL'
+p170
+S'<function URL>'
+p171
+sS'SCHOOL_NETWORK_LIST'
+p172
+S"['San Francisco de Sales', 'San Antonio', 'San Pedro', 'San Juan Evangelista']"
+p173
+sS'__file__'
+p174
+S"r'D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\views\\default/info.html'"
+p175
+sS'db'
+p176
+S'<DAL uri="postgres:******@wspio1.pioix.edu.ar/seacat">'
+p177
+sS'auth'
+p178
+S'<gluon.tools.Auth object>'
+p179
+sS'P'
+S"<class 'gluon.html.P'>"
+p180
+sS'TFOOT'
+p181
+S"<class 'gluon.html.TFOOT'>"
+p182
+sS'XHTML'
+p183
+S"<class 'gluon.html.XHTML'>"
+p184
+sS'datetime'
+p185
+S"<module 'datetime' (built-in)>"
+p186
+sS'ON'
+p187
+S'True'
+p188
+sS'OL'
+p189
+S"<class 'gluon.html.OL'>"
+p190
+sS'TEXTAREA'
+p191
+S"<class 'gluon.html.TEXTAREA'>"
+p192
+sS'closing_date'
+p193
+S'datetime.date(2014, 8, 29)'
+p194
+sS'MENU'
+p195
+S"<class 'gluon.html.MENU'>"
+p196
+sS'MAX_PHOTO_SIZE'
+p197
+S'(640, 480)'
+p198
+sS'IS_IMAGE'
+p199
+S"<class 'gluon.validators.IS_IMAGE'>"
+p200
+sS'EM'
+p201
+S"<class 'gluon.html.EM'>"
+p202
+sS'CODE'
+p203
+S"<class 'gluon.html.CODE'>"
+p204
+sS'HTTP'
+p205
+S"<class 'gluon.http.HTTP'>"
+p206
+sS'HR'
+p207
+S"<class 'gluon.html.HR'>"
+p208
+sS'IS_DATETIME'
+p209
+S"<class 'gluon.validators.IS_DATETIME'>"
+p210
+sS'STYLE'
+p211
+S"<class 'gluon.html.STYLE'>"
+p212
+sS'LABEL'
+p213
+S"<class 'gluon.html.LABEL'>"
+p214
+sS'CLEANUP'
+p215
+S"<class 'gluon.validators.CLEANUP'>"
+p216
+sS'plugins'
+p217
+S'<gluon.tools.PluginManager object>'
+p218
+sS'logo'
+p219
+S"'image.file.ae9a423a27e76721.4c6f676f50696f49582d4e7565766f2e706e67.png'"
+p220
+sS'MAX_AVATAR_SIZE'
+p221
+S'(300, 300)'
+p222
+sS'SELECT'
+p223
+S"<class 'gluon.html.SELECT'>"
+p224
+sS'use_janrain'
+p225
+S'<function use_janrain>'
+p226
+sS'CENTER'
+p227
+S"<class 'gluon.html.CENTER'>"
+p228
+sS'prettydate'
+p229
+S'<function prettydate>'
+p230
+sS'Crud'
+p231
+S"<class 'gluon.tools.Crud'>"
+p232
+sS'Auth'
+p233
+S"<class 'gluon.tools.Auth'>"
+p234
+sS'DEVELOPMENT_MENU'
+p235
+g149
+sS'__builtins__'
+p236
+S"{'ArithmeticError': <type 'exceptions.ArithmeticError'>, 'AssertionError': <type 'exceptions.AssertionError'>, 'AttributeError': <type 'exceptions.AttributeError'>, 'BaseException': <type 'exceptions.BaseException'>, 'BufferError': <type 'exceptions.BufferError'>, 'BytesWarning': <type 'exceptions.BytesWarning'>, 'DeprecationWarning': <type 'exceptions.DeprecationWarning'>, 'EOFError': <type 'exceptions.EOFError'>, 'Ellipsis': Ellipsis, 'EnvironmentError': <type 'exceptions.EnvironmentError'>, ...}"
+p237
+sS'HTML'
+p238
+S"<class 'gluon.html.HTML'>"
+p239
+sS'SUSPEND_SERVICE'
+p240
+g149
+sS'SQLFORM'
+p241
+S"<class 'gluon.sqlhtml.SQLFORM'>"
+p242
+sS'LOAD'
+p243
+S'<function LOAD>'
+p244
+sS'redirect'
+p245
+S'<function redirect>'
+p246
+sS'FIELDSET'
+p247
+S"<class 'gluon.html.FIELDSET'>"
+p248
+sS'IS_EQUAL_TO'
+p249
+S"<class 'gluon.validators.IS_EQUAL_TO'>"
+p250
+sS'DOC_TYPE_SET'
+p251
+S"['DNI', 'LE', 'LC', <lazyT 'PASSPORT'>]"
+p252
+sS'embed64'
+p253
+S'<function embed64>'
+p254
+sS'IS_LIST_OF'
+p255
+S"<class 'gluon.validators.IS_LIST_OF'>"
+p256
+sS'__name__'
+p257
+S"'__restricted__'"
+p258
+sS'EMBED'
+p259
+S"<class 'gluon.html.EMBED'>"
+p260
+sS'_'
+S'<function _>'
+p261
+sS'H2'
+p262
+S"<class 'gluon.html.H2'>"
+p263
+sS'H3'
+p264
+S"<class 'gluon.html.H3'>"
+p265
+sS'BUTTON'
+p266
+S"<class 'gluon.html.BUTTON'>"
+p267
+sS'H1'
+p268
+S"<class 'gluon.html.H1'>"
+p269
+sS'H6'
+p270
+S"<class 'gluon.html.H6'>"
+p271
+sS'GENDER_LIST'
+p272
+S"[<lazyT 'Male'>, <lazyT 'Female'>]"
+p273
+sS'H4'
+p274
+S"<class 'gluon.html.H4'>"
+p275
+sS'H5'
+p276
+S"<class 'gluon.html.H5'>"
+p277
+sS'UL'
+p278
+S"<class 'gluon.html.UL'>"
+p279
+sS'IS_UPPER'
+p280
+S"<class 'gluon.validators.IS_UPPER'>"
+p281
+sS'xmlescape'
+p282
+S'<function xmlescape>'
+p283
+sS'NOW'
+p284
+S'datetime.datetime(2014, 1, 24, 11, 40, 32, 130000)'
+p285
+sS'OPTION'
+p286
+S"<class 'gluon.html.OPTION'>"
+p287
+sS'TITLE'
+p288
+S"<class 'gluon.html.TITLE'>"
+p289
+sS'CRYPT'
+p290
+S"<class 'gluon.validators.CRYPT'>"
+p291
+sS'IS_EMPTY_OR'
+p292
+S"<class 'gluon.validators.IS_EMPTY_OR'>"
+p293
+sS'MARKMIN'
+p294
+S"<class 'gluon.html.MARKMIN'>"
+p295
+sS'TIME_FORMAT'
+p296
+S"'%H:%M:%S'"
+p297
+sS'DB_DB'
+p298
+S"'seacat'"
+p299
+sS'INPUT'
+p300
+S"<class 'gluon.html.INPUT'>"
+p301
+sS'STRONG'
+p302
+S"<class 'gluon.html.STRONG'>"
+p303
+sS'COL'
+p304
+S"<class 'gluon.html.COL'>"
+p305
+sS'VALID_IMG_EXTENSION_SET'
+p306
+S"('jpeg', 'jpg', 'png')"
+p307
+sS'service'
+p308
+S'<gluon.tools.Service object>'
+p309
+sS'SCRIPT'
+p310
+S"<class 'gluon.html.SCRIPT'>"
+p311
+sS'PROVINCES_LIST'
+p312
+S"['Buenos Aires', 'Catamarca', 'Ciudad Aut\\xc3\\xb3noma de Buenos Aires', 'Chaco', 'Chubut', 'Corrientes', 'C\\xc3\\xb3rdoba', 'Entre R\\xc3\\xados', 'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuqu\\xc3\\xa9n', 'R\\xc3\\xado Negro', 'Salta', 'San Juan', 'San Luis', 'Santa Cruz', ...]"
+p313
+sS'DB_USER'
+p314
+S"'leo'"
+p315
+sS'is_mobile'
+p316
+g149
+sS'TABLE'
+p317
+S"<class 'gluon.html.TABLE'>"
+p318
+sS'IS_IPV4'
+p319
+S"<class 'gluon.validators.IS_IPV4'>"
+p320
+sS'IS_LENGTH'
+p321
+S"<class 'gluon.validators.IS_LENGTH'>"
+p322
+sS'IS_IPV6'
+p323
+S"<class 'gluon.validators.IS_IPV6'>"
+p324
+sS'XML'
+p325
+S"<class 'gluon.html.XML'>"
+p326
+sS'B'
+S"<class 'gluon.html.B'>"
+p327
+sS'IMG'
+p328
+S"<class 'gluon.html.IMG'>"
+p329
+sS'SQLTABLE'
+p330
+S"<class 'gluon.sqlhtml.SQLTABLE'>"
+p331
+sS'DB_PASSWORD'
+p332
+S"'47alfatango'"
+p333
+sS'IS_MATCH'
+p334
+S"<class 'gluon.validators.IS_MATCH'>"
+p335
+sS'IS_ALPHANUMERIC'
+p336
+S"<class 'gluon.validators.IS_ALPHANUMERIC'>"
+p337
+sS'DATE_FORMAT'
+p338
+S"'%d-%m-%Y'"
+p339
+sS'SPAN'
+p340
+S"<class 'gluon.html.SPAN'>"
+p341
+sS'IS_JSON'
+p342
+S"<class 'gluon.validators.IS_JSON'>"
+p343
+sS'TEL_TYPE_SET'
+p344
+S"[<lazyT 'Line'>, <lazyT 'Cell Phone'>, <lazyT 'Other'>]"
+p345
+sS'IS_IPADDRESS'
+p346
+S"<class 'gluon.validators.IS_IPADDRESS'>"
+p347
+sS'IS_SLUG'
+p348
+S"<class 'gluon.validators.IS_SLUG'>"
+p349
+sS'navbar'
+p350
+S'<gluon.html.LI object>'
+p351
+sS'BEAUTIFY'
+p352
+S"<class 'gluon.html.BEAUTIFY'>"
+p353
+sS'META'
+p354
+S"<class 'gluon.html.META'>"
+p355
+sS'DB_ENGINE'
+p356
+S"'postgres'"
+p357
+sS'IS_DATE'
+p358
+S"<class 'gluon.validators.IS_DATE'>"
+p359
+sS'IS_EMAIL'
+p360
+S"<class 'gluon.validators.IS_EMAIL'>"
+p361
+sS'DBURI'
+p362
+S"'postgres://leo:47alfatango@wspio1.pioix.edu.ar/seacat'"
+p363
+sS'IS_NOT_EMPTY'
+p364
+S"<class 'gluon.validators.IS_NOT_EMPTY'>"
+p365
+sS'IS_FLOAT_IN_RANGE'
+p366
+S"<class 'gluon.validators.IS_FLOAT_IN_RANGE'>"
+p367
+sS'TBODY'
+p368
+S"<class 'gluon.html.TBODY'>"
+p369
+sS'CAT'
+p370
+S"<class 'gluon.html.CAT'>"
+p371
+sS'Field'
+p372
+S"<class 'gluon.dal.Field'>"
+p373
+sS'IS_LIST_OF_EMAILS'
+p374
+S"<class 'gluon.validators.IS_LIST_OF_EMAILS'>"
+p375
+sS'middle_columns'
+p376
+S"'span12'"
+p377
+sS'DIV'
+p378
+S"<class 'gluon.html.DIV'>"
+p379
+sS'LEGEND'
+p380
+S"<class 'gluon.html.LEGEND'>"
+p381
+sS'COLGROUP'
+p382
+S"<class 'gluon.html.COLGROUP'>"
+p383
+sS'DAL'
+p384
+S"<class 'gluon.dal.DAL'>"
+p385
+sS'TT'
+p386
+S"<class 'gluon.html.TT'>"
+p387
+sS'TR'
+p388
+S"<class 'gluon.html.TR'>"
+p389
+sS'LI'
+p390
+S"<class 'gluon.html.LI'>"
+p391
+sS'right_sidebar_enabled'
+p392
+g149
+sS'openinng_date'
+p393
+S'datetime.date(2014, 3, 10)'
+p394
+sS'TH'
+p395
+S"<class 'gluon.html.TH'>"
+p396
+sS'TD'
+p397
+S"<class 'gluon.html.TD'>"
+p398
+sS'PluginManager'
+p399
+S"<class 'gluon.tools.PluginManager'>"
+p400
+sS'IS_URL'
+p401
+S"<class 'gluon.validators.IS_URL'>"
+p402
+sS'A'
+S"<class 'gluon.html.A'>"
+p403
+sS'HEAD'
+p404
+S"<class 'gluon.html.HEAD'>"
+p405
+sS'IS_DATETIME_IN_RANGE'
+p406
+S"<class 'gluon.validators.IS_DATETIME_IN_RANGE'>"
+p407
+sS'FORM'
+p408
+S"<class 'gluon.html.FORM'>"
+p409
+sS'I'
+S"<class 'gluon.html.I'>"
+p410
+sS'crud'
+p411
+S'<gluon.tools.Crud object>'
+p412
+sS'IS_NOT_IN_DB'
+p413
+S"<class 'gluon.validators.IS_NOT_IN_DB'>"
+p414
+sg121
+S"<Storage {'body': <cStringIO.StringO object at 0...x0000000008ED4E48>, 'view': 'default/info.html'}>"
+p415
+sS'THEAD'
+p416
+S"<class 'gluon.html.THEAD'>"
+p417
+sS'ANY_OF'
+p418
+S"<class 'gluon.validators.ANY_OF'>"
+p419
+sS'IS_NULL_OR'
+p420
+S"<class 'gluon.validators.IS_EMPTY_OR'>"
+p421
+sS'IS_TIME'
+p422
+S"<class 'gluon.validators.IS_TIME'>"
+p423
+sg56
+S"<Storage {'_vars': None, 'function': 'info', 'co...opbox\\\\web2py\\\\applications\\\\SEACAT_ingresos\\\\'}>"
+p424
+sS'IS_EXPR'
+p425
+S"<class 'gluon.validators.IS_EXPR'>"
+p426
+sS'T'
+S'<gluon.languages.translator object>'
+p427
+sS'IS_IN_SET'
+p428
+S"<class 'gluon.validators.IS_IN_SET'>"
+p429
+sS'DB_HOST'
+p430
+S"'wspio1.pioix.edu.ar'"
+p431
+sS'IS_UPLOAD_FILENAME'
+p432
+S"<class 'gluon.validators.IS_UPLOAD_FILENAME'>"
+p433
+sS'IS_DECIMAL_IN_RANGE'
+p434
+S"<class 'gluon.validators.IS_DECIMAL_IN_RANGE'>"
+p435
+sssS'traceback'
+p436
+S'Traceback (most recent call last):\n  File "D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\gluon\\restricted.py", line 217, in restricted\n    exec ccode in environment\n  File "D:\\Usuarios\\Leo\\Mis Documentos\\Dropbox\\web2py\\applications\\SEACAT_ingresos\\views\\default/info.html", line 115, in <module>\nNameError: name \'openning_date\' is not defined\n'
+p437
+s.

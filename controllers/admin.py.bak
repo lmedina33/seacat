@@ -120,3 +120,16 @@ def users_list():
                         csv=False,
                         paginate=50)
     return dict(form=form, grid=grid)
+
+@auth.requires_permission('read', db.date)
+def dates_list():
+    grid = SQLFORM.grid(db.date,
+                        create=False,
+                        deletable=False,
+                        details=False,
+                        editable=False,
+                        searchable=False,
+                        csv=False,
+                        paginate=50
+                        )
+    return dict(grid=grid)

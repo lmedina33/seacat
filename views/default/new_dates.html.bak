@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+{{=form}}
+<h3>
+    Variables enviadas
+</h3>
+{{=BEAUTIFY(response._vars)}}

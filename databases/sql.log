@@ -192,3 +192,30 @@ CREATE TABLE date(
     modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
+timestamp: 2014-01-24T14:05:42.633000
+CREATE TABLE image(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(512),
+    file VARCHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-01-24T13:58:31.420000
+CREATE TABLE general_date(
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(512),
+    year INTEGER,
+    date DATE,
+    start_time TIME,
+    end_time TIME,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!

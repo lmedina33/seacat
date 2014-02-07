@@ -68,7 +68,7 @@
 
 <body>
   <!-- Navbar ================================================== -->
-  {{#if auth.is_logged_in():}}
+  <!--{{#if auth.is_logged_in():}}-->
   <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="flash">{{=response.flash or ''}}</div>
     <div class="navbar-inner">
@@ -81,11 +81,13 @@
         </button>
 	{{=response.logo or ''}}
           <!-- {{#If the language is Spanish and the user is Female we say "Bienvenida", else "Bienvenido"}} -->
-          {{navbar = auth.navbar(mode="dropdown")}}
-          {{#if T.accepted_language == 'es' and auth.user.gender == T("Female"):}}
-          {{#navbar = auth.navbar(prefix='Bienvenida', mode="dropdown")}}
-          {{#pass}}
-          <<!-- {{# end of navbar spanish personalization}} -->
+          {{navbar = auth.navbar(mode="default")}}
+          {{if auth.is_logged_in() and T.accepted_language == 'es' and auth.user.gender == T("Female"):}}
+          {{navbar = auth.navbar(prefix='Bienvenida', mode="dropdown")}}
+          {{else:}}
+          {{navbar = auth.navbar(mode="dropdown")}}}}
+          {{pass}}
+          <!-- {{# end of navbar spanish personalization}} -->
           <ul id="navbar" class="nav pull-right">{{='auth' in globals() and navbar or ''}}</ul>
         <div class="nav-collapse">
           {{is_mobile=request.user_agent().is_mobile}}
@@ -96,7 +98,7 @@
       </div>
     </div>
   </div><!--/top navbar -->
-  {{#pass}}
+  <!--{{#pass}}-->
   <div class="container">
 
       <!-- Masthead ================================================== -->

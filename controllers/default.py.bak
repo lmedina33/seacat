@@ -22,8 +22,8 @@ def index():
     else:
         ## If the user is successfully logged in we store the timestamp in the 'auth_user' table.
         db.auth_user[auth.user.id]=dict(last_login=request.now)
-        usernameid = {'uid': auth.user.id, 'first_name': auth.user.first_name, 'last_name': auth.user.last_name}
-        auth.log_event(origin=request.env.http_host, description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in", usernameid))
+        #usernameid = {'uid': auth.user.id, 'first_name': auth.user.first_name, 'last_name': auth.user.last_name}
+        #auth.log_event(description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in" % usernameid))
         ## Then we redirect to the "Start Page"
         redirect(URL('start'))
     return dict(message=T("Registration System"), form=form)
@@ -66,7 +66,10 @@ def set_up():
     return dict(message="SETTED_UP")
 
 def info():
-    return locals()
+    logo = db.image(name="Logo Pío IX Nuevo 250x245").file
+    closing_date = db.date(description="Cierre del período de inscripciones.").date
+    openning_date = db.date(description="Comienzo del período de inscripciones.").date
+    return dict(logo=logo, closing_date=closing_date, openning_date=openning_date)
 
 @auth.requires_login()
 def start():
@@ -216,9 +219,61 @@ def fathers_list():
     return dict(grid=grid)
 
 @auth.requires_permission('create', db.date)
-def new_date():
+def new_turn():
     form = SQLFORM(db.date)
     if form.process().accepted:
         #db.date.insert(**db.date._filter_fields(form.vars))
         response.flash = T("Record inserted")
+    return dict(form=form)
+
+@auth.requires_permission('create', db.date)
+def new_dates():
+    form = SQLFORM.factory(db.general_date.year)
+    
+    response.flash = str(request.vars.year)
+
+    for date_type in GENERAL_DATE_TYPE:
+        fila = TR(LABEL(B(date_type)))
+        fila += TR(LABEL(T("Date")+":"), INPUT(_name=date_type.replace(' ','_')+'_date', _class="date", requires=IS_EMPTY_OR(IS_DATE(DATE_FORMAT))), _id=date_type.replace(' ','_')+"_date__row")
+        fila += TR(LABEL(T("Start Time")+":"), INPUT(_name=date_type.replace(' ','_')+'_start_time', _class="time", requires=IS_EMPTY_OR(IS_TIME())), _id=date_type.replace(' ','_')+"_start_time__row")
+        fila += TR(LABEL(T("End Time")+":"), INPUT(_name=date_type.replace(' ','_')+'_end_time', _class="time", requires=IS_EMPTY_OR(IS_TIME())), _id=date_type.replace(' ','_')+"_end_time__row")
+        form[0].insert(-1, fila)
+    if not request.vars.year:
+        form.vars.year = request.now.year
+    else:
+        form.vars.year = request.vars.year
+    data = db(db.general_date.year==form.vars.year).select(db.general_date.type, db.general_date.date, db.general_date.start_time, db.general_date.end_time)
+    for row in data:
+        fieldtype = row.type
+        fieldtype = fieldtype.replace(' ', '_')
+        form.vars[fieldtype+'_date'] = row.date.strftime(DATE_FORMAT)
+        if not row.start_time:
+            form.vars[fieldtype+'_start_time'] = row.start_time
+        if not row.end_time:
+            form.vars[fieldtype+'_end_time'] = row.end_time
+
+    if form.validate():
+        for field, value in form.vars.items():
+            fieldtype = ""
+            date = ""
+            start_time = ""
+            end_time = ""
+            if not value:
+                continue
+            elif "_date" in field:
+                fieldname = field.split("_date")
+                fieldtype = fieldname[0].replace('_', ' ')
+                date = value
+                start_time = form.vars[fieldname[0]+"_start_time"]
+                end_time = form.vars[fieldname[0]+"_end_time"]
+            elif "_start_time" in field:
+                continue
+            elif "_end_time" in field:
+                continue
+            elif "year" in field:
+                continue
+            else:
+                pass
+            db.general_date.update_or_insert((db.general_date.type==fieldtype)&(db.general_date.year==form.vars.year), type=fieldtype, year=form.vars.year, date=date, start_time=start_time, end_time=end_time)
+        response.flash = T("new record inserted")
     return dict(form=form)

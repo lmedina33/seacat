@@ -39,12 +39,13 @@ response.meta.generator = 'Web2py Web Framework'
 #########################################################################
 
 ## Top level Menu:
-response.menu = [
-                 [T('Home'), False, URL('default', 'index'), []],
-                 [T('New'), False, None, []],
-                 [T('View'), False, None, []],
-                 [T('Help'), False, URL('default', 'help'), []],
-]
+if auth.is_logged_in():
+    response.menu = [
+                     [T('Home'), False, URL('default', 'index'), []],
+                     [T('New'), False, None, []],
+                     [T('View'), False, None, []],
+                     [T('Help'), False, URL('default', 'help'), []],
+    ]
 
 ## EXAMPLES:
 #response.menu.insert(2, [T('TEST'), False, None, []])
@@ -54,7 +55,10 @@ if auth.has_permission('create new father', db.auth_user):
     response.menu[1][3].insert(0, [T("Father"), False, URL('new_father')])
 
 if auth.has_permission('create', db.date):
-    response.menu[1][3].append([T("Date"), False, URL('default','new_date')])
+    response.menu[1][3].append([T("Date"), False, None, [
+                                                         ["General", False, URL('default','new_dates')],
+                                                         [T("Turns"), False, URL('default','new_turn')],
+                                                         ]])
 
 if auth.has_permission('read', db.auth_user):
     response.menu[2][3].insert(0, [T("Users List"), False, URL(request.application, 'admin', 'users_list')])

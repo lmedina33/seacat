@@ -95,7 +95,7 @@ db.auth_group.description.readable = True
 auth.settings.remember_me_form = False
 
 ## Defining new table for Images:
-db.define_table('images',
+db.define_table('image',
                 Field('name', label=T("Name")),
                 Field('file', 'upload', label=T("File"), required=True),
                 auth.signature
@@ -167,6 +167,15 @@ db.define_table('date',
                 auth.signature
                 )
 
+db.define_table('general_date',
+                Field('type', required=True, requires=IS_IN_SET(GENERAL_DATE_TYPE), label=T("Date Type")),
+                Field('year', 'integer', length=4, required=True, requires=IS_IN_SET(['2013', '2014', '2015', '2016', '2017', '2018']), label=T("Year")),
+                Field('date', 'date', required=True, requires=IS_DATE(DATE_FORMAT), label=T("Date")),
+                Field('start_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("Start Time")),
+                Field('end_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("End Time")),
+                auth.signature
+                )
+
 ## configure email
 mail = auth.settings.mailer
 mail.settings.server = 'logging' or 'smtp.gmail.com:587'
@@ -201,6 +210,9 @@ if not db().select(db.auth_user.ALL):
 else:
     auth.settings.actions_disabled = ['register']
 
+auth.messages.login_log = T("User %(id)s - %(last_name)s, %(first_name)s - logged in")
+auth.messages.logout_log = T("User %(id)s - %(last_name)s, %(first_name)s - logged out")
+    
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 ## register with janrain.com, write your domain:api_key in private/janrain.key
 from gluon.contrib.login_methods.rpx_account import use_janrain

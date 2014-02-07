@@ -83,7 +83,7 @@ def new_user():
 
 @auth.requires_membership('root')
 def upload_image():
-    grid = SQLFORM.smartgrid(db.images)
+    grid = SQLFORM.smartgrid(db.image)
     return locals()
 
 @auth.requires_permission('read', db.auth_user)

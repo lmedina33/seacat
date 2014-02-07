@@ -3,6 +3,8 @@
 ## This file contains global settings and constants.
 
 import datetime
+import locale
+locale.setlocale(locale.LC_TIME, '')
 
 ####################################################################################################
 ## DB Settings
@@ -71,6 +73,44 @@ MAX_AVATAR_SIZE = (300, 300)
 
 DATE_TYPE = [T("meeting"), T("turn"), T("expiration"), T("exam"), T("opening")]
 
+GENERAL_DATE_TYPE = [T("Open Enrollment"),
+                     T("Enrollment Deadline"),
+                     T("Deadline for Priority"),
+                     T("First Parent Meeting (First Date)"),
+                     T("First Parent Meeting (Second Date)"),
+                     T("Language Exam"),
+                     T("Math Exam"),
+                     T("Report Cards Presentation Deadline"),
+                     T("Pre-Registered List's Publication")
+                     ]
+
 DATE_FORMAT = '%d-%m-%Y'
 
 TIME_FORMAT = '%H:%M:%S'
+
+MONTH_TR = {'January':'Enero',
+            'Febrary':'Febrero',
+            'March':'Marzo',
+            'April':'Abril',
+            'June':'Junio',
+            'July':'Julio',
+            'August':'Agosto',
+            'September':'Septiembre',
+            'October':'Octubre',
+            'November':'Noviembre',
+            'December':'Diciembre'}
+
+DAYS_TR = {'Sunday':'Domingo',
+           'Monday':'Lunes',
+           'Tuesday':'Martes',
+	       'Wednesday':'Miercoles',
+	       'Thursday':'Jueves',
+	       'Friday':'Viernes',
+	       'Saturday':'Sabado'}
+
+def translate_date(date):
+    for i in DAYS_TR:
+        date = date.replace(i, DAYS_TR[i])
+    for i in MONTH_TR:
+        date = date.replace(i, MONTH_TR[i])
+    return date
