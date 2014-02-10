@@ -83,7 +83,7 @@ def new_user():
 
 @auth.requires_membership('root')
 def upload_image():
-    grid = SQLFORM.smartgrid(db.images)
+    grid = SQLFORM.smartgrid(db.image)
     return locals()
 
 @auth.requires_permission('read', db.auth_user)
@@ -133,3 +133,25 @@ def dates_list():
                         paginate=50
                         )
     return dict(grid=grid)
+
+@auth.requires_membership('root')
+def general_dates_list():
+    form = SQLFORM.factory(Field('year', requires=IS_EMPTY_OR(IS_IN_DB(db, 'general_date.year', zero=T("All"), distinct=True)), label=T("Filter")))
+    query = db(db.general_date.year==form.vars.year).select()
+    if form.vars.year == None:
+        query = (db.general_date.id>0)
+        response.flash = ""
+
+
+    grid = SQLFORM.grid(query,
+                             #fields=[db.general_date.id,
+                             #        db.general_date.type],
+                             maxtextlengths={'general_date.type': 50},
+                             showbuttontext=False,
+                             orderby=db.general_date.type,
+                             #groupby=db.general_date.year, ## Cuando le pongo el groupby me tira error y no sé por qué.
+                             paginate=50,
+                             links_in_grid=False,
+                             exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True)
+                             )
+    return locals()

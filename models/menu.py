@@ -66,6 +66,9 @@ if auth.has_permission('read', db.auth_user):
 if auth.has_permission('read', db.date):
     response.menu[2][3].append([T("Dates List"), False, URL('admin','dates_list')])
 
+if auth.has_permission('read', db.date):
+    response.menu[2][3].append([T("General Dates List"), False, URL('admin','general_dates_list')])
+
 if auth.has_permission('view fathers list', db.auth_user):
     response.menu[2][3].insert(0, [T("Fathers List"), False, URL('fathers_list')])
 

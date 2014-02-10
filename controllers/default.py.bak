@@ -67,8 +67,8 @@ def set_up():
 
 def info():
     logo = db.image(name="Logo Pío IX Nuevo 250x245").file
-    closing_date = db.date(description="Cierre del período de inscripciones.").date
-    openning_date = db.date(description="Comienzo del período de inscripciones.").date
+    closing_date = db.general_date(type=GENERAL_DATE_TYPE[1]).date
+    openning_date = db.general_date(type=GENERAL_DATE_TYPE[0]).date
     return dict(logo=logo, closing_date=closing_date, openning_date=openning_date)
 
 @auth.requires_login()
@@ -228,9 +228,26 @@ def new_turn():
 
 @auth.requires_permission('create', db.date)
 def new_dates():
-    form = SQLFORM.factory(db.general_date.year)
-    
-    response.flash = str(request.vars.year)
+    ## Falta hacer andar el script de la vista, para recargar el formulario con el cambio del año.
+    ## Sino convertimos el formulario a la propuesta de Julio, un primer formulario de búsqueda y 
+    ## un segundo formulario de modificación.
+
+    find_form = SQLFORM.factory(db.general_date.year)
+    if request.vars != None:
+        find_form.vars.year = request.vars.year
+    ## Oculta el botón submit
+    submit = find_form.element('input',_type='submit')
+    submit['_style'] = 'display:none;'
+    find_form.attributes['_id'] = 'find_form'
+    find_form.element('select').attributes['_id'] = 'filter'
+
+#    if find_form.process(formname='find_form').accepted:
+#        response.flash = ""
+#        year = find_form.vars.year
+
+    ## Crea el formulario para insertar o modificar los datos
+    form = SQLFORM.factory(Field('selected_year', label=T("Selected Year")))
+    form.vars.selected_year = request.vars.year
 
     for date_type in GENERAL_DATE_TYPE:
         fila = TR(LABEL(B(date_type)))
@@ -238,21 +255,23 @@ def new_dates():
         fila += TR(LABEL(T("Start Time")+":"), INPUT(_name=date_type.replace(' ','_')+'_start_time', _class="time", requires=IS_EMPTY_OR(IS_TIME())), _id=date_type.replace(' ','_')+"_start_time__row")
         fila += TR(LABEL(T("End Time")+":"), INPUT(_name=date_type.replace(' ','_')+'_end_time', _class="time", requires=IS_EMPTY_OR(IS_TIME())), _id=date_type.replace(' ','_')+"_end_time__row")
         form[0].insert(-1, fila)
-    if not request.vars.year:
-        form.vars.year = request.now.year
-    else:
-        form.vars.year = request.vars.year
-    data = db(db.general_date.year==form.vars.year).select(db.general_date.type, db.general_date.date, db.general_date.start_time, db.general_date.end_time)
+
+    data = db(db.general_date.year==find_form.vars.year).select(
+                                                 db.general_date.type,
+                                                 db.general_date.date,
+                                                 db.general_date.start_time,
+                                                 db.general_date.end_time
+                                                 )
     for row in data:
         fieldtype = row.type
         fieldtype = fieldtype.replace(' ', '_')
         form.vars[fieldtype+'_date'] = row.date.strftime(DATE_FORMAT)
-        if not row.start_time:
-            form.vars[fieldtype+'_start_time'] = row.start_time
-        if not row.end_time:
-            form.vars[fieldtype+'_end_time'] = row.end_time
+        #if not row.start_time:
+        form.vars[fieldtype+'_start_time'] = row.start_time
+        #if not row.end_time:
+        form.vars[fieldtype+'_end_time'] = row.end_time
 
-    if form.validate():
+    if form.validate(formname='form'):
         for field, value in form.vars.items():
             fieldtype = ""
             date = ""
@@ -274,6 +293,6 @@ def new_dates():
                 continue
             else:
                 pass
-            db.general_date.update_or_insert((db.general_date.type==fieldtype)&(db.general_date.year==form.vars.year), type=fieldtype, year=form.vars.year, date=date, start_time=start_time, end_time=end_time)
+            db.general_date.update_or_insert((db.general_date.type==fieldtype)&(db.general_date.year==form.vars.selected_year), type=fieldtype, year=form.vars.selected_year, date=date, start_time=start_time, end_time=end_time)
         response.flash = T("new record inserted")
-    return dict(form=form)
+    return dict(find_form=find_form, form=form)
