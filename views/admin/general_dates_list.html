@@ -1,5 +1,19 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
 {{=form}}
+<hr>
 {{=grid}}
-<!--{{=BEAUTIFY(response._vars)}}-->
+
+<!--<h2>
+    Response:
+</h2>
+{{=BEAUTIFY(response._vars)}}
+<h2>
+    Form:
+</h2>
+{{=BEAUTIFY(form.vars)}}
+<h2>
+    Request:
+</h2>
+{{=BEAUTIFY(request.vars)}}
+-->

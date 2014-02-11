@@ -147,6 +147,10 @@ db.define_table('personal_data',
                 )
 #db.personal_data.age = Field.Virtual(lambda row: (request.now-row.personal_data.dob).years)
 
+db.define_table('student',
+                Field('course', requires=IS_IN_SET(COURSE))
+                )
+
 ## Defining new table for Fathers.
 db.define_table('father',
                 Field('father_id', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
@@ -154,6 +158,12 @@ db.define_table('father',
                 Field('children_name', label=T("Children name")),
                 Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
                 Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
+                Field('is_alive', 'boolean', required=True, default=True, label=T("Is Alive?")),
+                Field('work', 'string', length=100, label=T("Work")),
+                Field('works_in', 'string', length=100, label=T("Works in")),
+                Field('spouse', 'reference father', label=T("Spouse")),
+                Field('state', requires=IS_IN_SET(FATHER_STATE), label=T("State")),
+                Field('student_id', 'reference student', label=T("Student")),
                 auth.signature,
                 format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                )

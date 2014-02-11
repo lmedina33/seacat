@@ -219,3 +219,97 @@ CREATE TABLE general_date(
     modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
+timestamp: 2014-02-10T20:02:56.362000
+ALTER TABLE father ADD work VARCHAR(100);
+timestamp: 2014-02-10T20:02:56.537000
+ALTER TABLE father ADD works_in VARCHAR(100);
+timestamp: 2014-02-10T20:02:56.590000
+ALTER TABLE father ADD is_alive CHAR(1);
+success!
+timestamp: 2014-02-10T20:40:26.546000
+ALTER TABLE father ADD status VARCHAR(512);
+timestamp: 2014-02-10T20:40:26.926000
+ALTER TABLE father ADD student_id INTEGER REFERENCES student (id) ON DELETE CASCADE;
+timestamp: 2014-02-10T20:40:55.352000
+CREATE TABLE student(
+    id SERIAL PRIMARY KEY,
+    course VARCHAR(512)
+);
+success!
+timestamp: 2014-02-10T20:40:55.897000
+ALTER TABLE father ADD student_id INTEGER REFERENCES student (id) ON DELETE CASCADE;
+timestamp: 2014-02-10T20:40:56.076000
+ALTER TABLE father ADD spouse INTEGER REFERENCES father (id) ON DELETE CASCADE;
+success!
+timestamp: 2014-02-10T20:57:56.509000
+ALTER TABLE father ADD state VARCHAR(512);
+timestamp: 2014-02-10T20:57:56.598000
+ALTER TABLE father DROP COLUMN status;
+timestamp: 2014-02-10T20:58:50.582000
+ALTER TABLE father DROP COLUMN status;
+timestamp: 2014-02-10T20:59:39.244000
+ALTER TABLE father DROP COLUMN status;
+timestamp: 2014-02-10T21:00:18.904000
+ALTER TABLE father DROP COLUMN status;
+timestamp: 2014-02-10T21:00:37.442000
+ALTER TABLE father DROP COLUMN status;
+timestamp: 2014-02-10T21:02:25.724000
+CREATE TABLE father(
+    id SERIAL PRIMARY KEY,
+    father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    children_in_school CHAR(1),
+    children_name VARCHAR(512),
+    student_network CHAR(1),
+    student_school VARCHAR(512),
+    is_alive CHAR(1),
+    work VARCHAR(100),
+    works_in VARCHAR(100),
+    spouse INTEGER REFERENCES father (id) ON DELETE CASCADE,
+    student_id INTEGER REFERENCES student (id) ON DELETE CASCADE,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+timestamp: 2014-02-10T21:03:27.713000
+CREATE TABLE father(
+    id SERIAL PRIMARY KEY,
+    father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    children_in_school CHAR(1),
+    children_name VARCHAR(512),
+    student_network CHAR(1),
+    student_school VARCHAR(512),
+    is_alive CHAR(1),
+    work VARCHAR(100),
+    works_in VARCHAR(100),
+    spouse INTEGER REFERENCES father (id) ON DELETE CASCADE,
+    state VARCHAR(512),
+    student_id INTEGER REFERENCES student (id) ON DELETE CASCADE,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+timestamp: 2014-02-10T21:09:52.300000
+CREATE TABLE father(
+    id SERIAL PRIMARY KEY,
+    father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    children_in_school CHAR(1),
+    children_name VARCHAR(512),
+    student_network CHAR(1),
+    student_school VARCHAR(512),
+    is_alive CHAR(1),
+    work VARCHAR(100),
+    works_in VARCHAR(100),
+    spouse INTEGER REFERENCES father (id) ON DELETE CASCADE,
+    state VARCHAR(512),
+    student_id INTEGER REFERENCES student (id) ON DELETE CASCADE,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!

@@ -136,12 +136,16 @@ def dates_list():
 
 @auth.requires_membership('root')
 def general_dates_list():
-    form = SQLFORM.factory(Field('year', requires=IS_EMPTY_OR(IS_IN_DB(db, 'general_date.year', zero=T("All"), distinct=True)), label=T("Filter")))
-    query = db(db.general_date.year==form.vars.year).select()
-    if form.vars.year == None:
-        query = (db.general_date.id>0)
-        response.flash = ""
+    form = SQLFORM.factory(Field('year', requires=IS_EMPTY_OR(IS_IN_DB(db, 'general_date.year', zero=T("All"), distinct=True)), label=T("Filter")), submit_button=T("Find"))
 
+    query = db.general_date
+
+    if form.process().accepted:
+        if form.vars.year != None:
+            query = db.general_date.year==request.vars.year
+            response.flash = T("Showing data for year %s", request.vars.year)
+        else:
+            response.flash = T("Showing data for all years")
 
     grid = SQLFORM.grid(query,
                              #fields=[db.general_date.id,
@@ -152,6 +156,11 @@ def general_dates_list():
                              #groupby=db.general_date.year, ## Cuando le pongo el groupby me tira error y no sé por qué.
                              paginate=50,
                              links_in_grid=False,
-                             exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True)
+                             create=False,
+                             deletable=False,
+                             details=False,
+                             editable=False,
+                             searchable=False,
+                             csv=False,
                              )
     return locals()

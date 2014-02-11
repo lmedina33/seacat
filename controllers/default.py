@@ -139,13 +139,20 @@ def new_father():
                            db.auth_user.gender,
                            db.auth_user.email,
                            Field('password', required=True, requires=[IS_MATCH('\d{8}'), CRYPT()], label=T("Document")),
-                           db.father,
+                           db.father.children_in_school,
+                           db.father.children_name,
+                           db.father.student_network,
+                           db.father.student_school
                            )
     if form.process().accepted:
         new_user_id = db.auth_user.insert(**db.auth_user._filter_fields(form.vars))
         db.auth_membership.insert(user_id=new_user_id,
                                   group_id=db.auth_group(role='padre').id)
-        db.father.insert(father_id=new_user_id, **db.father._filter_fields(form.vars))
+        db.father.insert(father_id=new_user_id,
+                         is_alive=True,
+                         state=FATHER_STATE[0],
+                         **db.father._filter_fields(form.vars)
+                         )
         db.auth_user[new_user_id]=dict(created_on=request.now)
         response.flash = T("new record inserted")
         redirect(URL('start'))
@@ -217,6 +224,10 @@ def fathers_list():
                         csv=False,
                         paginate=50)
     return dict(grid=grid)
+@auth.requires_permission('create', db.personal_data)
+def father_data():
+    
+    return locals()
 
 @auth.requires_permission('create', db.date)
 def new_turn():

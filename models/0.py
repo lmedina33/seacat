@@ -61,6 +61,32 @@ PROVINCES_LIST = ["Buenos Aires",
 
 SCHOOL_NETWORK_LIST = ["San Francisco de Sales", "San Antonio", "San Pedro", "San Juan Evangelista"]
 
+FATHER_STATE = [T("Password Change"),
+                 T("Parent Data 1"),
+                 T("Parent Data 2"),
+                 T("Student Data"),
+                 T("School Data"),
+                 T("Survey"),
+                 T("Informative Talk"),
+                 T("Terms and Conditions"),
+                 T("Exam Payment"),
+                 T("First Parent Meeting"),
+                 T("Priority Test"),
+                 T("Calification Test"),
+                 T("Grades Review"),
+                 T("Test"),
+                 T("Final Registration"),
+                 T("Second Parent Meeting"),
+                 T("Vacancy"),
+                 T("Admitted"),
+                 T("Rejected")
+                 ]
+
+COURSE = [T("electronics"),
+          T("informatics"),
+          T("comunication")
+          ]
+
 DOC_TYPE_SET = ['DNI', 'LE', 'LC', T("PASSPORT")]
 
 TEL_TYPE_SET = [T("Line"), T("Cell Phone"), T("Other")]
