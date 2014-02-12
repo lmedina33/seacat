@@ -1,7 +1,9 @@
 # Ignoring files for git repository
 #.gitignore
-#errors/
-#sessions/
+databases/
+errors/
+sessions/
 *~
 models/app_settings.py*
 .netrc
+*.bak
