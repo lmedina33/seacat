@@ -313,3 +313,199 @@ CREATE TABLE father(
     modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
 );
 success!
+timestamp: 2014-02-12T11:28:52.974513
+CREATE TABLE auth_user(
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(512),
+    password VARCHAR(512),
+    registration_key VARCHAR(512),
+    reset_password_key VARCHAR(512),
+    registration_id VARCHAR(512),
+    middle_name VARCHAR(512),
+    gender VARCHAR(512),
+    created_on TIMESTAMP,
+    last_login TIMESTAMP,
+    obs TEXT,
+    is_active CHAR(1),
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:53.063142
+CREATE TABLE auth_group(
+    id SERIAL PRIMARY KEY,
+    role VARCHAR(512),
+    description TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:53.143386
+CREATE TABLE auth_membership(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:53.210212
+CREATE TABLE auth_permission(
+    id SERIAL PRIMARY KEY,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(512),
+    table_name VARCHAR(512),
+    record_id INTEGER,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:53.286961
+CREATE TABLE auth_event(
+    id SERIAL PRIMARY KEY,
+    time_stamp TIMESTAMP,
+    client_ip VARCHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-02-12T11:28:53.360397
+CREATE TABLE auth_cas(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service VARCHAR(512),
+    ticket VARCHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2014-02-12T11:28:53.427608
+CREATE TABLE image(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(512),
+    file VARCHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:53.522499
+CREATE TABLE address(
+    id SERIAL PRIMARY KEY,
+    uid INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    street VARCHAR(512) NOT NULL,
+    building INTEGER,
+    floor VARCHAR(512),
+    door VARCHAR(512),
+    apartment VARCHAR(512),
+    street1 VARCHAR(512),
+    street2 VARCHAR(512),
+    zip_code VARCHAR(512),
+    loc VARCHAR(512),
+    prov VARCHAR(512),
+    obs TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:53.673603
+CREATE TABLE personal_data(
+    id SERIAL PRIMARY KEY,
+    uid INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    doc_type VARCHAR(512) NOT NULL DEFAULT 'DNI',
+    doc VARCHAR(8) NOT NULL UNIQUE,
+    nac VARCHAR(512) NOT NULL DEFAULT 'Argentina',
+    cuil VARCHAR(11) NOT NULL UNIQUE,
+    dob DATE NOT NULL,
+    mail2 VARCHAR(512),
+    tel1_type VARCHAR(512) NOT NULL DEFAULT 'Línea',
+    tel1 VARCHAR(8) NOT NULL,
+    tel2_type VARCHAR(512),
+    tel2 VARCHAR(8),
+    photo VARCHAR(512),
+    avatar VARCHAR(512),
+    twitter VARCHAR(512),
+    facebook VARCHAR(512),
+    obs TEXT,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:53.801644
+CREATE TABLE student(
+    id SERIAL PRIMARY KEY,
+    course VARCHAR(512)
+);
+success!
+timestamp: 2014-02-12T11:28:53.922529
+CREATE TABLE father(
+    id SERIAL PRIMARY KEY,
+    father_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    children_in_school CHAR(1),
+    children_name VARCHAR(512),
+    student_network CHAR(1),
+    student_school VARCHAR(512),
+    is_alive CHAR(1),
+    work VARCHAR(100),
+    works_in VARCHAR(100),
+    spouse INTEGER REFERENCES father (id) ON DELETE CASCADE,
+    state VARCHAR(512),
+    student_id INTEGER REFERENCES student (id) ON DELETE CASCADE,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:54.053980
+CREATE TABLE date(
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(512),
+    date DATE,
+    start_time TIME,
+    end_time TIME,
+    description VARCHAR(512),
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-02-12T11:28:54.163647
+CREATE TABLE general_date(
+    id SERIAL PRIMARY KEY,
+    type VARCHAR(512),
+    year INTEGER,
+    date DATE,
+    start_time TIME,
+    end_time TIME,
+    is_active CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!

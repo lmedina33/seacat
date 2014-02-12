@@ -150,7 +150,7 @@ def new_father():
                                   group_id=db.auth_group(role='padre').id)
         db.father.insert(father_id=new_user_id,
                          is_alive=True,
-                         status=FATHER_STATUS[0],
+                         state=FATHER_STATE[0],
                          **db.father._filter_fields(form.vars)
                          )
         db.auth_user[new_user_id]=dict(created_on=request.now)
@@ -224,6 +224,7 @@ def fathers_list():
                         csv=False,
                         paginate=50)
     return dict(grid=grid)
+
 @auth.requires_permission('create', db.personal_data)
 def father_data():
     
@@ -237,16 +238,28 @@ def new_turn():
         response.flash = T("Record inserted")
     return dict(form=form)
 
+def validate_gral_dates(form):
+    #####################################################
+    ## Hay que completar con el resto de los validadores
+    #####################################################
+    #for date_type in GENERAL_DATE_TYPE:
+    if int(form.vars.selected_year) != form.vars[str(GENERAL_DATE_TYPE[0]).replace(' ','_')+'_date'].year:
+        form.errors[str(GENERAL_DATE_TYPE[0]).replace(' ','_')+'_date'] = T("The date must equals the year selected")
+
 @auth.requires_permission('create', db.date)
 def new_dates():
-    ## Falta hacer andar el script de la vista, para recargar el formulario con el cambio del año.
+    ## Falta hacer andar el script de la vista, para recargar el formulario con el cambio del año. -- Listo, gracias a Julio César Albornoz <juliocesaralbornoz@gmail.com>
     ## Sino convertimos el formulario a la propuesta de Julio, un primer formulario de búsqueda y
     ## un segundo formulario de modificación.
-    ##########################################################
+
+    #########################################################################################################
     ## Faltaría hacer la validación de la entrada de datos, con jQuery? o armo un validador?
+    ## ---  Listo, se valida con la función validate_gral_dates()
     ## Estaría bueno ocultar el campo "selected_year" y trabajar con el valor elegido sin poder modificarlo
+    ##    (No se puede agregar el atributo/argumento "hidden" y ahí definimos que selected_year es hidden
+    ##     o de alguna manera seleccionar form.element y poner selected_year como tipo hidden).
     ## Preguntarle a Mariano cómo es que funciona el tema de las variables enviadas/aceptadas!!!!!
-    ##########################################################
+    #########################################################################################################
 
     find_form = SQLFORM.factory(db.general_date.year)
     if request.vars != None:
@@ -287,7 +300,7 @@ def new_dates():
         #if not row.end_time:
         form.vars[fieldtype+'_end_time'] = row.end_time
 
-    if form.validate(formname='form'):
+    if form.process(formname='form', onvalidation=validate_gral_dates).accepted:
         for field, value in form.vars.items():
             fieldtype = ""
             date = ""
@@ -309,6 +322,11 @@ def new_dates():
                 continue
             else:
                 pass
-            db.general_date.update_or_insert((db.general_date.type==fieldtype)&(db.general_date.year==form.vars.selected_year), type=fieldtype, year=form.vars.selected_year, date=date, start_time=start_time, end_time=end_time)
-        response.flash = T("new record inserted")
+            db.general_date.update_or_insert((db.general_date.type==fieldtype)&(db.general_date.year==form.vars.selected_year),
+                                             type=fieldtype,
+                                             year=form.vars.selected_year,
+                                             date=date,
+                                             start_time=start_time,
+                                             end_time=end_time)
+        response.flash = T("New set of records inserted for year %s" % form.vars.selected_year)
     return dict(find_form=find_form, form=form)

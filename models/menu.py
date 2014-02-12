@@ -56,7 +56,7 @@ if auth.has_permission('create new father', db.auth_user):
 
 if auth.has_permission('create', db.date):
     response.menu[1][3].append([T("Date"), False, None, [
-                                                         ["General", False, URL('default','new_dates')],
+                                                         ["General", False, URL('default','new_general_dates')],
                                                          [T("Turns"), False, URL('default','new_turn')],
                                                          ]])
 
