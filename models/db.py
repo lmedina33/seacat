@@ -104,7 +104,7 @@ db.define_table('image',
 ## Defining new table for address:
 db.define_table('address',
                 Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("User ID")),
-                Field('street', required=True, notnull=True, label=T("Street")),
+                Field('street', label=T("Street")),
                 Field('building', 'integer', label=T("Building")),
                 Field('floor', label=T("Floor")),
                 Field('door', label=T("Door")),
@@ -123,25 +123,25 @@ db.define_table('address',
 db.define_table('personal_data',
                 Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auht_user.id'), label=T("User ID")),
                 Field('doc_type', required=True, requires=IS_IN_SET(DOC_TYPE_SET), notnull=True, default=DOC_TYPE_SET[0], label=T("Document Type")),
-                Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, unique=True, label=T("Document"), comment=T("Insert only numbers without dots. i.e.: 12654897")),
+                Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), label=T("Document"), comment=T("Insert only numbers. i.e.: 12654897")),
                 Field('nac', required=True, notnull=True, default="Argentina", label=T("Nacionality")),
-                Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), notnull=True, unique=True, label="CUIL"),
-                Field('dob', 'date', required=True, requires=IS_DATE(format=('%d-%m-%Y')), notnull=True, label=T("Day of Birth")),
+                Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), unique=True, label="CUIL", comment=T("Insert only numbers. i.e.: 12654897")),
+                Field('dob', 'date', requires=IS_DATE(format=('%d-%m-%Y')), label=T("Day of Birth")),
                 ## Commented because they are in 'auth_user' table:
                 #Field('first_name', required=True, notnull=True, label=T("First Name")),
                 #Field('middle_name', label=T("Middle Name")),
                 #Field('last_name', required=True, notnull=True, label=T("Last Name")),
                 #Field('mail1', required=True, requires=IS_EMAIL(), notnull=True, label=T("email 1")),
-                Field('mail2', requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Alternative email"), comment=T("Another contact mail")),
-                Field('tel1_type', required=True, requires=IS_IN_SET(TEL_TYPE_SET), notnull=True, default=TEL_TYPE_SET[0], label=T("Principal Phone Type")),
-                Field('tel1', length=8, required=True, requires=IS_MATCH('\d{8}'), notnull=True, label=T("Principal Phone Number")),
-                Field('tel2_type', requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Alternative Phone Type")),
+                Field('mail2', requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Alternative email"), comment=T("Another contact mail (optional)")),
+                Field('tel1_type', requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Principal Phone Type")),
+                Field('tel1', length=8, requires=IS_MATCH('\d{8}'), label=T("Principal Phone Number")),
+                Field('tel2_type', requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Alternative Phone Type"), comment=T("(optional)")),
                 Field('tel2', length=8, requires=IS_MATCH('\d{8}'), label=T("Alternative Phone Number")),
-                Field('photo', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_PHOTO_SIZE)), label=T("Photo")),
-                Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_AVATAR_SIZE)), label=T("Avatar")),
-                Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile")),
-                Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile")),
-                Field('obs', 'text', label=T("Observations")),
+                Field('photo', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_PHOTO_SIZE)), label=T("Photo"), comment=T("Your picture (optional)")),
+                Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_AVATAR_SIZE)), label=T("Avatar"), comment=T("For your profile (optional)")),
+                Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile"), comment=T("For social networking (optional)")),
+                Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile"), comment=T("For social networking (optional)")),
+                Field('obs', 'text', label=T("Observations"), comment=T("Anything you wanna add to your profile that you consider important (optional)")),
                 auth.signature,
                 format='%(doc)s'
                 )
@@ -189,8 +189,9 @@ db.define_table('general_date',
 ## configure email
 mail = auth.settings.mailer
 mail.settings.server = 'logging' or 'smtp.gmail.com:587'
+mail.settings.server = 'smtp.gmail.com:587'
 mail.settings.sender = 'soportetecnico@pioix.edu.ar'
-mail.settings.login = 'soportetecnico:deagostini'
+mail.settings.login = 'soportetecnico@pioix.edu.ar:deagostini'
 
 ## configure auth policy
 auth.settings.registration_requires_verification = False

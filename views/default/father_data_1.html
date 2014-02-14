@@ -1,0 +1,17 @@
+{{extend 'layout.html'}}
+{{if auth.user.gender == T("Female"):}}
+{{=H2(T( request.function.replace('_',' ').replace('father', 'mother').capitalize() ))}}
+{{else:}}
+{{=H2(T( request.function.replace('_',' ').capitalize() ))}}
+{{pass}}
+<h5>
+    Por favor complete sus datos personales.
+    En el próximo formulario podrá completar los datos {{if auth.user.gender == T("Female"):}}
+    {{="del padre."}}
+    {{else:}}
+    {{="de la madre."}}
+    {{pass}}
+    Y luego los datos de su hijo.
+</h5>
+{{=form}}
+<!--{{=BEAUTIFY(response._vars)}}-->
