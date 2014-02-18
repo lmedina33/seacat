@@ -1,0 +1,98 @@
+# coding: utf8
+"""
+auth.messages:
+==============
+    *** LOG ***
+        add_group_log
+        add_membership_log
+        add_permission_log
+        change_password_log
+        del_group_log
+        del_membership_log
+        del_permission_log
+        has_membership_log
+        has_permission_log
+        impersonate_log
+        invalid_login
+        login_log
+        login_failed_log
+        logout_log
+        profile_log
+        register_log
+        retrieve_password_log
+        retrieve_username_log
+        reset_password_log
+        verify_email_log
+
+    *** OTHERS ***
+        invalid_email
+        verify_email_subject
+        password_change_button
+        unable_send_email
+        lock_keys
+        label_email
+        verify_email
+        retrieve_username
+        label_record_id
+        label_reset_password_key
+        verify_password
+        label_remember_me
+        email_taken
+        registration_successful
+        label_password
+        logged_in
+        profile_save_button
+        login_disabled
+        label_user_id
+        label_first_name
+        registration_verifying
+        T
+        reset_password_subject
+        login_button
+        registration_pending
+        retrieve_password
+        retrieve_username_subject
+        reset_password
+        email_sent
+        register_button
+        access_denied
+        mismatched_password
+        delete_label
+        verify_password_comment
+        function_disabled
+        username_taken
+        label_role
+        label_time_stamp
+        profile_updated
+        logged_out
+        label_name
+        submit_button
+        label_registration_key
+        label_last_name
+        label_description
+        label_table_name
+        password_changed
+        new_password
+        label_registration_id
+        label_origin
+        invalid_password
+        ajax_failed_authentication
+        invalid_reset_password
+        password_reset_button
+        is_empty
+        label_client_ip
+        invalid_user
+        group_description
+        unable_to_send_email
+        invalid_username
+        label_group_id
+        email_verified
+        new_password_sent
+        retrieve_password_subject
+        username_sent
+        old_password
+        label_username
+"""
+auth.messages.login_log = "%(last_name)s, %(first_name)s - logged in"
+auth.messages.logout_log = "%(last_name)s, %(first_name)s - logged out"
+auth.messages.change_password_log = "%(last_name)s, %(first_name)s - password changed"

@@ -9,16 +9,6 @@
 ## be redirected to HTTPS, uncomment the line below:
 # request.requires_https()
 
-if SUSPEND_SERVICE:
-    message = "<html><body><h2>"
-    message += T("System is under maitenance, please come back later.")
-    message += "</h2><h3>"
-    message += T("Sorry for the inconvenience")
-    message += "</h3><p>"
-    message += str(NOW)
-    message += "</p></body></html>"
-    raise HTTP(503, message)
-
 db = DAL(DBURI, check_reserved=[DB_ENGINE])
 
 #if not request.env.web2py_runtime_gae:
@@ -61,13 +51,10 @@ crud, service, plugins = Crud(db), Service(), PluginManager()
 ## Adding "last_login" and "obs" fields to 'auth_user' table
 auth.settings.extra_fields['auth_user'] = [
                                            Field('middle_name', label=T("Middle Name")),
-                                           # Falta agregar notnull...
-                                           Field('gender', requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
+                                           Field('gender', 'string', length=1, default=GENDER_LIST[1][0], requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
                                            Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=True),
                                            Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
                                            Field('obs', 'text', label=T("Observations")),
-                                           #Field('personal_data_id', 'reference personal_data', writable=False, readable=False, requires=IS_IN_DB(db, 'personal_data.id'), label=T("Personal Data ID")),
-                                           #Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID"))
                                            ]
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=True, migrate=True)
@@ -103,7 +90,6 @@ db.define_table('image',
 
 ## Defining new table for address:
 db.define_table('address',
-                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("User ID")),
                 Field('street', label=T("Street")),
                 Field('building', 'integer', label=T("Building")),
                 Field('floor', label=T("Floor")),
@@ -119,51 +105,80 @@ db.define_table('address',
                 format='%(street)s'+" "+'%(building)s'+" "+'%(floor)s'+" "+'%(door)s'+" "+'%(apartment)s'
                 )
 
-## Defining new table for personal data
+    ## Defining new table for personal data
 db.define_table('personal_data',
                 Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auht_user.id'), label=T("User ID")),
                 Field('doc_type', required=True, requires=IS_IN_SET(DOC_TYPE_SET), notnull=True, default=DOC_TYPE_SET[0], label=T("Document Type")),
-                Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), label=T("Document"), comment=T("Insert only numbers. i.e.: 12654897")),
+                Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), label=T("Document"), comment=T("Insert only numbers.")+" i.e.: 12654897"),
                 Field('nac', required=True, notnull=True, default="Argentina", label=T("Nacionality")),
-                Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), unique=True, label="CUIL", comment=T("Insert only numbers. i.e.: 12654897")),
-                Field('dob', 'date', requires=IS_DATE(format=('%d-%m-%Y')), label=T("Day of Birth")),
-                ## Commented because they are in 'auth_user' table:
-                #Field('first_name', required=True, notnull=True, label=T("First Name")),
-                #Field('middle_name', label=T("Middle Name")),
-                #Field('last_name', required=True, notnull=True, label=T("Last Name")),
-                #Field('mail1', required=True, requires=IS_EMAIL(), notnull=True, label=T("email 1")),
+                Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), unique=True, label="CUIL", comment=T("Insert only numbers")+" i.e.: 20126548971"),
+                Field('dob', 'date', requires=IS_DATE(format=('%d-%m-%Y')), label=T("Day of Birth"), comment=T("Use the format dd-mm-aaaa")+" i.e.: 30-08-1978"),
                 Field('mail2', requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Alternative email"), comment=T("Another contact mail (optional)")),
-                Field('tel1_type', requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Principal Phone Type")),
-                Field('tel1', length=8, requires=IS_MATCH('\d{8}'), label=T("Principal Phone Number")),
-                Field('tel2_type', requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Alternative Phone Type"), comment=T("(optional)")),
-                Field('tel2', length=8, requires=IS_MATCH('\d{8}'), label=T("Alternative Phone Number")),
+                Field('tel1_type', requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Principal Phone Type"), comment=T("If you choose Cell Phone, do not use (15)")),
+                Field('tel1', length=8, requires=IS_MATCH('\d{8}'), label=T("Principal Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811337"),
+                Field('tel2_type', requires=IS_EMPTY_OR(IS_IN_SET(TEL_TYPE_SET)), default=TEL_TYPE_SET[0], label=T("Alternative Phone Type"), comment=T("If you choose Cell Phone, do not use (15)")+" "+T("(optional)")),
+                Field('tel2', length=8, requires=IS_EMPTY_OR(IS_MATCH('\d{8}')), label=T("Alternative Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811985"),
                 Field('photo', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_PHOTO_SIZE)), label=T("Photo"), comment=T("Your picture (optional)")),
-                Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_AVATAR_SIZE)), label=T("Avatar"), comment=T("For your profile (optional)")),
+                Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_AVATAR_SIZE)), label=T("Avatar"), comment=T("An image for your profile (optional)")),
                 Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile"), comment=T("For social networking (optional)")),
                 Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile"), comment=T("For social networking (optional)")),
                 Field('obs', 'text', label=T("Observations"), comment=T("Anything you wanna add to your profile that you consider important (optional)")),
+                Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID")),
                 auth.signature,
+                #Field.Virtual('age', lambda row: diff_in_years(row.dob)),
                 format='%(doc)s'
                 )
-#db.personal_data.age = Field.Virtual(lambda row: (request.now-row.personal_data.dob).years)
+db.personal_data.age = Field.Virtual('age', lambda row: diff_in_years(row.dob)) ### REVISAR CUENTA DE LOS AÑOS, NO CALCULA!
+
+db.define_table('school',
+                Field('name', 'string', length=50, label=T("School Name")),
+                Field('number', 'string', length=10, label=T("Number")),
+                Field('district', 'string', length=6, label=T("District")),
+                Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID")),
+                auth.signature,
+                format="("+'%(number)s'+") "+'%(name)s'
+                )
 
 db.define_table('student',
-                Field('course', requires=IS_IN_SET(COURSE))
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Student ID")),
+                Field('cod', 'string', length=32, label=T("Student Code")),
+                Field('school', 'reference school', label=T("School")),
+                Field('course', requires=IS_IN_SET(COURSE)),
+                Field('admitted', 'boolean', default=False, label=T("Admitted")),
+                auth.signature,
+                format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                 )
 
 ## Defining new table for Fathers.
 db.define_table('father',
-                Field('father_id', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
                 Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
                 Field('children_name', label=T("Children name")),
                 Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
                 Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
                 Field('is_alive', 'boolean', required=True, default=True, label=T("Is Alive?")),
-                Field('work', 'string', length=100, label=T("Work")),
-                Field('works_in', 'string', length=100, label=T("Works in")),
-                Field('spouse', 'reference father', label=T("Spouse")),
-                Field('state', requires=IS_IN_SET(FATHER_STATE), label=T("State")),
-                Field('student_id', 'reference student', label=T("Student")),
+                Field('work', 'string', length=100, label=T("Work"), comment=T("Teacher, Sailsman, Engineer, etc...")),
+                Field('works_in', 'string', length=100, label=T("Works in"), comment=T("Where you work")),
+                Field('spouse', 'reference auth_user', label=T("Spouse")),
+                Field('state', requires=IS_IN_SET(PARENT_STATE), label=T("State")),
+                Field('student_id', 'reference auth_user', label=T("Student")),
+                auth.signature,
+                format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
+               )
+
+## Defining new table for Parents.
+db.define_table('parent',
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
+                Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
+                Field('children_name', label=T("Children name")),
+                Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
+                Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
+                Field('is_alive', 'boolean', required=True, default=True, label=T("Is Alive?")),
+                Field('work', 'string', length=100, label=T("Work"), comment=T("Teacher, Sailsman, Engineer, etc...")),
+                Field('works_in', 'string', length=100, label=T("Works in"), comment=T("Where you work")),
+                Field('spouse', 'reference auth_user', label=T("Spouse")),
+                Field('state', requires=IS_IN_SET(PARENT_STATE), label=T("State")),
+                Field('student_id', 'reference auth_user', label=T("Student")),
                 auth.signature,
                 format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                )
@@ -186,44 +201,6 @@ db.define_table('general_date',
                 auth.signature
                 )
 
-## configure email
-mail = auth.settings.mailer
-mail.settings.server = 'logging' or 'smtp.gmail.com:587'
-mail.settings.server = 'smtp.gmail.com:587'
-mail.settings.sender = 'soportetecnico@pioix.edu.ar'
-mail.settings.login = 'soportetecnico@pioix.edu.ar:deagostini'
-
-## configure auth policy
-auth.settings.registration_requires_verification = False
-auth.settings.registration_requires_approval = False
-auth.settings.reset_password_requires_verification = True
-
-auth.settings.create_user_groups = False
-
-auth.settings.login_url = URL('user',args='login')
-auth.settings.logged_url = URL('user',args='profile')
-auth.settings.download_url = URL('download')
-auth.settings.login_next = URL('index')
-auth.settings.logout_next = URL('index')
-auth.settings.profile_next = URL('index')
-auth.settings.register_next = URL('user',args='login')
-auth.settings.retrieve_username_next = URL('index')
-auth.settings.retrieve_password_next = URL('index')
-auth.settings.change_password_next = URL('index')
-auth.settings.request_reset_password_next = URL('user', args='login')
-auth.settings.reset_password_next = URL('user', args='login')
-auth.settings.verify_email_next = URL('user', args='login')
-auth.settings.on_failed_authentication = URL('user', args='login')
-
-
-if not db().select(db.auth_user.ALL):
-    auth.settings.actions_disabled = []
-else:
-    auth.settings.actions_disabled = ['register']
-
-auth.messages.login_log = T("User %(id)s - %(last_name)s, %(first_name)s - logged in")
-auth.messages.logout_log = T("User %(id)s - %(last_name)s, %(first_name)s - logged out")
-    
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.
 ## register with janrain.com, write your domain:api_key in private/janrain.key
 from gluon.contrib.login_methods.rpx_account import use_janrain

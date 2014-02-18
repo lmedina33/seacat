@@ -82,7 +82,7 @@
 	{{=response.logo or ''}}
           <!-- {{#If the language is Spanish and the user is Female we say "Bienvenida", else "Bienvenido"}} -->
           {{navbar = auth.navbar(mode="default")}}
-          {{if auth.is_logged_in() and T.accepted_language == 'es' and auth.user.gender == T("Female"):}}
+          {{if auth.is_logged_in() and T.accepted_language == 'es' and auth.user.gender == "F":}}
           {{navbar = auth.navbar(prefix='Bienvenida', mode="dropdown")}}
           {{else:}}
           {{navbar = auth.navbar(mode="dropdown")}}

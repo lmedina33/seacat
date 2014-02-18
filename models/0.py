@@ -1,10 +1,5 @@
 # coding: utf8
-
 ## This file contains global settings and constants.
-
-import datetime
-import locale
-locale.setlocale(locale.LC_TIME, '')
 
 ####################################################################################################
 ## DB Settings
@@ -29,11 +24,12 @@ SUSPEND_SERVICE = False
 ## Constants and Lists
 ####################################################################################################
 
-NOW = datetime.datetime.now()
+GENDER_LIST = (("M", T("Male")),
+               ("F", T("Female"))
+              )
 
-GENDER_LIST = [T("Male"), T("Female")]
-
-PROVINCES_LIST = ["Buenos Aires",
+## Lista de provincias, se usa una tupla porque es más económica en memoria y es inmutable.
+PROVINCES_LIST = ("Buenos Aires",
                   "Catamarca",
                   "Ciudad Autónoma de Buenos Aires",
                   "Chaco",
@@ -57,39 +53,53 @@ PROVINCES_LIST = ["Buenos Aires",
                   "Santiago del Estero",
                   "Tierra del Fuego, Antártida e Islas del Atlántico Sur",
                   "Tucumán"
-                 ]
+                 )
 
-SCHOOL_NETWORK_LIST = ["San Francisco de Sales", "San Antonio", "San Pedro", "San Juan Evangelista"]
+## Lista de escuelas en red, se usa una tupla porque es más económica en memoria y es inmutable a lo largo de la ejecución.
+SCHOOL_NETWORK_LIST = ("San Francisco de Sales",
+                       "San Antonio",
+                       "San Pedro",
+                       "San Juan Evangelista"
+                      )
 
-FATHER_STATE = [T("Password Change"),
-                 T("Parent Data 1"),
-                 T("Parent Data 2"),
-                 T("Student Data"),
-                 T("School Data"),
-                 T("Survey"),
-                 T("Informative Talk"),
-                 T("Terms and Conditions"),
-                 T("Exam Payment"),
-                 T("First Parent Meeting"),
-                 T("Priority Test"),
-                 T("Calification Test"),
-                 T("Grades Review"),
-                 T("Test"),
-                 T("Final Registration"),
-                 T("Second Parent Meeting"),
-                 T("Vacancy"),
-                 T("Admitted"),
-                 T("Rejected")
-                 ]
+## Lista de estados del proceso de registro. ¿No convendría ponerlo en una tabla de la DB?
+PARENT_STATE = ("Password Change",       ## 0   - Cambio de Password
+                "Parent Data 1",         ## 1.1 - Datos del Padre 1
+                "Parent Data 2",         ## 1.2 - Datos del Padre 2
+                "Student Data",          ## 1.3 - Datos del Hijo
+                "School Data",           ## 1.4 - Datos de la Escuela
+                "Survey",                ## 1.5 - Encuesta
+                "Informative Talk",      ## 2   - Charla Informativa
+                "Terms and Conditions",  ## 3.1 - Términos y Condiciones
+                "Exam Payment",          ## 3.2 - Pago Derecho de Examen
+                "First Parent Meeting",  ## 4   - Primera Reunión de Padres
+                "Priority Test",         ## 4.a - Test Psicopedagógico Prioritarios
+                "Calification Test",     ## 5.1 - Examen de Ingreso
+                "Grades Review",         ## 5.2 - Publicación de Notas
+                "Test",                  ## 6   - Test Psicopedagógico
+                "Final Registration",    ## 7.1 - Registro Final
+                "Second Parent Meeting", ## 7.2 - Segunda Reunión de Padres
+                "Vacancy",               ## 7.3 - Reserva de Vacante
+                "Admitted",              ## 8.a - Admitido
+                "Rejected"               ## 8.b - No Admitido
+               )
 
-COURSE = [T("electronics"),
-          T("informatics"),
-          T("comunication")
-          ]
+## Lista de carreras. ¿No convendría ponerlo en una tabla de la DB?
+COURSE = (("electronics", T("electronics")),
+          ("informatics", T("informatics")),
+          ("comunication", T("comunication"))
+          )
 
-DOC_TYPE_SET = ['DNI', 'LE', 'LC', T("PASSPORT")]
+DOC_TYPE_SET = ('DNI',
+                'LE',
+                'LC',
+                ("PASSPORT", T("PASSPORT"))
+               )
 
-TEL_TYPE_SET = [T("Line"), T("Cell Phone"), T("Other")]
+TEL_TYPE_SET = (("Line", T("Line")),
+                ("Cell Phone", T("Cell Phone")),
+                ("Other", T("Other")),
+                )
 
 VALID_IMG_EXTENSION_SET = ('jpeg', 'jpg', 'png')
 
@@ -97,18 +107,23 @@ MAX_PHOTO_SIZE = (640, 480)
 
 MAX_AVATAR_SIZE = (300, 300)
 
-DATE_TYPE = [T("meeting"), T("turn"), T("expiration"), T("exam"), T("opening")]
+DATE_TYPE = ("meeting",
+             "turn",
+             "expiration",
+             "exam",
+             "opening"
+            )
 
-GENERAL_DATE_TYPE = [T("Open Enrollment"),
-                     T("Enrollment Deadline"),
-                     T("Deadline for Priority"),
-                     T("First Parent Meeting (First Date)"),
-                     T("First Parent Meeting (Second Date)"),
-                     T("Language Exam"),
-                     T("Math Exam"),
-                     T("Report Cards Presentation Deadline"),
-                     T("Pre-Registered List's Publication")
-                     ]
+GENERAL_DATE_TYPE = ("Open Enrollment",                    ## Apertura del Período de Inscripciones
+                     "Enrollment Deadline",                ## Cierre del Período de Inscripciones
+                     "Deadline for Priority",              ## Fin de Prioritarios
+                     "First Parent Meeting (First Date)",  ## Primera Reunión de Padres (Primer Turno)
+                     "First Parent Meeting (Second Date)", ## Primera Reunión de Padres (Segundo Turno)
+                     "Language Exam",                      ## Examen de Lengua
+                     "Math Exam",                          ## Examen de Matemática
+                     "Report Cards Presentation Deadline", ## Límite de Presentación de Boletines
+                     "Pre-Registered List's Publication"   ## Publicación de Pre-Registrados
+                    )
 
 DATE_FORMAT = '%d-%m-%Y'
 
@@ -133,10 +148,3 @@ DAYS_TR = {'Sunday':'Domingo',
 	       'Thursday':'Jueves',
 	       'Friday':'Viernes',
 	       'Saturday':'Sabado'}
-
-def translate_date(date):
-    for i in DAYS_TR:
-        date = date.replace(i, DAYS_TR[i])
-    for i in MONTH_TR:
-        date = date.replace(i, MONTH_TR[i])
-    return date

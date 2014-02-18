@@ -23,47 +23,13 @@ def index():
         ## If the user is successfully logged in we store the timestamp in the 'auth_user' table.
         db.auth_user[auth.user.id]=dict(last_login=request.now)
         if auth.has_membership('padre'):
-            redirect(URL('father'))
+            redirect(URL('parent', 'index'))
         else:
         #usernameid = {'uid': auth.user.id, 'first_name': auth.user.first_name, 'last_name': auth.user.last_name}
         #auth.log_event(description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in" % usernameid))
         ## Then we redirect to the "Start Page"
             redirect(URL('start'))
     return dict(message=T("Registration System"), form=form)
-
-@auth.requires_membership('padre')
-def father():
-    ## Con esta función obtenemos el estado actual del padre para saber a qué página redirigirlo.
-    current_state = db.father(db.father.father_id==auth.user.id).state
-    father_pages = {'Password Change': 'father_password_change',
-                    'Parent Data 1': 'father_data_1'}
-    if current_state == 'Parent Data 1':
-        session.flash = T("Thanks for updating your password!")
-    redirect(URL(father_pages[current_state]))
-    return locals()
-
-@auth.requires_membership('padre')
-def father_password_change():
-    form = auth.change_password(onvalidation=validate_password, onaccept=change_father_state,next=URL('father'))
-    return dict(form=form)
-
-def validate_password(form):
-    if form.vars.new_password == form.vars.old_password:
-        form.errors.new_password = T("You must use a password different than the old one!")
-
-def change_father_state(self):
-    ## Obtenemos el registro del padre actual.
-    father = db.father(db.father.father_id==auth.user.id)
-    ## Incrementamos el estado del padre actual.
-    father.state = FATHER_STATE[FATHER_STATE.index(father.state)+1]
-    ## Actualizamos el registro en la DB.
-    father.update_record()
-
-@auth.requires_membership('padre')
-def father_data_1():
-    #form = SQLFORM(db.personal_data, db.personal_data(db.personal_data.uid==auth.user.id))
-    form = crud.update(db.personal_data, db.personal_data(db.personal_data.uid==auth.user.id).id, deletable=False)
-    return dict(form=form)
 
 @auth.requires_login()
 @auth.requires_permission('not allowed', db.auth_user)
@@ -127,10 +93,6 @@ def user():
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
     """
-    ## Deactivating the user group creation on registration
-    auth.settings.create_user_groups = None
-    ## The line below is commented because is effective on admin/setting_up controller.
-    #auth.settings.actions_disabled.append('register')
     return dict(form=auth())
 
 @cache.action()
@@ -140,7 +102,6 @@ def download():
     http://..../[app]/default/download/[filename]
     """
     return response.download(request, db)
-
 
 def call():
     """
@@ -176,21 +137,18 @@ def new_father():
                            db.auth_user.gender,
                            db.auth_user.email,
                            db.personal_data.doc,
-                           #db.auth_user.password,
-                           #Field('password', required=True, requires=[IS_MATCH('\d{8}'), CRYPT()], label=T("Document")),
                            db.father.children_in_school,
                            db.father.children_name,
                            db.father.student_network,
                            db.father.student_school,
-                           #hidden=dict(password='')
+                           submit_button=T("Create New Father")
                            )
-    #form.vars.password = form.vars.doc
     if form.process().accepted:
         new_user_id = db.auth_user.insert(password=str(CRYPT()(form.vars.doc)[0]),
                                           **db.auth_user._filter_fields(form.vars))
         db.auth_membership.insert(user_id=new_user_id,
                                   group_id=db.auth_group(role='padre').id)
-        db.father.insert(father_id=new_user_id,
+        db.father.insert(uid=new_user_id,
                          is_alive=True,
                          state=FATHER_STATE[0],
                          **db.father._filter_fields(form.vars)
@@ -199,70 +157,13 @@ def new_father():
                                 doc=form.vars.doc
                                 )
         db.auth_user[new_user_id]=dict(created_on=request.now)
-        #auth.log_event(description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in" % usernameid))
-        send_welcome_mail(form)
-        session.flash = T("mail sended and new record inserted")
-        #redirect(URL('start'))
+        auth.log_event(description="New Father Created: %s" % (fullname(new_user_id)))
+        send_welcome_mail(form, new_user_id)
+        session.flash = T("New record inserted")+" & "+T("Email sent")
+        redirect(URL('start'))
     elif form.errors:
         response.flash = T("Form has errors")
     return dict(form=form)
-
-def send_welcome_mail(form):
-    mail.send(to=[form.vars.email],
-              subject=T("Welcome to Pío IX registration system (SEACAT)"),
-              reply_to='no_responder@pioix.edu.ar',
-              message=T("""
-              Dear """+form.vars.first_name+""",
-                thanks for registering in Pío IX, we are pleased to have you there and we hope
-                this become the beginning of something beatiful.
-                
-                For this to continue you must go to the following link: http://inscripciones.pioix.edu.ar/
-                and login with your email: """+form.vars.email+"""
-                Your password will be your document number:"""+form.vars.doc+"""
-                (don't panic! You will be asked to change your password immediately after the first login).
-                
-                You have a week to complete the first step of registration. After this you will have to call or go to the school to renew your user.
-                
-                Greetings,
-                The Pío IX Community.
-                """)
-    )
-    #auth.log_event(description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in" % usernameid))
-
-def new_personal_data():
-    username = auth.user.last_name + ", " + auth.user.first_name + " " + auth.user.middle_name
-    form = SQLFORM.factory(db.personal_data.dob,
-                           db.personal_data.doc_type,
-                           db.personal_data.doc,
-                           db.personal_data.nac,
-                           db.personal_data.cuil,
-                           db.personal_data.mail2,
-                           db.personal_data.tel1_type,
-                           db.personal_data.tel1,
-                           db.personal_data.tel2_type,
-                           db.personal_data.tel2,
-                           db.address.street,
-                           db.address.building,
-                           db.address.floor,
-                           db.address.door,
-                           db.address.apartment,
-                           db.address.street1,
-                           db.address.street2,
-                           db.address.zip_code,
-                           db.address.loc,
-                           db.address.prov,
-                           db.personal_data.obs,
-                           db.personal_data.photo,
-                           db.personal_data.avatar,
-                           db.personal_data.twitter,
-                           db.personal_data.facebook,
-                          )
-    if form.process().accepted:
-        data_id = db.personal_data.insert(**db.personal_data._filter_fields(form.vars))
-        addr_id = db.address.insert(**db.address._filter_fields(form.vars))
-        db.auth_user[auth.user.id]=dict(personal_data_id=data_id, address_id=addr_id)
-        response.flash = T("Record inserted")
-    return dict(form=form, user=username)
 
 @auth.requires(auth.has_permission('view fathers list', db.auth_user) or auth.has_permission('view users list', db.auth_user))
 def fathers_list():
@@ -294,11 +195,6 @@ def fathers_list():
                         paginate=50)
     return dict(grid=grid)
 
-@auth.requires_permission('create', db.personal_data)
-def father_data():
-    
-    return locals()
-
 @auth.requires_permission('create', db.date)
 def new_turn():
     form = SQLFORM(db.date)
@@ -328,6 +224,7 @@ def new_general_dates():
     ##    (No se puede agregar el atributo/argumento "hidden" y ahí definimos que selected_year es hidden
     ##     o de alguna manera seleccionar form.element y poner selected_year como tipo hidden).
     ## Preguntarle a Mariano cómo es que funciona el tema de las variables enviadas/aceptadas!!!!!
+    ## Falta hacer el auht.log_event!!!!
     #########################################################################################################
 
     find_form = SQLFORM.factory(db.general_date.year)
