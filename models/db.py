@@ -49,31 +49,48 @@ auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
 ## Adding "last_login" and "obs" fields to 'auth_user' table
-auth.settings.extra_fields['auth_user'] = [
-                                           Field('middle_name', label=T("Middle Name")),
-                                           Field('gender', 'string', length=1, default=GENDER_LIST[1][0], requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
-                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=True),
-                                           Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
-                                           Field('obs', 'text', label=T("Observations")),
-                                           ]
+#auth.settings.extra_fields['auth_user'] = [
+#                                           Field('middle_name', label=T("Middle Name")),
+#                                           Field('gender', 'string', length=1, default=GENDER_LIST[1][0], requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
+#                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=True),
+#                                           Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
+#                                           Field('obs', 'text', label=T("Observations")),
+#                                           ]
+db.define_table(auth.settings.table_user_name,
+                Field('first_name', 'string', length=64, required=True, requires=IS_NOT_EMPTY(), label=T("First Name")),
+                Field('middle_name', 'string', length=64, label=T("Middle Name")),
+                Field('last_name', 'string', length=128, required=True, requires=IS_NOT_EMPTY(), label=T("Last Name")),
+                Field('email', 'string', length=128, required=True, unique=True, requires=[IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')], label=T("Email")),
+                Field('password', 'password', length=512, readable=False, requires=CRYPT(), label=T('Password')),
+                Field('gender', 'string', length=1, default=GENDER_LIST[1][0], requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
+                Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
+                Field('obs', 'text', label=T("Observations")),
+                Field('registration_key', 'string', length=512, writable=False, readable=False, default='', label=T("Registration Key")),
+                Field('reset_password_key', 'string', length=512, writable=False, readable=False, default='', label=T("Reset Password Key")),
+                Field('registration_id', 'string', length=512, writable=False, readable=False, default='', label=T("Registration ID")),
+                auth.signature,
+                format='%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)s'
+                )
+
+auth.settings.table_user = db[auth.settings.table_user_name]
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=True, migrate=True)
 
 ## Changing format to 'auth_user' table:
-db.auth_user._format = '%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)s'
+#db.auth_user._format = '%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)s'
 
 ## Settings for 'first_name' field:
-db.auth_user.first_name.required=True
-db.auth_user.first_name.requires=IS_NOT_EMPTY()
+#db.auth_user.first_name.required=True
+#db.auth_user.first_name.requires=IS_NOT_EMPTY()
 
 ## Settings for 'last_name' field:
-db.auth_user.last_name.required=True
-db.auth_user.last_name.requires=IS_NOT_EMPTY()
+#db.auth_user.last_name.required=True
+#db.auth_user.last_name.requires=IS_NOT_EMPTY()
 
 ## Setting email to unique
-db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')]
-db.auth_user.email.unique=True
-db.auth_user.email.error_message=T("This email is already in our database, please choose another one")
+#db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')]
+#db.auth_user.email.unique=True
+#db.auth_user.email.error_message=T("This email is already in our database, please choose another one")
 
 ## Changing attributes:
 db.auth_group.description.readable = True
@@ -139,9 +156,9 @@ db.define_table('school',
                 format="("+'%(number)s'+") "+'%(name)s'
                 )
 
-db.define_table('student',
-                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Student ID")),
-                Field('cod', 'string', length=32, label=T("Student Code")),
+db.define_table('candidate',
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Candidate ID")),
+                Field('cod', 'string', length=32, label=T("Candidate Code")),
                 Field('school', 'reference school', label=T("School")),
                 Field('course', requires=IS_IN_SET(COURSE)),
                 Field('admitted', 'boolean', default=False, label=T("Admitted")),
@@ -149,28 +166,13 @@ db.define_table('student',
                 format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                 )
 
-## Defining new table for Fathers.
-db.define_table('father',
-                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
-                Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
-                Field('children_name', label=T("Children name")),
-                Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
-                Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
-                Field('is_alive', 'boolean', required=True, default=True, label=T("Is Alive?")),
-                Field('work', 'string', length=100, label=T("Work"), comment=T("Teacher, Sailsman, Engineer, etc...")),
-                Field('works_in', 'string', length=100, label=T("Works in"), comment=T("Where you work")),
-                Field('spouse', 'reference auth_user', label=T("Spouse")),
-                Field('state', requires=IS_IN_SET(PARENT_STATE), label=T("State")),
-                Field('student_id', 'reference auth_user', label=T("Student")),
-                auth.signature,
-                format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
-               )
-
 ## Defining new table for Parents.
 db.define_table('parent',
                 Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
                 Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
                 Field('children_name', label=T("Children name")),
+                Field('children_course', requires=IS_EMPTY_OR(IS_IN_SET(COURSE)), label=T("Children course")),
+                Field('children_registration_year', length=4, requires=IS_EMPTY_OR(IS_MATCH('\d{4}', error_message=T("Please insert year in the format YYYY")+" i.e.: 2008")), label=T("Children Registration Year")),
                 Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
                 Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
                 Field('is_alive', 'boolean', required=True, default=True, label=T("Is Alive?")),

@@ -1,0 +1,16 @@
+{{extend 'layout.html'}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<h5>
+    Por favor complete los datos de su hijo.
+</h5>
+{{=form}}
+
+<script>
+    jQuery(document).ready(function(){
+        jQuery('#no_table_email__row').hide();
+        jQuery('#no_table_has_email').change(function(){
+            if(jQuery('#no_table_has_email').is(':checked'))
+                jQuery('#no_table_email__row').show();
+            else jQuery('#no_table_email__row').hide();});
+    });
+</script>

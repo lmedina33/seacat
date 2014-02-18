@@ -52,7 +52,7 @@ if auth.is_logged_in():
 #response.menu[2][3].insert(0, [T('test1'), False, None, []])
 #response.menu[2][3].insert(1, [T('test2'), False, None, []])
 if auth.has_permission('create new father', db.auth_user):
-    response.menu[1][3].insert(0, [T("Father"), False, URL('new_father')])
+    response.menu[1][3].insert(0, [T("Parent"), False, URL('new_parent')])
 
 if auth.has_permission('create', db.date):
     response.menu[1][3].append([T("Date"), False, None, [
@@ -70,7 +70,7 @@ if auth.has_permission('read', db.date):
     response.menu[2][3].append([T("General Dates List"), False, URL('admin','general_dates_list')])
 
 if auth.has_permission('view fathers list', db.auth_user):
-    response.menu[2][3].insert(0, [T("Fathers List"), False, URL('fathers_list')])
+    response.menu[2][3].insert(0, [T("Parents List"), False, URL('parents_list')])
 
 if auth.has_permission('create', db.auth_user):
     response.menu[1][3].append([T("User"), False, URL(request.application, 'admin', 'new_user')])

@@ -24,6 +24,10 @@ def index():
         db.auth_user[auth.user.id]=dict(last_login=request.now)
         if auth.has_membership('padre'):
             redirect(URL('parent', 'index'))
+        elif auth.has_membership('derivaciones'):
+            redirect(URL('reception', 'index'))
+        elif auth.has_membership('secretaria'):
+            redirect(URL('secretary', 'index'))
         else:
         #usernameid = {'uid': auth.user.id, 'first_name': auth.user.first_name, 'last_name': auth.user.last_name}
         #auth.log_event(description=T("User %(uid)s - %(last_name)s, %(first_name)s - logged in" % usernameid))

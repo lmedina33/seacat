@@ -1,4 +1,8 @@
 # coding: utf8
+
+## Removing "remember me" feature at login form
+auth.settings.remember_me_form = False
+
 ## configure auth policy
 auth.settings.registration_requires_verification = False
 auth.settings.registration_requires_approval = False

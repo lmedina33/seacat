@@ -64,9 +64,9 @@ SCHOOL_NETWORK_LIST = ("San Francisco de Sales",
 
 ## Lista de estados del proceso de registro. ¿No convendría ponerlo en una tabla de la DB?
 PARENT_STATE = ("Password Change",       ## 0   - Cambio de Password
-                "Parent Data 1",         ## 1.1 - Datos del Padre 1
-                "Parent Data 2",         ## 1.2 - Datos del Padre 2
-                "Student Data",          ## 1.3 - Datos del Hijo
+                "Parent Data",           ## 1.1 - Datos del Padre
+                "Spouse Data",           ## 1.2 - Datos del Cónyuge
+                "Candidate Data",        ## 1.3 - Datos del Hijo
                 "School Data",           ## 1.4 - Datos de la Escuela
                 "Survey",                ## 1.5 - Encuesta
                 "Informative Talk",      ## 2   - Charla Informativa
