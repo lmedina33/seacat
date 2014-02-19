@@ -48,19 +48,11 @@ from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
-## Adding "last_login" and "obs" fields to 'auth_user' table
-#auth.settings.extra_fields['auth_user'] = [
-#                                           Field('middle_name', label=T("Middle Name")),
-#                                           Field('gender', 'string', length=1, default=GENDER_LIST[1][0], requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
-#                                           Field('created_on', 'datetime', label=T("Created On"), writable=False, readable=True),
-#                                           Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
-#                                           Field('obs', 'text', label=T("Observations")),
-#                                           ]
 db.define_table(auth.settings.table_user_name,
                 Field('first_name', 'string', length=64, required=True, requires=IS_NOT_EMPTY(), label=T("First Name")),
                 Field('middle_name', 'string', length=64, label=T("Middle Name")),
                 Field('last_name', 'string', length=128, required=True, requires=IS_NOT_EMPTY(), label=T("Last Name")),
-                Field('email', 'string', length=128, required=True, unique=True, requires=[IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')], label=T("Email")),
+                Field('email', 'string', length=128, required=True, unique=True, requires=[IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email', error_message=T("This email is already in our database, please choose another one"))], label=T("Email")),
                 Field('password', 'password', length=512, readable=False, requires=CRYPT(), label=T('Password')),
                 Field('gender', 'string', length=1, default=GENDER_LIST[1][0], requires=IS_IN_SET(GENDER_LIST), label=T("Gender")),
                 Field('last_login', 'datetime', label=T("Last Login"), writable=False, readable=True),
@@ -76,128 +68,108 @@ auth.settings.table_user = db[auth.settings.table_user_name]
 ## create all tables needed by auth if not custom tables
 auth.define_tables(username=False, signature=True, migrate=True)
 
-## Changing format to 'auth_user' table:
-#db.auth_user._format = '%(last_name)s'+", "+'%(first_name)s'+" "+'%(middle_name)s'
-
-## Settings for 'first_name' field:
-#db.auth_user.first_name.required=True
-#db.auth_user.first_name.requires=IS_NOT_EMPTY()
-
-## Settings for 'last_name' field:
-#db.auth_user.last_name.required=True
-#db.auth_user.last_name.requires=IS_NOT_EMPTY()
-
-## Setting email to unique
-#db.auth_user.email.requires = [IS_EMAIL(), IS_NOT_IN_DB(db, 'auth_user.email')]
-#db.auth_user.email.unique=True
-#db.auth_user.email.error_message=T("This email is already in our database, please choose another one")
-
-## Changing attributes:
-db.auth_group.description.readable = True
-
-## Removing "remember me" feature at login form
-auth.settings.remember_me_form = False
-
 ## Defining new table for Images:
 db.define_table('image',
-                Field('name', label=T("Name")),
+                Field('name', 'string', length=128, label=T("Name")),
                 Field('file', 'upload', label=T("File"), required=True),
                 auth.signature
                 )
 
 ## Defining new table for address:
 db.define_table('address',
-                Field('street', label=T("Street")),
-                Field('building', 'integer', label=T("Building")),
-                Field('floor', label=T("Floor")),
-                Field('door', label=T("Door")),
-                Field('apartment', label=T("Apartment")),
-                Field('street1', label=T("Street 1")),
-                Field('street2', label=T("Street 2")),
-                Field('zip_code', label=T("ZIP Code")),
-                Field('loc', default=PROVINCES_LIST[2], label=T("Locality")),
-                Field('prov', requires=IS_IN_SET(PROVINCES_LIST), default=PROVINCES_LIST[2], label=T("Province")),
+                Field('street', 'string', length=128, label=T("Street")),
+                Field('building', 'string', length=5, label=T("Building")),
+                Field('floor', 'string', length=3, label=T("Floor")),
+                Field('door', 'string', length=3, label=T("Door")),
+                Field('apartment', 'string', length=3, label=T("Apartment")),
+                Field('street1', 'string', length=128, label=T("Street 1")),
+                Field('street2', 'string', length=128, label=T("Street 2")),
+                Field('zip_code', 'string', length=10, label=T("ZIP Code")),
+                Field('loc', 'string', length=64, default=PROVINCES_LIST[2], label=T("Locality")),
+                Field('prov', 'string', length=64, requires=IS_IN_SET(PROVINCES_LIST), default=PROVINCES_LIST[2], label=T("Province")),
                 Field('obs', 'text', label=T("Observations")),
                 auth.signature,
                 format='%(street)s'+" "+'%(building)s'+" "+'%(floor)s'+" "+'%(door)s'+" "+'%(apartment)s'
                 )
 
-    ## Defining new table for personal data
+## Defining new table for personal data
 db.define_table('personal_data',
-                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auht_user.id'), label=T("User ID")),
-                Field('doc_type', required=True, requires=IS_IN_SET(DOC_TYPE_SET), notnull=True, default=DOC_TYPE_SET[0], label=T("Document Type")),
-                Field('doc', 'string', length=8, required=True, requires=IS_MATCH('\d{8}'), label=T("Document"), comment=T("Insert only numbers.")+" i.e.: 12654897"),
-                Field('nac', required=True, notnull=True, default="Argentina", label=T("Nacionality")),
-                Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), unique=True, label="CUIL", comment=T("Insert only numbers")+" i.e.: 20126548971"),
-                Field('dob', 'date', requires=IS_DATE(format=('%d-%m-%Y')), label=T("Day of Birth"), comment=T("Use the format dd-mm-aaaa")+" i.e.: 30-08-1978"),
-                Field('mail2', requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Alternative email"), comment=T("Another contact mail (optional)")),
-                Field('tel1_type', requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Principal Phone Type"), comment=T("If you choose Cell Phone, do not use (15)")),
-                Field('tel1', length=8, requires=IS_MATCH('\d{8}'), label=T("Principal Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811337"),
-                Field('tel2_type', requires=IS_EMPTY_OR(IS_IN_SET(TEL_TYPE_SET)), default=TEL_TYPE_SET[0], label=T("Alternative Phone Type"), comment=T("If you choose Cell Phone, do not use (15)")+" "+T("(optional)")),
-                Field('tel2', length=8, requires=IS_EMPTY_OR(IS_MATCH('\d{8}')), label=T("Alternative Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811985"),
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("User ID")),
+                Field('doc_type', 'string', length=10, requires=IS_IN_SET(DOC_TYPE_SET), default=DOC_TYPE_SET[0], label=T("Document Type")),
+                Field('doc', 'string', length=8, requires=IS_MATCH('^\d{7,8}$'), label=T("Document"), comment=T("Insert only numbers.")+" i.e.: 12654897"),
+                Field('nac', 'string', length=32, default="Argentina", label=T("Nacionality")),
+                Field('cuil', 'string', length=11, requires=IS_MATCH('\d{11}'), label="CUIL", comment=T("Insert only numbers")+" i.e.: 20126548971"),
+                Field('dob', 'date', requires=IS_DATE(format=(DATE_FORMAT)), label=T("Day of Birth"), comment=T("Use the format dd-mm-aaaa")+" i.e.: 30-08-1978"),
+                Field('mail2', 'string', length=128, requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Alternative email"), comment=T("Another contact mail (optional)")),
+                Field('tel1_type', 'string', length=32, requires=IS_IN_SET(TEL_TYPE_SET), default=TEL_TYPE_SET[0], label=T("Principal Phone Type"), comment=T("If you choose Cell Phone, do not use (15)")),
+                Field('tel1', length=8, requires=IS_MATCH('^\d{6,10}$'), label=T("Principal Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811337"),
+                Field('tel2_type', 'string', length=32, requires=IS_EMPTY_OR(IS_IN_SET(TEL_TYPE_SET)), default=TEL_TYPE_SET[0], label=T("Alternative Phone Type"), comment=T("If you choose Cell Phone, do not use (15)")+" "+T("(optional)")),
+                Field('tel2', length=8, requires=IS_EMPTY_OR(IS_MATCH('^\d{6,10}$')), label=T("Alternative Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811985"),
                 Field('photo', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_PHOTO_SIZE)), label=T("Photo"), comment=T("Your picture (optional)")),
                 Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_AVATAR_SIZE)), label=T("Avatar"), comment=T("An image for your profile (optional)")),
-                Field('twitter', requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile"), comment=T("For social networking (optional)")),
-                Field('facebook', requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile"), comment=T("For social networking (optional)")),
+                Field('twitter', 'string', length=128, requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile"), comment=T("For social networking (optional)")),
+                Field('facebook', 'string', length=128, requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile"), comment=T("For social networking (optional)")),
                 Field('obs', 'text', label=T("Observations"), comment=T("Anything you wanna add to your profile that you consider important (optional)")),
                 Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID")),
                 auth.signature,
                 #Field.Virtual('age', lambda row: diff_in_years(row.dob)),
                 format='%(doc)s'
                 )
-db.personal_data.age = Field.Virtual('age', lambda row: diff_in_years(row.dob)) ### REVISAR CUENTA DE LOS AÑOS, NO CALCULA!
+db.personal_data.age = Field.Virtual('age', lambda row: diff_in_years(row.personal_data.dob)) ### REVISAR CUENTA DE LOS AÑOS, NO CALCULA!
 
 db.define_table('school',
-                Field('name', 'string', length=50, label=T("School Name")),
-                Field('number', 'string', length=10, label=T("Number")),
-                Field('district', 'string', length=6, label=T("District")),
+                Field('name', 'string', length=50, requires=IS_NOT_EMPTY(), label=T("School Name")),
+                Field('number', 'string', requires=IS_MATCH('^A-\d{2,4}$', error_message=T("The format must be A-#, like A-1024")), length=10, label=T("Number"), comment=T("School code.")+" i.e.: A-66"),
+                Field('district', 'string', length=6, requires=IS_NOT_EMPTY(), label=T("District")),
                 Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID")),
+                Field('verified', 'boolean', default=False, label=T("Verified")),
                 auth.signature,
                 format="("+'%(number)s'+") "+'%(name)s'
                 )
 
 db.define_table('candidate',
-                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Candidate ID")),
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(select_user_from_group('candidato'), 'auth_user.id'), label=T("Candidate ID")),
                 Field('cod', 'string', length=32, label=T("Candidate Code")),
                 Field('school', 'reference school', label=T("School")),
-                Field('course', requires=IS_IN_SET(COURSE)),
+                Field('course', 'string', length=16, requires=IS_IN_SET(COURSE)),
                 Field('admitted', 'boolean', default=False, label=T("Admitted")),
+                Field('key', 'integer', requires=IS_INT_IN_RANGE(0,99999999), label=T("Form Number")),
                 auth.signature,
                 format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                 )
 
 ## Defining new table for Parents.
 db.define_table('parent',
-                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(db, 'auth_user.id'), label=T("Father ID")),
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(select_user_from_group('padre'), 'auth_user.id'), label=T("Father ID")),
                 Field('children_in_school', 'boolean', label=T("Do you have children in our school?")),
-                Field('children_name', label=T("Children name")),
-                Field('children_course', requires=IS_EMPTY_OR(IS_IN_SET(COURSE)), label=T("Children course")),
-                Field('children_registration_year', length=4, requires=IS_EMPTY_OR(IS_MATCH('\d{4}', error_message=T("Please insert year in the format YYYY")+" i.e.: 2008")), label=T("Children Registration Year")),
+                Field('children_name', 'string', length=128, label=T("Children name")),
+                Field('children_course', 'string', length=16, requires=IS_EMPTY_OR(IS_IN_SET(COURSE)), label=T("Children course")),
+                Field('children_registration_year', length=4, requires=IS_EMPTY_OR(IS_MATCH('^\d{4}$', error_message=T("Please insert year in the format YYYY")+" i.e.: 2008")), label=T("Children Registration Year")),
                 Field('student_network', 'boolean', label=T("Does your son goes to a school in our network?")),
-                Field('student_school', requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
+                Field('student_school', 'string', length=32, requires=IS_EMPTY_OR(IS_IN_SET(SCHOOL_NETWORK_LIST)), label=T("Choose your school")),
                 Field('is_alive', 'boolean', required=True, default=True, label=T("Is Alive?")),
                 Field('work', 'string', length=100, label=T("Work"), comment=T("Teacher, Sailsman, Engineer, etc...")),
                 Field('works_in', 'string', length=100, label=T("Works in"), comment=T("Where you work")),
                 Field('spouse', 'reference auth_user', label=T("Spouse")),
-                Field('state', requires=IS_IN_SET(PARENT_STATE), label=T("State")),
+                Field('state', 'string', length=32, requires=IS_IN_SET(PARENT_STATE), label=T("State")),
                 Field('student_id', 'reference auth_user', label=T("Student")),
                 auth.signature,
                 format='%(db.auth_user.last_name)s'+', '+'%(db.auth_user.first_name)s'+' '+'%(db.auth_user.middle_name)s'
                )
 
 db.define_table('date',
-                Field('type', required=True, requires=IS_IN_SET(DATE_TYPE), label=T("Date Type")),
+                Field('type', 'string', length=16, requires=IS_IN_SET(DATE_TYPE), label=T("Date Type")),
                 Field('date', 'date', required=True, requires=IS_DATE(DATE_FORMAT), label=T("Date")),
                 Field('start_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("Start Time")),
                 Field('end_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("End Time")),
-                Field('description', label=T("Description")),
+                Field('description', 'string', length=64, label=T("Description")),
                 auth.signature
                 )
 
 db.define_table('general_date',
-                Field('type', required=True, requires=IS_IN_SET(GENERAL_DATE_TYPE), label=T("Date Type")),
+                Field('type', 'string', length=64, requires=IS_IN_SET(GENERAL_DATE_TYPE), label=T("Date Type")),
                 Field('year', 'integer', length=4, required=True, requires=IS_IN_SET(['2013', '2014', '2015', '2016', '2017', '2018']), label=T("Year")),
-                Field('date', 'date', required=True, requires=IS_DATE(DATE_FORMAT), label=T("Date")),
+                Field('date', 'date', requires=IS_DATE(DATE_FORMAT), label=T("Date")),
                 Field('start_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("Start Time")),
                 Field('end_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("End Time")),
                 auth.signature

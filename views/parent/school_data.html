@@ -1,3 +1,6 @@
 {{extend 'layout.html'}}
-<h1>Esta es la plantilla parent/school_data.html</h1>
-{{=BEAUTIFY(response._vars)}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<h5>
+    Por favor complete los datos de la escuela en la que se encuentra su hijo cursando 7º grado. Busque una de la lista o agregue nuevos datos.
+</h5>
+{{=form}}

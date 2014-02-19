@@ -1,0 +1,54 @@
+{{extend 'layout.html'}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<h5>
+    Por favor complete los datos referentes a sus direcciones postales.
+</h5>
+{{=form}}
+
+<script>
+    jQuery(document).ready(function(){
+        jQuery('#no_table_street__row').hide();
+        jQuery('#no_table_building__row').hide();
+        jQuery('#no_table_floor__row').hide();
+        jQuery('#no_table_door__row').hide();
+        jQuery('#no_table_apartment__row').hide();
+        jQuery('#no_table_street1__row').hide();
+        jQuery('#no_table_street2__row').hide();
+        jQuery('#no_table_zip_code__row').hide();
+        jQuery('#no_table_loc__row').hide();
+        jQuery('#no_table_prov__row').hide();
+        jQuery('#no_table_obs__row').hide();
+        jQuery('#no_table_lives_with').change(function(){
+            if(jQuery('#no_table_lives_with').val()=="0")//"{{=T("Doesn't live with parents")}}")
+            {
+                jQuery('#no_table_street__row').show();
+                jQuery('#no_table_building__row').show();
+                jQuery('#no_table_floor__row').show();
+                jQuery('#no_table_door__row').show();
+                jQuery('#no_table_apartment__row').show();
+                jQuery('#no_table_street1__row').show();
+                jQuery('#no_table_street2__row').show();
+                jQuery('#no_table_zip_code__row').show();
+                jQuery('#no_table_loc__row').show();
+                jQuery('#no_table_prov__row').show();
+                jQuery('#no_table_obs__row').show();
+            }
+            else
+            {
+                jQuery('#no_table_street__row').hide();
+                jQuery('#no_table_building__row').hide();
+                jQuery('#no_table_floor__row').hide();
+                jQuery('#no_table_door__row').hide();
+                jQuery('#no_table_apartment__row').hide();
+                jQuery('#no_table_street1__row').hide();
+                jQuery('#no_table_street2__row').hide();
+                jQuery('#no_table_zip_code__row').hide();
+                jQuery('#no_table_loc__row').hide();
+                jQuery('#no_table_prov__row').hide();
+                jQuery('#no_table_obs__row').hide();
+            }
+        });
+
+    });
+</script>
+<!--{{=BEAUTIFY(response._vars)}}-->

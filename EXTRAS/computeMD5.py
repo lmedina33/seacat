@@ -11,5 +11,5 @@ def computeMD5(string):
 name = raw_input("Ingrese su nombre: ")
 last_name = raw_input("Ingrese su apellido: ")
 
-print len(computeMD5(name+last_name))
+print type(computeMD5(name+last_name))
 

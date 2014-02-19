@@ -1,6 +1,7 @@
 # coding: utf8
 import datetime
 import locale
+import hashlib
 locale.setlocale(locale.LC_TIME, '')
 
 if SUSPEND_SERVICE:
@@ -46,6 +47,7 @@ def diff_in_years(date):
     """
     try:
         return rdelta.relativedelta(datetime.datetime.today().date(), date).years
+        #return rdelta.relativedelta(datetime.datetime.today().date(), row['personal_data']['dob']).years
     except:
         return None
 
@@ -90,3 +92,13 @@ The Pío IX Community.""" % {'first_name': form.vars.first_name, 'email': form.v
               message=mensaje
     )
     auth.log_event(description="Mail sent to %s" % fullname(id))
+
+def select_user_from_group(role):
+    db((db.auth_user.id==db.auth_membership.user_id)&
+       (db.auth_membership.group_id==db.auth_group.id)&
+       (db.auth_group.role==role)).select()
+
+def computeMD5(string):
+    m = hashlib.md5()
+    m.update(string)
+    return m.hexdigest()

@@ -68,7 +68,11 @@ PARENT_STATE = ("Password Change",       ## 0   - Cambio de Password
                 "Spouse Data",           ## 1.2 - Datos del Cónyuge
                 "Candidate Data",        ## 1.3 - Datos del Hijo
                 "School Data",           ## 1.4 - Datos de la Escuela
-                "Survey",                ## 1.5 - Encuesta
+                "Parent Address Data",   ## 1.5 - Direcciones Madre/Padre
+                "Spouse Address Data",   ## 1.6 - Direcciones Padre/Madre
+                "Candidate Address Data",## 1.7 - Direcciones Hijo
+                "Survey",                ## 1.8 - Encuesta
+                "Review Data",           ## 1.9 - Revisión de Datos
                 "Informative Talk",      ## 2   - Charla Informativa
                 "Terms and Conditions",  ## 3.1 - Términos y Condiciones
                 "Exam Payment",          ## 3.2 - Pago Derecho de Examen
