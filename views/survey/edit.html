@@ -1,0 +1,112 @@
+{{extend 'layout.html'}}
+<style>
+.myQuestions {
+  width: 180px;
+  padding: 20px 20px 20px 35px;
+  margin-left: 10px;
+  border: 1px solid #0F3974;
+  background-color: #e7e7e7;
+}
+</style>
+<script src="/{{=request.application}}/static/survey/nicEdit.js" type="text/javascript"></script>
+<script>
+$(document).ready(function(){
+    new nicEditor({fullPanel : true, iconsPath : '/{{=request.application}}/static/survey/nicEditorIcons.gif'}).panelInstance('question_body');
+});
+</script>
+<script src="/{{=request.application}}/static/survey/jquery.dimensions.js"></script>
+<script src="/{{=request.application}}/static/survey/ui.mouse.js"></script>
+<script src="/{{=request.application}}/static/survey/ui.draggable.js"></script>
+<script src="/{{=request.application}}/static/survey/ui.droppable.js"></script>
+<script src="/{{=request.application}}/static/survey/ui.sortable.js"></script>
+<script><!--
+    function on_type() {
+        $('#question_minimum__row').hide();
+        $('#question_maximum__row').hide();
+        $('#question_correct_answer__row').hide();
+        $('#question_points__row').hide();
+        $('#question_option_A__row').hide();
+        $('#question_option_B__row').hide();
+        $('#question_option_C__row').hide();
+        $('#question_option_D__row').hide();
+        $('#question_option_E__row').hide();
+        $('#question_option_F__row').hide();
+        $('#question_option_G__row').hide();
+        $('#question_option_H__row').hide();
+        $('#question_points_for_option_A__row').hide();
+        $('#question_points_for_option_B__row').hide();
+        $('#question_points_for_option_C__row').hide();
+        $('#question_points_for_option_D__row').hide();
+        $('#question_points_for_option_E__row').hide();
+        $('#question_points_for_option_F__row').hide();
+        $('#question_points_for_option_G__row').hide();
+        $('#question_points_for_option_H__row').hide();
+
+        var value=$('#question_type').val()
+
+        if(value=='integer') {
+            $('#question_minimum__row').show();
+            $('#question_maximum__row').show();
+        }
+        if(value=='float') {
+            $('#question_minimum__row').show();
+            $('#question_maximum__row').show();
+        }
+        if(value=='long text' || value=='long text verbatim' || value=='upload') {
+            $('#question_correct_answer__row').attr('value','').hide();
+            $('#question_points__row').attr('value','0').hide();
+        }
+        if(value.substring(0,8)=='multiple') {
+            $('#question_correct_answer__row').hide();
+            $('#question_points__row').hide();
+            $('#question_option_A__row').show();
+            $('#question_option_B__row').show();
+            $('#question_option_C__row').show();
+            $('#question_option_D__row').show();
+            $('#question_option_E__row').show();
+            $('#question_option_F__row').show();
+            $('#question_option_G__row').show();
+            $('#question_option_H__row').show();
+        }
+    }
+
+    $(document).ready(function() {
+        on_type();
+        $('#question_type').change(function(){
+            //    alert("Change detected");
+            on_type();
+        });
+        $("#myQuestions").sortable({
+            stop: function (a,b){
+                var dragEls = $(".myQuestion");
+                var els = '';
+                $.each(dragEls, function (){
+                    var cur_id = $(this).attr('id').split('_').shift();
+                    els += cur_id+",";
+                });
+                var url = '{{=URL('sort_questions',args=request.args[:1])}}?order='+els;
+                $.get(url);
+            }
+        });
+        $("#myQuestions").disableSelection();
+    });
+//-->
+</script>
+<script type="text/javascript" src="/{{=request.application}}/static/survey/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="/{{=request.application}}/static/survey/jquery-ui-1.10.4.custom.js"></script>
+<h1>{{=T("Edit Questions for")}} {{=survey.title}}</h1>
+<table width="100%">
+<tr><td>
+[{{=A(T("Append new question"),_href=URL(r=request,args=request.args[:1],vars=dict(new='true')))}}]
+<ul id="myQuestions" class="myQuestions">
+{{for i,row in enumerate(rows):}}
+  <li id="{{=row.id}}_question" class="myQuestion">
+    {{=A("%s"%(row.title),_href=URL(r=request,args=[request.args[0],row.id]))}}
+  </li>
+{{pass}}
+</ul>
+    {{=T("Drag and Drop to Sort")}}
+</td><td>
+{{=form}}
+</td></tr>
+</table>

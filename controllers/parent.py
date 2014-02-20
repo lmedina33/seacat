@@ -357,6 +357,8 @@ def candidate_address_data():
 
 @auth.requires_membership('padre')
 def survey():
-    form = "ENCUESTA"
-    age = db(db.personal_data.uid==auth.user.id).select().first().age
+    form = SQLFORM.factory(Field('zone', 'string', label=T("In which neighborhood do you live?"), comment=T("If you doesn't live in C.A.B.A., please especify locality too")),
+                           Field('school', 'string', label=T("In which school does your son goes?"))
+                           )
+    date = request.now.date()
     return locals()
