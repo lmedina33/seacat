@@ -1,0 +1,20 @@
+{{extend 'layout.html'}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<hr>
+{{=grid}}
+<hr>
+{{=parent_grid}}
+<hr>
+{{=candidate_grid}}
+<hr>
+{{=form}}
+<!--
+{{#=grid_parents}}
+<hr>
+-->
+<!--
+{{#=grid_candidate}}
+-->
+<!--
+{{#=BEAUTIFY(response._vars)}}
+-->

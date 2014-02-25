@@ -1,0 +1,34 @@
+{{extend 'layout.html'}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<div id='filter'> {{=find_form}} </div>
+<hr>
+<div id='new_date'> {{=form}} </div>
+<script>
+$(document).ready(function(){
+    $('#filter').change(function(){
+        $('#find_form').submit()
+    });
+});
+</script>
+<!--<script>
+$(document).ready(function(){
+    $('#no_table_year__row').hide()
+});
+</script>
+-->
+<!--{{=DIV(form, _id='rta')}}-->
+<!--<h3>Variables enviadas</h3>
+{{=BEAUTIFY(request.vars)}}
+<h3>Variables Aceptadas</h3>
+{{=BEAUTIFY(form.vars)}}
+<h3>Errores en el formulario</h3>
+{{=BEAUTIFY(form.errors)}}
+-->
+<!--<script>
+    $(document).ready(function(){
+        $('#no_table_year').change(function(){
+            ajax("{{=URL('new_dates')}}", ['year'], 'rta')
+            /*$('form').submit()*/
+        });
+    });
+</script>-->

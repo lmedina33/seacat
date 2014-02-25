@@ -249,7 +249,7 @@ def new_general_dates():
     form.vars.selected_year = request.vars.year
 
     for date_type in GENERAL_DATE_TYPE:
-        fila = TR(LABEL(B(date_type)))
+        fila = TR(LABEL(B(T(date_type))))
         fila += TR(LABEL(T("Date")+":"), INPUT(_name=date_type.replace(' ','_')+'_date', _class="date", requires=IS_EMPTY_OR(IS_DATE(DATE_FORMAT))), _id=date_type.replace(' ','_')+"_date__row")
         fila += TR(LABEL(T("Start Time")+":"), INPUT(_name=date_type.replace(' ','_')+'_start_time', _class="time", requires=IS_EMPTY_OR(IS_TIME())), _id=date_type.replace(' ','_')+"_start_time__row")
         fila += TR(LABEL(T("End Time")+":"), INPUT(_name=date_type.replace(' ','_')+'_end_time', _class="time", requires=IS_EMPTY_OR(IS_TIME())), _id=date_type.replace(' ','_')+"_end_time__row")

@@ -13,21 +13,28 @@ def new_survey():
     if form.process().accepted:
         code_edit=str(uuid.uuid4())
         code_take=str(uuid.uuid4())
-        survey_id = db.survey.insert(email=auth.user.email,
-                         title=form.vars.survey_name,
-                         code_edit=code_edit,
-                         code_take=code_take)
+        survey_id = db.survey.insert(title=form.vars.survey_name,
+                                     code_edit=code_edit,
+                                     code_take=code_take)
         auth.log_event(description="%s - created new survey %s"% (simple_fullname(auth.user.id), survey_id))
         redirect(URL('edit', args=code_edit))
     return locals()
 
 @auth.requires_membership('root')
 def survey_list():
+    ACTION_LIST = (('edit', T("Edit")),
+                   ('activate', T("Activate")),
+                   ('results', T("View Results"))
+                  )
     form = SQLFORM.factory(Field('survey', requires=IS_IN_DB(db, 'survey.code_edit', '%(title)s', zero=None), label=T("Select a survey")),
-                           Field('action', requires=IS_IN_SET((('edit', T("Edit")), ('results', T("View Results"))), zero=None), label=T("Action"))
+                           Field('action', requires=IS_IN_SET(ACTION_LIST, zero=None), label=T("Action"))
                            )
     if form.process().accepted:
-        redirect(URL(form.vars.action, args=form.vars.survey))
+        if form.vars.action == 'activate':
+            db(db.survey.is_active==True).update(is_active=False)
+            db(db.survey.code_edit==form.vars.survey).update(is_active=True)
+        else:
+            redirect(URL(form.vars.action, args=form.vars.survey))
     return locals()
 
 def user():
@@ -40,6 +47,7 @@ def __edit_survey():
         redirect(URL('index'))
     return surveys[0]
 
+@auth.requires_membership('padre')
 def __take_survey():
     surveys=db(db.survey.code_take==request.args[0]).select()
     if not surveys:
@@ -47,14 +55,15 @@ def __take_survey():
         redirect(URL('index'))
     return surveys[0]
 
+@auth.requires_membership('root')
 def edit():
     survey=__edit_survey()
-    response.title=survey.title
-    response.menu+=[
-       [T('edit survey'),True,URL('edit',args=[survey.code_edit])],
-       [T('take survey'),0,URL('take',args=[survey.code_take])],
-       [T('results'),0,URL('results',args=[survey.code_edit])],
-    ]
+#    response.title=survey.title
+#    response.menu+=[
+#       [T('edit survey'),True,URL('edit',args=[survey.code_edit])],
+#       [T('take survey'),0,URL('take',args=[survey.code_take])],
+#       [T('results'),0,URL('results',args=[survey.code_edit])],
+#    ]
     rows=db(db.question.survey==survey.id).select()
     rows=sorted(rows,lambda x,y: +1 if y.number<x.number else -1)
     rows_count=len(rows)
@@ -83,7 +92,9 @@ def edit():
                 response.flash='there is an error in the form'
     return dict(rows=rows,survey=survey,form=form,question_id=question_id)
 
+@auth.requires_membership('padre')
 def take():
+    caller = request.vars.caller
     survey=__take_survey()
     response.title=survey.title
     sas=db(db.sa.session_id==response.session_id)(db.sa.survey==survey.id).select()
@@ -202,19 +213,24 @@ def take():
             db(db.answer.id==answer_id)\
                 .update(value=cPickle.dumps(form.vars.value),\
                 comment=form.vars.comment)
-        db(db.sa.session_id==response.session_id).update(modified_on=now)
+        db(db.sa.session_id==response.session_id).update(modified_on=NOW)
         session.flash=T('answer recorded')
-        if next: redirect(URL(r=request,args=[request.args[0],next]))
-        else: redirect(URL('done',args=request.args[:1]))
+        if next: redirect(URL(r=request,args=[request.args[0],next], vars={'caller':caller}))
+        else: redirect(URL('done',args=request.args[:1], vars={'caller':caller}))
     elif form.errors:
         response.flash='invalid value'
-    return dict(questions=questions,survey=survey,form=form,question=question)
+    return dict(questions=questions,survey=survey,form=form,question=question,caller=caller)
 
 def done():
+    caller = request.vars.caller
     survey=__take_survey()
     response.title=survey.title
-    db(db.sa.session_id==response.session_id).update(completed=True,modified_on=now)
-    return dict()
+    db(db.sa.session_id==response.session_id).update(completed=True,modified_on=NOW,uid=auth.user.id)
+    form = FORM(TAG.BUTTON(T("Continue")))
+    if form.process().accepted:
+        app, controller, function = caller[1:].split("/")
+        redirect(URL(a=app, c=controller, f=function))
+    return locals()
 
 def match(a,b):
     return str(a).strip()==str(b).strip()
@@ -230,15 +246,16 @@ def aggregate(items):
        pass
    return [[c,'#4E7DD1',v] for c,v in d.items()]
 
+@auth.requires_membership('root')
 def results():
     import cPickle, re
     def normalize(text): return re.sub('\s+',' ',text.strip()).lower()
     survey=__edit_survey()
-    response.menu+=[
-       [T('edit survey'),0,URL('edit',args=[survey.code_edit])],
-       [T('take survey'),0,URL('take',args=[survey.code_take])],
-       [T('results'),True,URL('results',args=[survey.code_edit])],
-    ]
+#    response.menu+=[
+#       [T('edit survey'),0,URL('edit',args=[survey.code_edit])],
+#       [T('take survey'),0,URL('take',args=[survey.code_take])],
+#       [T('results'),True,URL('results',args=[survey.code_edit])],
+#    ]
     response.title=survey.title
     sas=db(db.sa.survey==survey.id).select()
     previous,d,qk,values=None,[],{},[]
@@ -266,6 +283,7 @@ def results():
     if previous: d.append([previous,aggregate(values)])
     return dict(rows=d,survey=survey,sas=sas)
 
+@auth.requires_membership('root')
 def answer():
     import cPickle
     survey=__edit_survey()

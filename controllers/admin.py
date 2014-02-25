@@ -1,6 +1,6 @@
 # coding: utf8
 def index():
-    return dict(message="hello from admin.py")
+    redirect(URL('default', 'index'))
 
 @auth.requires_membership('root')
 def admin_users():

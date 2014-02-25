@@ -1,3 +1,8 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<hr>
+<h4>
+    {{=T("Current Active Survey")}}: {{=db(db.survey.is_active==True).select().first().title}}
+</h4>
+
 {{=form}}

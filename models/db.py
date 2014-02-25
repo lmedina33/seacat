@@ -162,7 +162,8 @@ db.define_table('date',
                 Field('date', 'date', required=True, requires=IS_DATE(DATE_FORMAT), label=T("Date")),
                 Field('start_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("Start Time")),
                 Field('end_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("End Time")),
-                Field('description', 'string', length=64, label=T("Description")),
+                Field('description', 'string', length=128, label=T("Description")),
+                Field('participants', 'integer', length=2, label=T("Participants")),
                 auth.signature
                 )
 
@@ -173,6 +174,11 @@ db.define_table('general_date',
                 Field('start_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("Start Time")),
                 Field('end_time', 'time', requires=IS_EMPTY_OR(IS_TIME()), label=T("End Time")),
                 auth.signature
+                )
+
+db.define_table('turn',
+                Field('uid', 'reference auth_user', writable=False, readable=False, requires=IS_IN_DB(select_user_from_group('padre'), 'auth_user.id'), label=T("Father ID")),
+                Field('date', 'reference date', requires=IS_IN_DB(db, 'date.id'), label=T("Date ID"))
                 )
 
 ## if you need to use OpenID, Facebook, MySpace, Twitter, Linkedin, etc.

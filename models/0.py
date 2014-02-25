@@ -89,9 +89,11 @@ PARENT_STATE = ("Password Change",       ## 0   - Cambio de Password
                )
 
 ## Lista de carreras. ¿No convendría ponerlo en una tabla de la DB?
-COURSE = (("electronics", T("electronics")),
-          ("informatics", T("informatics")),
-          ("comunication", T("comunication"))
+COURSE = (("electronics", T("Electronics")),
+          ("informatics", T("Informatics")),
+          ("comunication", T("Comunication")),
+          ("bachelor", T("Bachelor")),
+          ("not sure", T("Not Sure"))
           )
 
 DOC_TYPE_SET = ('DNI',
@@ -111,13 +113,24 @@ MAX_PHOTO_SIZE = (640, 480)
 
 MAX_AVATAR_SIZE = (300, 300)
 
-DATE_TYPE = ("meeting",
-             "turn",
-             "expiration",
-             "exam",
-             "opening"
+DATE_TYPE = (("informative talk", T("Informative Talk")),
+             ("priority test", T("Priority Test")),
+             ("test", T("Test")),
+             ("second parent meeting", T("Second Parent Meeting")),
+             ("matriculation interview", T("Matriculation Interview"))
             )
-
+"""
+GENERAL_DATE_TYPE = (("Open Enrollment", T("Open Enrollment")),                                       ## Apertura del Período de Inscripciones
+                     ("Enrollment Deadline", T("Enrollment Deadline")),                               ## Cierre del Período de Inscripciones
+                     ("Deadline for Priority", T("Deadline for Priority")),                           ## Fin de Prioritarios
+                     ("First Parent Meeting (First Date)", T("First Parent Meeting (First Date)")),   ## Primera Reunión de Padres (Primer Turno)
+                     ("First Parent Meeting (Second Date)", T("First Parent Meeting (Second Date)")), ## Primera Reunión de Padres (Segundo Turno)
+                     ("Language Exam", T("Language Exam")),                                           ## Examen de Lengua
+                     ("Math Exam", T("Math Exam")),                                                   ## Examen de Matemática
+                     ("Report Cards Presentation Deadline", T("Report Cards Presentation Deadline")), ## Límite de Presentación de Boletines
+                     ("Pre-Registered List's Publication", T("Pre-Registered List's Publication")),   ## Publicación de Pre-Registrados
+                    )
+"""
 GENERAL_DATE_TYPE = ("Open Enrollment",                    ## Apertura del Período de Inscripciones
                      "Enrollment Deadline",                ## Cierre del Período de Inscripciones
                      "Deadline for Priority",              ## Fin de Prioritarios
@@ -126,9 +139,8 @@ GENERAL_DATE_TYPE = ("Open Enrollment",                    ## Apertura del Perí
                      "Language Exam",                      ## Examen de Lengua
                      "Math Exam",                          ## Examen de Matemática
                      "Report Cards Presentation Deadline", ## Límite de Presentación de Boletines
-                     "Pre-Registered List's Publication"   ## Publicación de Pre-Registrados
+                     "Pre-Registered List's Publication",  ## Publicación de Pre-Registrados
                     )
-
 DATE_FORMAT = '%d-%m-%Y'
 
 TIME_FORMAT = '%H:%M:%S'

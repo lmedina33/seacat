@@ -136,3 +136,6 @@ def email(sender,to,subject='test',message='test',server='localhost:25',auth=Non
         except Exception,e:
             return False
         else: return True
+
+def is_odd(num):
+    return num & 0x1

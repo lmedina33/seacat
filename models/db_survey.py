@@ -1,15 +1,18 @@
 # coding: utf8
 db.define_table('survey',
-                db.Field('email'),
+                #db.Field('email'),
                 db.Field('title',length=128),
                 db.Field('code_edit',length=128),
-                db.Field('code_take',length=128)
+                db.Field('code_take',length=128),
+                auth.signature
                )
+db.survey.is_active.default = False
 
 db.define_table('sa',
                 Field('survey', db.survey),
                 Field('session_id', length=128, default=response.session_id),
                 Field('created_ip'),
+                Field('uid', 'reference auth_user'),
                 Field('modified_on', 'datetime', default=None),
                 Field('completed', 'boolean')
                )
