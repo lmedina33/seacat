@@ -2,6 +2,7 @@
 import datetime
 import locale
 import hashlib
+import os
 locale.setlocale(locale.LC_TIME, '')
 
 NOW = now = datetime.datetime.now()

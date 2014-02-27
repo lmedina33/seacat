@@ -91,6 +91,7 @@ db.define_table('address',
                 auth.signature,
                 format='%(street)s'+" "+'%(building)s'+" "+'%(floor)s'+" "+'%(door)s'+" "+'%(apartment)s'
                 )
+db.address.zip_code.comment=SPAN(T("If you doesn't know your zip code, you can check it on: "), A("Correo Argentino", _target='_blank', _href='http://www.correoargentino.com.ar/formularios/cpa'))
 
 ## Defining new table for personal data
 db.define_table('personal_data',
@@ -105,7 +106,7 @@ db.define_table('personal_data',
                 Field('tel1', length=8, requires=IS_MATCH('^\d{6,10}$'), label=T("Principal Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811337"),
                 Field('tel2_type', 'string', length=32, requires=IS_EMPTY_OR(IS_IN_SET(TEL_TYPE_SET)), default=TEL_TYPE_SET[0], label=T("Alternative Phone Type"), comment=T("If you choose Cell Phone, do not use (15)")+" "+T("(optional)")),
                 Field('tel2', length=8, requires=IS_EMPTY_OR(IS_MATCH('^\d{6,10}$')), label=T("Alternative Phone Number"), comment=T("Insert only numbers, without area code and dashes.")+" i.e.: 49811985"),
-                Field('photo', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_PHOTO_SIZE)), label=T("Photo"), comment=T("Your picture (optional)")),
+                Field('photo', 'upload', uploadfolder=os.path.join(request.folder, 'uploads'), requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_PHOTO_SIZE)), label=T("Photo"), comment=T("Your picture (optional)")),
                 Field('avatar', 'upload', requires=IS_EMPTY_OR(IS_IMAGE(extensions=VALID_IMG_EXTENSION_SET, maxsize=MAX_AVATAR_SIZE)), label=T("Avatar"), comment=T("An image for your profile (optional)")),
                 Field('twitter', 'string', length=128, requires=IS_EMPTY_OR(IS_URL()), label=T("Twitter Profile"), comment=T("For social networking (optional)")),
                 Field('facebook', 'string', length=128, requires=IS_EMPTY_OR(IS_URL()), label=T("Facebook Profile"), comment=T("For social networking (optional)")),

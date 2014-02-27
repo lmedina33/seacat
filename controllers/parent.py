@@ -1,4 +1,12 @@
 # coding: utf8
+"""
+Sería prudente hacer la consulta de 'parent', 'spouse' y 'candidate' de manera global en el controlador?
+"""
+"""
+Sería mejor tener una función para los datos y que reciba por argumento a quién tiene que modificar?
+(algo parecido a lo que hice en review_data y modify)
+"""
+
 @auth.requires_membership('padre')
 def index():
     ## Con esta función obtenemos el estado actual del padre para saber a qué página redirigirlo.
@@ -32,6 +40,14 @@ def index():
 
 def user():
     redirect(URL('default','index'))
+
+@cache.action()
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request, db)
 
 @auth.requires_membership('padre')
 def password_change():
@@ -236,7 +252,7 @@ def candidate_data():
 @auth.requires_membership('padre')
 def school_data():
     query = (auth.user.id == db.parent.uid) & (db.parent.student_id == db.candidate.uid) & (db.auth_user.id == db.candidate.uid)
-    form = SQLFORM.factory(Field('school_id', 'string', length=50, requires=IS_EMPTY_OR(IS_IN_DB(db, 'school.id', '(%(number)s) %(name)s', zero=T("Select one from list or \"Add new school\""))), label=T("School Name")),
+    form = SQLFORM.factory(Field('school_id', 'string', length=128, requires=IS_EMPTY_OR(IS_IN_DB(db, 'school.id', '(%(number)s) %(name)s', zero=T("Select one from list or \"Add new school\""))), label=T("School Name")),
                            Field('candidate_id', requires=IS_IN_DB(db(query), 'auth_user.id', '%(first_name)s %(middle_name)s %(last_name)s', zero=None), label=T("Sun/Daughter")),
                            submit_button=T("Insert Data")
                                     )
@@ -326,9 +342,10 @@ def candidate_address_data():
                   ("0", T("Doesn't live with parents")))
     if parent.parent.spouse:
         spouse = db((db.auth_user.id==parent.parent.spouse)&(db.personal_data.uid==db.auth_user.id)&(db.parent.uid==db.auth_user.id)).select().first()
-        LIVES_WITH = ((parent.auth_user.id, simple_fullname(parent.auth_user.id)),
-                      (spouse.auth_user.id, simple_fullname(spouse.auth_user.id)),
-                      ("0", T("Doesn't live with parents")))
+        if parent.personal_data.address_id != spouse.personal_data.address_id:
+            LIVES_WITH = ((parent.auth_user.id, simple_fullname(parent.auth_user.id)),
+                          (spouse.auth_user.id, simple_fullname(spouse.auth_user.id)),
+                          ("0", T("Doesn't live with parents")))
 
     form = SQLFORM.factory(Field("lives_with", requires=IS_IN_SET(LIVES_WITH, zero=None)),
                            db.address,
@@ -371,11 +388,6 @@ def survey():
 
 @auth.requires_membership('padre')
 def review_data():
-    ###################################################
-    ####### FALTA VERIFICAR SI HAY O NO SPOUSE!!!!! Y construir los formulario de modificacion y volver a esto.
-    ####### Procesar datos casndidate!!!!!
-    ###################################################
-
     ## Obtenemos el regitro del padre que está conectado
     parent = db((db.auth_user.id==auth.user.id)&
                 (db.parent.uid==db.auth_user.id)&
@@ -402,7 +414,8 @@ def review_data():
                      db.personal_data.tel1_type, db.personal_data.tel1,
                      db.personal_data.tel2_type, db.personal_data.tel2,
                      db.address.street, db.address.building, db.address.floor, db.address.apartment,
-                     db.address.door, db.address.street1, db.address.street2, db.address.prov, db.address.zip_code,
+                     db.address.door, db.address.street1, db.address.street2,
+                     db.address.prov, db.address.loc, db.address.zip_code,
                      db.personal_data.facebook, db.personal_data.twitter]
     ## Construimos la tabla Común
     grid = TABLE(COLGROUP(
@@ -410,14 +423,17 @@ def review_data():
                           ),
                  THEAD(
                        TR(
-                           TH(),
-                           TH(T("Parent")),
-                           TH(T("Spouse")),
-                           TH(T("Candidate")),
+                           TH(_id="header"),
+                           TH(T("Parent"), _id="parent_header"),
+                           TH(T("Spouse"), _id="spouse_header"),
+                           TH(T("Candidate"), _id="candidate_header"),
+                           _id="header__row"
                          )
                        ),
                  TBODY(),
-                 _class='web2py_grid')
+                 _class='web2py_grid',
+                 _id="personal_data__table"
+                 )
 
     ## Función para presentar los valores en la tabla
     def __format_data(parent):
@@ -455,7 +471,8 @@ def review_data():
 
     ##  Formateamos los valores de los registros en valores "presentables"
     __format_data(parent)
-    __format_data(spouse)
+    if spouse:
+        __format_data(spouse)
     __format_data(candidate)
 
     ## Agregamos las filas con los datos que armamos en la lista de campos: common_fields.
@@ -464,23 +481,47 @@ def review_data():
             row_class = "odd"
         else:
             row_class = "even"
-        grid[2].append(TR(
-                          TH(item.label),
-                          TD(parent[item]),
-                          TD(spouse[item]),
-                          TD(candidate[item]),
-                          _class=row_class)
-                       )
+        if spouse:
+            grid[2].append(TR(
+                              TH(item.label, _id=str(item)+"__label"),
+                              TD(parent[item], _id=str(item)+"__parent"),
+                              TD(spouse[item], _id=str(item)+"__spouse"),
+                              TD(candidate[item], _id=str(item)+"__candidate"),
+                              _class=row_class,
+                              _id=str(item)+"__row"
+                             )
+                          )
+        else:
+            grid[2].append(TR(
+                              TH(item.label, _id=str(item)+"__label"),
+                              TD(parent[item], _id=str(item)+"__parent"),
+                              TD("", _id=str(item)+"__spouse"),
+                              TD(candidate[item], _id=str(item)+"__candidate"),
+                              _class=row_class,
+                              _id=str(item)+"__row"
+                             )
+                          )
     ## Agregamos los botones de edición en el Table Footer
     grid.append(TFOOT(
                       TR(
                          TD(),
-                         TD(TAG.A(T("Edit"), _id="parent", _class="btn", _href=URL('modify', args=['parent']))),
-                         TD(TAG.A(T("Edit"), _id="spouse", _class="btn", _href=URL('modify', args=['spouse']))),
-                         TD(TAG.A(T("Edit"), _id="candidate", _class="btn", _href=URL('modify', args=['candidate']))),
+                         TD(TAG.A(T("Edit"), _id="parent__btn", _class="btn", _href=URL('modify', args=['parent']))),
+                         TD(TAG.A(T("Edit"), _id="spouse__btn", _class="btn", _href=URL('modify', args=['spouse']))),
+                         TD(TAG.A(T("Edit"), _id="candidate__btn", _class="btn", _href=URL('modify', args=['candidate']))),
+                         _id="footer__row"
                         )
                      )
                 )
+    ## Muestra de fotos
+    """
+    ###############################
+    ## LA FOTO NO FUNCIONA!!!!!!!!!!!!!!!!!!!!!
+    ###############################
+    """
+    grid[2][0][1]= TD(IMG(_src=URL('download', args=[parent.personal_data.photo]), _alt=simple_fullname(parent.auth_user.id)+" Photo"), _id='personal_data.photo__parent')
+    if spouse:
+        grid[2][0][2] = TD(IMG(_src=URL('download', args=spouse.personal_data.photo), _alt=simple_fullname(spouse.auth_user.id)+" Photo"), _id='personal_data.photo__spouse')
+    grid[2][0][3] = TD(IMG(_src=URL('download', args=candidate.personal_data.photo), _alt=simple_fullname(candidate.auth_user.id)+" Photo"), _id='personal_data.photo__candidate')
 
     ## Armamos una lista con los campos exclusivos de los padres. El orden importa!
     parent_fields = [db.parent.work, db.parent.works_in]
@@ -490,91 +531,127 @@ def review_data():
                                 ),
                         THEAD(
                               TR(
-                                 TH(),
-                                 TH(T("Parent")),
-                                 TH(T("Spouse"))
+                                 TH(_id="header"),
+                                 TH(T("Parent"), _id="parent_header"),
+                                 TH(T("Spouse"), _id="spouse_header"),
+                                 _id="header__row"
                                 )
                              ),
                         TBODY(),
-                        _class='web2py_grid')
+                        _class='web2py_grid',
+                        _id="parents__table"
+                        )
+
     ## Agregamos las filas con los datos que armamos en la lista de campos: parent_fields.
     for i,item in enumerate(parent_fields):
         if is_odd(i):
             row_class = "odd"
         else:
             row_class = "even"
-        parent_grid[2].append(TR(
-                                 TH(item.label),
-                                 TD(parent[item]),
-                                 TD(spouse[item]),
-                                 _class=row_class)
-                             )
+        if spouse:
+            parent_grid[2].append(TR(
+                                     TH(item.label, _id=str(item)+"__label"),
+                                     TD(parent[item], _id=str(item)+"__parent"),
+                                     TD(spouse[item], _id=str(item)+"__spouse"),
+                                     _class=row_class,
+                                     _id=str(item)+"__row"
+                                    )
+                                 )
+        else:
+            parent_grid[2].append(TR(
+                                     TH(item.label, _id=str(item)+"__label"),
+                                     TD(parent[item], _id=str(item)+"__parent"),
+                                     TD("", _id=str(item)+"__spouse"),
+                                     _class=row_class,
+                                     _id=str(item)+"__row"
+                                    )
+                                 )
     ## Agregamos los botones de edición en el Table Footer
     parent_grid.append(TFOOT(
                              TR(
                                 TD(),
-                                TD(TAG.A(T("Edit"), _id="parent_work", _class="btn", _href=URL('modify', args=['parent_work']))),
-                                TD(TAG.A(T("Edit"), _id="spouse_work", _class="btn", _href=URL('modify', args=['spouse_work']))),
+                                TD(TAG.A(T("Edit"), _id="parent_work__btn", _class="btn", _href=URL('modify', args=['parent_work']))),
+                                TD(TAG.A(T("Edit"), _id="spouse_work__btn", _class="btn", _href=URL('modify', args=['spouse_work']))),
+                                _id="footer__row"
                                )
                             )
                        )
 
     ## Acomodamos los títulos de las columnas acorde al sexo del usuario que está conectado:
     if auth.user.gender == 'M':
-        grid[1][0][1] = TH(T("Father"))
-        parent_grid[1][0][1] = TH(T("Father")+": "+simple_fullname(parent.auth_user.id))
-        grid[1][0][2] = TH(T("Mother"))
-        parent_grid[1][0][2] = TH(T("Mother")+": "+simple_fullname(spouse.auth_user.id))
+        grid[1][0][1] = TH(T("Father"), _id="parent_header")
+        parent_grid[1][0][1] = TH(T("Father")+": "+simple_fullname(parent.auth_user.id), _id="parent_header")
+        grid[1][0][2] = TH(T("Mother"), _id="spouse_header")
+        if spouse:
+            parent_grid[1][0][2] = TH(T("Mother")+": "+simple_fullname(spouse.auth_user.id), _id="spouse_header")
+        else:
+            parent_grid[1][0][2] = TH(T("Mother"), _id="spouse_header")
     else:
-        grid[1][0][1] = TH(T("Mother"))
-        parent_grid[1][0][1] = TH(T("Mother")+": "+simple_fullname(parent.auth_user.id))
-        grid[1][0][2] = TH(T("Father"))
-        parent_grid[1][0][2] = TH(T("Father")+": "+simple_fullname(spouse.auth_user.id))
+        grid[1][0][1] = TH(T("Mother"), _id="parent_header")
+        parent_grid[1][0][1] = TH(T("Mother")+": "+simple_fullname(parent.auth_user.id), _id="parent_header")
+        grid[1][0][2] = TH(T("Father"), _id="spouse_header")
+        parent_grid[1][0][2] = TH(T("Father")+": "+simple_fullname(spouse.auth_user.id), _id="spouse_header")
 
     ## Armamos una lista con los campos exclusivos de los padres. El orden importa!
     candidate_fields = [db.candidate.course,
                         db.school.name, db.school.number, db.school.district,
                         db.address.street, db.address.building, db.address.floor, db.address.apartment,
-                        db.address.door, db.address.street1, db.address.street2, db.address.prov, db.address.zip_code]
+                        db.address.door, db.address.street1, db.address.street2,
+                        db.address.prov, db.address.loc, db.address.zip_code]
     ## Construimos la tabla de la escuela del Candidato
     candidate_grid = TABLE(COLGROUP(
                                     COL(_span="1", _style='web2py_grid')
                                     ),
                            THEAD(
                                  TR(
-                                    TH(),
-                                    TH(T("Candidate")),
+                                    TH(_id="header"),
+                                    TH(T("Candidate"), _id="candidate_header"),
+                                    _id="header__row"
                                    )
                                 ),
                            TBODY(),
-                           _class='web2py_grid')
+                           _class='web2py_grid',
+                           _id="candidate__table",
+                           )
     ## Agregamos las filas con los datos que armamos en la lista de campos: candidate_fields.
     for i,item in enumerate(candidate_fields):
+        school_address = db.address((db.school.id==candidate.candidate.school)&(db.school.address_id==db.address.id)).address
         if is_odd(i):
             row_class = "odd"
         else:
             row_class = "even"
-        candidate_grid[2].append(TR(
-                                    TH(item.label),
-                                    TD(candidate[item]),
-                                    _class=row_class
-                                   )
-                                )
+        if 'address' in str(item):
+            candidate_grid[2].append(TR(
+                                        TH(item.label, _id=str(item)+"__label"),
+                                        TD(school_address[item], _id=str(item)+"__candidate"),
+                                        _class=row_class,
+                                        _id=str(item)+"__row"
+                                       )
+                                    )
+        else:
+            candidate_grid[2].append(TR(
+                                        TH(item.label, _id=str(item)+"__label"),
+                                        TD(candidate[item], _id=str(item)+"__candidate"),
+                                        _class=row_class,
+                                        _id=str(item)+"__row"
+                                       )
+                                    )
     ## Agregamos los botones de edición en el Table Footer
     candidate_grid.append(TFOOT(
                                 TR(
                                    TD(),
-                                   TD(TAG.A(T("Edit"), _id="edit_candidate_school", _class="btn", _href=URL('modify', args=['candidate_school']))),
+                                   TD(TAG.A(T("Edit"), _id="edit_candidate_school__btn", _class="btn", _href=URL('modify', args=['candidate_school']))),
+                                   _id="footer__row"
                                   )
                                )
                          )
     ## Acomodamos los títulos de las columnas acorde al sexo del candidato:
     if db.auth_user(id=candidate.auth_user.id).gender == "M": ## Si lo pongo como 'candidate.auth_user.gender', eso me devuelve un 'LazyT' no el valor "M" o "F"
-        grid[1][0][3] = TH(T("Son"))
-        candidate_grid[1][0][1] = TH(T("Son")+": "+simple_fullname(candidate.auth_user.id))
+        grid[1][0][3] = TH(T("Son"), _id="candidate_header")
+        candidate_grid[1][0][1] = TH(T("Son")+": "+simple_fullname(candidate.auth_user.id), _id="candidate_header")
     elif db.auth_user(id=candidate.auth_user.id).gender == "F":
-        grid[1][0][3] = TH(T("Daughter"))
-        candidate_grid[1][0][1] = TH(T("Daughter")+": "+simple_fullname(candidate.auth_user.id))
+        grid[1][0][3] = TH(T("Daughter"), _id="candidate_header")
+        candidate_grid[1][0][1] = TH(T("Daughter")+": "+simple_fullname(candidate.auth_user.id), _id="candidate_header")
 
     ## Construimos el formulario para verificar los datos
     form = FORM(T("Is the data correct?")+": ",
@@ -589,6 +666,11 @@ def review_data():
     return dict(grid=grid, parent_grid=parent_grid, candidate_grid=candidate_grid, form=form)
 
 def modify():
+    """
+    #####################################################
+    ## No pude pasar los parent, spouse y candidate, cuando los pasaba como vars, me los pasaba como str.
+    #####################################################
+    """
     parent = db((db.auth_user.id==auth.user.id)&
                 (db.parent.uid==db.auth_user.id)&
                 (db.personal_data.uid==db.auth_user.id)&
@@ -606,116 +688,235 @@ def modify():
     if request.args[0] == 'parent' or request.args[0] == 'parent_work':
         subject = parent
     if request.args[0] == 'spouse' or request.args[0] == 'spouse_work':
-        subject = spouse
+        if spouse:
+            subject = spouse
+        else:
+            ## Simplemente para que subject no sea None y no me tire error. ;-)
+            subject = parent
     if request.args[0] == 'candidate' or request.args[0] == 'candidate_school':
         subject = candidate
 
-    form = []
+    ## Para poner el dropdown de opciones de donde vive el candidato
+    LIVES_WITH = ((auth.user.id, simple_fullname(auth.user.id)),
+                  ("0", T("Doesn't live with parents")))
+    if parent.parent.spouse:
+        if parent.personal_data.address_id != spouse.personal_data.address_id:
+            LIVES_WITH = ((auth.user.id, simple_fullname(auth.user.id)),
+                          (parent.parent.spouse, simple_fullname(parent.parent.spouse)),
+                          ("0", T("Doesn't live with parents")))
+        else:
+            LIVES_WITH = ((auth.user.id, simple_fullname(auth.user.id)+"& "+simple_fullname(spouse.auth_user.id)),
+                          ("0", T("Doesn't live with parents")))
+
+    ## Construimos el formulario de modificación de datos personales.
     if request.args[0] == 'parent' or request.args[0] == 'spouse' or request.args[0] == 'candidate':
         form = SQLFORM.factory(db.auth_user.gender,
                                db.auth_user.last_name, db.auth_user.first_name, db.auth_user.middle_name, db.auth_user.email,
                                db.personal_data.mail2, db.personal_data.doc_type, db.personal_data.doc, db.personal_data.nac,
                                db.personal_data.cuil, db.personal_data.dob, #db.personal_data.age,
                                db.personal_data.tel1_type, db.personal_data.tel1, db.personal_data.tel2_type, db.personal_data.tel2,
+                               Field("lives_with", requires=IS_EMPTY_OR(IS_IN_SET(LIVES_WITH, zero=None))),
                                db.address.street, db.address.building, db.address.floor, db.address.apartment, db.address.door,
-                               db.address.street1, db.address.street2, db.address.prov, db.address.zip_code,
+                               db.address.street1, db.address.street2, db.address.prov, db.address.loc, db.address.zip_code,
                                db.personal_data.photo, db.personal_data.facebook, db.personal_data.twitter,
                                submit_button=T("Update Data")
                                )
-    elif request.args[0] == 'parent_work' or request.args[0] == 'spouse_work':
+    ## Modificamos el formulario de datos personales que hicimos recién según el perfil a modificar.
+    if request.args[0] == 'parent':
+        ## Si no es el candidato, sacamos la opción de "vive con"...
+        form[0].__delitem__(15)
+    if request.args[0] == 'spouse':
+        ## Si no es el candidato, sacamos la opción de "vive con"...
+        form[0].__delitem__(15)
+        ## Si es el cónyuge, agregamos la opción de "tiene email"
+        form[0].insert(4, TR(TD(LABEL(T("Has email?"), _for="no_table_has_email", _id="no_table_has_email__label"),_class="w2p_fl"),
+                             TD(INPUT(_type='checkbox', _name='has_email', _id="no_table_has_email"), _class="w2p_fw"),
+                             TD(T("Check this option if your spouse has email. This will enable your spouse's user."),_class="w2p_fc"),
+                             _id="no_table_has_email__row"))
+        """
+        Agregar función para insertar campos en los SQLFORM.factory
+        """
+        ## Si es el cónyuge, agregamos la opción de "vive conmigo"
+        form[0].insert(16, TR(TD(LABEL(T("My spouse lives with me"), _for="no_table_same_address", _id="no_table_same_address__label"),_class="w2p_fl"),
+                             TD(INPUT(_type='checkbox', _name='same_address', _id="no_table_same_address"), _class="w2p_fw"),
+                             TD(T("Check this option if you live together"),_class="w2p_fc"),
+                             _id="no_table_same_address__row"))
+    if request.args[0] == 'candidate':
+        ## Si es el candidato, agregamos la opción de "has_email"
+        form[0].insert(4, TR(TD(LABEL(T("Has email?"), _for="no_table_has_email", _id="no_table_has_email__label"),_class="w2p_fl"),
+                             TD(INPUT(_type='checkbox', _name='has_email', _id="no_table_has_email"), _class="w2p_fw"),
+                             TD(T("Check this option if your son/daughter has email. This will enable your son/daugther's user."),_class="w2p_fc"),
+                             _id="no_table_has_email__row"))
+
+    ## Construimos el formulario de modificación de datos personales de los padres (trabajo)
+    if request.args[0] == 'parent_work' or request.args[0] == 'spouse_work':
         form = SQLFORM.factory(db.parent.work,
                                db.parent.works_in,
                                submit_button=T("Update Data")
                                )
-    elif request.args[0] == 'candidate_school':
-        form = SQLFORM.factory(db.candidate.course, db.school.name, db.school.number, db.school.district,
+    """
+    ########
+    ## Me gustaría agregar la posibilidad de que school_id me liste todas las escuelas en la DB, pero cuando ocurre el evento 'onchange' tengo que cargar los campos del formulario y no sé como.
+    ########
+    """
+    ## Construimos el formulario de modificación de datos personales del candidato (escuela y carrera)
+    if request.args[0] == 'candidate_school':
+        form = SQLFORM.factory(db.candidate.course,
+                               Field('school_id', 'string', length=128,
+                                     requires=IS_EMPTY_OR(IS_IN_DB(db(db.school.id==subject.candidate.school), 'school.id', '(%(number)s) %(name)s', zero=T("Add new school"))),
+                                     label=T("Select School"), comment=T("Change the actual school selected or create a new one.")),
+                               db.school.name, db.school.number, db.school.district,
                                db.address.street, db.address.building, db.address.floor, db.address.apartment,
-                               db.address.door, db.address.street1, db.address.street2, db.address.prov, db.address.zip_code,
+                               db.address.door, db.address.street1, db.address.street2,
+                               db.address.prov, db.address.loc, db.address.zip_code,
                                submit_button=T("Update Data")
                                )
 
+    ## Agregamos el botón para volver a la página anterior.
+    form.add_button(T("Go Back"), URL('review_data'))
+
+    ## Completamos el formulario con los valores del registro.
     for table in subject:
         for field in subject[table]:
                 form.vars[field] = subject[table][field]
                 if isinstance(subject[table][field], datetime.date):
                     form.vars[field] = subject[table][field].strftime(DATE_FORMAT)
+    ## Modificamos la presentación del formulario según los valores del registro.
+    if '@nomail.com' in subject.auth_user.email:
+        form.vars.has_email = False
+    else:
+        form.vars.has_email = True
+    if request.args[0] == 'spouse' and spouse:
+        if parent.personal_data.address_id == spouse.personal_data.address_id:
+            form.vars.same_address = True
+        else:
+            form.vars.same_address = False
+    if request.args[0] == 'candidate':
+        if parent.personal_data.address_id == candidate.personal_data.address_id:
+            form.vars.lives_with = parent.auth_user.id
+        elif spouse.personal_data.address_id == candidate.personal_data.address_id:
+            form.vars.lives_with = spouse.auth_user.id
+        else:
+            form.vars.lives_with = "0"
+
+    ## Solo para que valide, porque con 'parent' o 'spouse' me tira error en "lives_with"
+    ## se ve que como lo uso en el constructor y después lo elimino, queda en el validador
+    if form.vars.lives_with == None:
+        form.vars.lives_with = "0"
+
+    if not spouse:
+        for field in form.vars:
+            form.vars[field] = ""
+        if auth.user.gender == "M":
+            form.vars.gender = 'F'
+        else:
+            form.vars.gender = 'M'
+        form.vars.email = 'spouse_'+str(auth.user.id)+'@nomail.com'
+        form.vars.prov = parent.address.prov
 
     if form.process(dbio=False).accepted:
-        test = ""
-        if request.args[0] == 'parent' or request.args[0] == 'spouse' or request.args[0] == 'candidate':
-            """
-            subject.auth_user.gender = form.vars.gender
-            subject.auth_user.last_name = form.vars.last_name
-            subject.auth_user.first_name = form.vars.first_name
-            subject.auth_user.middle_name = form.vars.middle_name
-            subject.auth_user.email = form.vars.email
-            subject.personal_data.mail2 = form.vars.mail2
-            subject.personal_data.doc_type = form.vars.doc_type
-            subject.personal_data.doc = form.vars.doc
-            subject.personal_data.nac = form.vars.nac
-            subject.personal_data.cuil = form.vars.cuil
-            subject.personal_data.dob = form.vars.dob
-            subject.personal_data.tel1_type = form.vars.tel1_type
-            subjec.personal_data.tel1 = form.vars.tel1
-            subject.personal_data.tel2_type = form.vars.tel2_type
-            subject.personal_data.tel2 = form.vars.tel2
-            subject.address.street = form.vars.street
-            subject.address.building = form.vars.building
-            subject.address.floor = form.vars.florr
-            subject.address.apartment = form.vars.apartment
-            subject.address.door = form.vars.door
-            subject.address.street1 = form.vars.street1
-            subject.address.street2 = form.vars.street2
-            subject.address.prov = form.vars.prov
-            subject.address.zip_code = form.vars.zip_code
-            subject.personal_data.photo = form.vars.photo
-            subject.personal_data.facebook = form.vars.facebook
-            subject.personal_data.twitter = form.vars.twitter
-
-            subject.auth_user.update_record()
-            subject.address.update_record()
-            subject.personal_data.update_record()
-            """
-
-            subject.auth_user.update_record(**db.auth_user._filter_fields(form.vars))
-            subject.personal_data.update_record(**db.personal_data._filter_fields(form.vars))
-            subject.address.update_record(**db.address._filter_fields(form.vars))
-
-        elif request.args[0] == 'parent_work' or request.args[0] == 'spouse_work':
-            """
-            subject.parent.work = form.vars.work
-            subject.parent.works_in = form.vars.works_in
-
-            subject.parent.update_record()
-            """
-            subject.parent.update_record(**db.parent._filter_fields(form.vars))
-            #db(db.parent.uid==subject.auth_user.id).update(**db.parent._filter_fields(form.vars))
-        elif request.args[0] == 'candidate_school':
-            """
-            subject.candidate.course = form.vars.course
-            subject.school.name = form.vars.name
-            subject.school.number = form.vars.number
-            subject.school.district = form.vars.district
-            subject.address.street = form.vars.street
-            subject.address.building = form.vars.building
-            subject.address.floor = form.vars.floor
-            subject.address.apartment = form.vars.apartment
-            subject.address.door = form.vars.door
-            subject.address.street1 = form.vars.street1
-            subject.address.street2 = form.vars.street2
-            subject.address.prov = form.vars.prov
-            subject.address.zip_code = form.vars.zip_code
-
-            subject.candidate.update_record()
-            subject.school.update_record()
-            subject.address.update_record()
-            """
-            #subject.candidate.update_record(**db.candidate._filter_fields(form.vars)) ## NO ANDUVO
-            subject.candidate.update_record(course=form.vars.course)
-            subject.school.update_record(**db.school._filter_fields(form.vars))
-            #db(db.candidate.uid==subject.auth_user.id).update(**db.candidate._filter_fields(form.vars))
-            #db((db.school.id==db.candidate.school)&(db.candidate.uid==subject.auth_user.id)).update(**db.school._filter_fields(form.vars))
-            #db((db.address.id==db.school.address_id)&(db.school.id==subject.candidate.school)).update(**db.address._filter_fields(form.vars))
+        """
+        ###########
+        ### El form.vars contiene valores de uid y password que yo nunca agregué ¿?
+        ###########
+        """
+        if not spouse:
+            new_uid = db.auth_user.insert(password=str(CRYPT()(form.vars.doc)[0]),
+                                          last_name=form.vars.last_name,
+                                          first_name=form.vars.first_name,
+                                          middle_name=form.vars.middle_name,
+                                          email=form.vars.email,
+                                          gender=form.vars.gender,
+                                          created_by=auth.user.id,
+                                          created_on=request.now,
+                                          modified_on=request.now,
+                                          modified_by=auth.user.id
+                                          )
+            subject.parent.update_record(spouse = new_uid)
+            new_personal_data = db.personal_data.insert(uid=new_uid,
+                                                        mail2=form.vars.mail2,
+                                                        doc_type=form.vars.doc_type,
+                                                        doc=form.vars.doc,
+                                                        nac=form.vars.nac,
+                                                        cuil=form.vars.cuil,
+                                                        dob=form.vars.dob,
+                                                        tel1_type=form.vars.tel1_type,
+                                                        tel1=form.vars.tel1,
+                                                        tel2_type=form.vars.tel2_type,
+                                                        tel2=form.vars.tel2,
+                                                        photo=form.vars.photo,
+                                                        facebook=form.vars.facebook,
+                                                        twitter=form.vars.twitter,
+                                                        )
+            db.parent.insert(uid=new_uid,
+                             children_in_school=parent.parent.children_in_school,
+                             student_network=parent.parent.student_network,
+                             work="",
+                             works_in="",
+                             spouse=auth.user.id,
+                             student_id=parent.parent.student_id,
+                             children_registration_year=parent.parent.children_registration_year,
+                             student_school=parent.parent.student_school,
+                             children_name=parent.parent.children_name,
+                             state=parent.parent.state,
+                             children_course=parent.parent.children_course)
+            auth.log_event("%s - created spouse %s" % (simple_fullname(auth.user.id), new_uid))
+            if form.vars.same_address:
+                db(db.personal_data.id==new_personal_data).select().first().update_record(address_id = parent.personal_data.address_id)
+                auth.log_event("%s - lives with spouse" % (simple_fullname(auth.user.id), new_uid))
+            else:
+                address_id = db.address.insert(**db.address._filter_fields(form.vars))
+                db(db.personal_data.id==new_personal_data).update_record(address_id = address_id)
+                auth.log_event("%s - new spouse's (%s) address %s" % (simple_fullname(auth.user.id), new_uid, address_id))
+        else:
+            if request.args[0] == 'parent' or request.args[0] == 'spouse' or request.args[0] == 'candidate':
+                subject.auth_user.update_record(**db.auth_user._filter_fields(form.vars))
+                subject.personal_data.update_record(**db.personal_data._filter_fields(form.vars))
+                auth.log_event("%s - modified %s data" % (simple_fullname(auth.user.id), request.args[0]))
+                if request.args[0] == 'candidate':
+                    if form.vars.lives_with == str(parent.auth_user.id):
+                        subject.personal_data.update_record(address_id = parent.personal_data.address_id)
+                        auth.log_event("%s - candidate lives with parent" % (simple_fullname(auth.user.id)))
+                    elif form.vars.lives_with == str(spouse.auth_user.id):
+                        subject.personal_data.update_record(address_id = spouse.personal_data.address_id)
+                        auth.log_event("%s - candidate lives with spouse" % (simple_fullname(auth.user.id)))
+                    else:
+                        address_id = db.address.update_or_insert(**db.address._filter_fields(form.vars))
+                        subject.personal_data.update_record(address_id = address_id)
+                        auth.log_event("%s - new candidate's address (%s)" % (simple_fullname(auth.user.id), address_id))
+                    if form.vars.has_email:
+                        subject.auth_user.update_record(registration_key="")
+                        auth.log_event("%s - candidate's mail enabled" % (simple_fullname(auth.user.id)))
+                        ## Mandar mail de bienvenida al usuario candidato.
+                        auth.log_event("%s - sent mail to candidate" % (simple_fullname(auth.user.id)))
+                if request.args[0] == 'spouse':
+                    if form.vars.same_address:
+                        subject.personal_data.update_record(address_id = parent.personal_data.address_id)
+                        auth.log_event("%s - modified spouse address, lives together" % (simple_fullname(auth.user.id)))
+                    else:
+                        address_id = db.address.update_or_insert(**db.address._filter_fields(form.vars))
+                        subject.personal_data.update_record(address_id = address_id)
+                        auth.log_event("%s - modified spouse address, new address (%s)" % (simple_fullname(auth.user.id), address_id))
+            elif request.args[0] == 'parent_work' or request.args[0] == 'spouse_work':
+                subject.parent.update_record(**db.parent._filter_fields(form.vars))
+                auth.log_event("%s - modified %s" % (simple_fullname(auth.user.id), request.args[0].replace("_", " ")))
+            elif request.args[0] == 'candidate_school':
+                subject.candidate.update_record(course=form.vars.course)
+                auth.log_event("%s - modified candidate course" % (simple_fullname(auth.user.id)))
+                if form.vars.school_id == None:
+                    new_address = db.address.insert(**db.address._filter_fields(form.vars))
+                    new_school = db.school.insert(address_id=new_address,
+                                                  name=form.vars.name,
+                                                  number=form.vars.number,
+                                                  district=form.vars.district,
+                                                  verified=False,
+                                                  )
+                    subject.candidate.update_record(school=new_school)
+                    auth.log_event("%s - new candidate school %s" % (simple_fullname(auth.user.id), new_school))
+                else:
+                    subject.school.update_record(**db.school._filter_fields(form.vars))
+                    school_address.update_record(**db.address._filter_fields(form.vars))
+                    auth.log_event("%s - modified candidate school" % (simple_fullname(auth.user.id)))
         session.flash = T("Records Updated!")
         redirect(URL('index'))
     return locals()
