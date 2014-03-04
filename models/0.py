@@ -24,8 +24,8 @@ SUSPEND_SERVICE = False
 ## Constants and Lists
 ####################################################################################################
 
-GENDER_LIST = (("M", T("Male")),
-               ("F", T("Female"))
+GENDER_LIST = (("F", T("Female")),
+               ("M", T("Male"))
               )
 
 ## Lista de provincias, se usa una tupla porque es más económica en memoria y es inmutable.

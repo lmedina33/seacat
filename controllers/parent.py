@@ -1,4 +1,10 @@
-# coding: utf8
+# coding: utf-8
+#72:
+#######################################################################
+#80:
+###############################################################################
+#100:
+###################################################################################################
 """
 Sería prudente hacer la consulta de 'parent', 'spouse' y 'candidate' de manera global en el controlador?
 """
@@ -9,6 +15,9 @@ Sería mejor tener una función para los datos y que reciba por argumento a qui�
 
 @auth.requires_membership('padre')
 def index():
+    """
+    This function redirects the page according to parent state.
+    """
     ## Con esta función obtenemos el estado actual del padre para saber a qué página redirigirlo.
     current_state = db.parent(db.parent.uid==auth.user.id).state
     messages = {'Password Change': T("Please change your password."),
@@ -36,13 +45,17 @@ def index():
                 'Rejected':"" }
     session.flash = messages[current_state]
     redirect(URL(current_state.lower().replace(' ','_')))
-    return locals()
+    return dict()
 
 def user():
+    """
+    This allows user functions on this controller.
+    """
     redirect(URL('default','index'))
 
 @cache.action()
 def download():
+    ### Aún no sé si es necesario!!!!
     """
     allows downloading of uploaded files
     http://..../[app]/default/download/[filename]
@@ -51,16 +64,32 @@ def download():
 
 @auth.requires_membership('padre')
 def password_change():
-    ## Automatic Log on event table because auth.change_password form is used.
-    form = auth.change_password(onvalidation=validate_password, next=URL('index'))
-    return locals()
+    """
+    This uses the 'password_change' form from 'Auth'.
 
-def validate_password(form):
-    if form.vars.new_password == form.vars.old_password:
-        form.errors.new_password = T("You must use a password different than the old one!")
-    change_parent_state(auth.user.id)
+    This event is logged automatically on event table because
+    auth.change_password form is used.
+    """
+    def __validate_password(form):
+        """
+        This checks if old password is being changed for a different one.
+        """
+        if form.vars.new_password == form.vars.old_password:
+            form.errors.new_password = T("You must use a password different than the old one!")
+        __change_parents_state(auth.user.id)
 
-def change_parent_state(uid):
+    form = auth.change_password(onvalidation=__validate_password, next=URL('index'))
+
+    return dict(form=form)
+
+def __change_parents_state(uid):
+    """
+    Advances the current parents state to the next state according to PARENT_STATE.
+
+    If the parent has spouse, then the spouse state is advanced too.
+
+    ## Se podría mejorar haciendo que reciba un 2º argumento que sea el estado al que queremos que vaya.
+    """
     ## Obtenemos el registro del padre actual.
     parent = db.parent(db.parent.uid==uid)
     state = parent.state
@@ -71,19 +100,29 @@ def change_parent_state(uid):
     parent.state = PARENT_STATE[PARENT_STATE.index(state)+1]
     ## Actualizamos el registro en la DB.
     parent.update_record()
+    ## Si el padre tiene cónyuge y está con el mismo estado, aumentamos.
     if parent.spouse and spouse.state == state:
-        change_spouse_state(parent.spouse)
+        __change_parent_state(parent.spouse)
 
-def change_spouse_state(uid):
-    parent = db.parent(db.parent.uid==uid)
+def __change_parent_state(uid):
+    """
+    Advances only the parent state of the UID provided.
+    """
+    spouse = db.parent(db.parent.uid==uid)
     ## Incrementamos el estado del padre actual.
-    parent.state = PARENT_STATE[PARENT_STATE.index(parent.state)+1]
+    spouse.state = PARENT_STATE[PARENT_STATE.index(spouse.state)+1]
     ## Actualizamos el registro en la DB.
-    parent.update_record()
+    spouse.update_record()
 
 @auth.requires_membership('padre')
 def parent_data():
-    name = simple_fullname(auth.user.id)
+    """
+    This function updates the parent data.
+
+    ## Por ahí habría que pensar en una implementación de una función que reciba como argumento
+    ## a quién debe ingresar los datos y después muestre el formulario según eso. 
+    ## Como hice en 'modify'.
+    """
     form = SQLFORM.factory(db.parent.work,
                            db.parent.works_in,
                            db.personal_data,
@@ -92,11 +131,11 @@ def parent_data():
     personal_data = db.personal_data(db.personal_data.uid==auth.user.id)
     parent_data = db.parent(db.parent.uid==auth.user.id)
 
+    ## Pre-popule form with data.
     for field in db.personal_data.fields:
         form.vars[field] = personal_data[field]
         if isinstance(personal_data[field], datetime.date):
             form.vars[field] = personal_data[field].strftime(DATE_FORMAT)
-
     form.vars.work = parent_data.work
     form.vars.works_in = parent_data.works_in
 
@@ -104,21 +143,37 @@ def parent_data():
         response.flash = ""
 
     if form.process().accepted:
+        ## Update parent data.
         db(db.parent.uid==auth.user.id).update(**db.parent._filter_fields(form.vars))
         db(db.personal_data.uid==auth.user.id).update(**db.personal_data._filter_fields(form.vars))
+
         if parent_data.spouse:
-            change_spouse_state(auth.user.id)
-            change_spouse_state(auth.user.id)
+            ## If the parent was inserted and activated by his/her spouse, first must change his/her
+            ## password, then updates his/her personal data. The spouse and candidate data has been
+            ## already completed by his/her spouse. So that's why he/she must advances two states.
+            __change_parent_state(auth.user.id)
+            __change_parent_state(auth.user.id)
         else:
-            change_parent_state(auth.user.id)
+            ## If the parent doesn't have spouse, means that he/she is the first one doing the
+            ## registration.
+            __change_parents_state(auth.user.id)
+
         auth.log_event(description="Parent %s updated data" % (fullname(auth.user.id)))
+
         if parent_data.spouse:
+            #####################################################
+            ## REVISAR ESTO, ME PARECE QUE ESTÁ MAL O DEMÁS....
+            #####################################################
             db(db.parent.id==auth.user.id).update(state=db.parent(uid=parent_data.spouse).state)
+
         redirect(URL('index'))
-    return locals()
+    return dict(form=form, name=simple_fullname(auth.user.id))
 
 @auth.requires_membership('padre')
 def spouse_data():
+    """
+    Insert or Skip spouse's personal data.
+    """
     form = SQLFORM.factory(db.auth_user.first_name,
                            db.auth_user.middle_name,
                            db.auth_user.last_name,
@@ -142,22 +197,30 @@ def spouse_data():
                            db.personal_data.twitter,
                            db.personal_data.facebook,
                            db.personal_data.obs,
-                           Field("enabled", 'boolean', default=True, label=T("Enable User?"), comment=T("If you enable the user he will be capable of using the system and make modifications like you do. He will be notified by email. Any modifications made in registration process (by him or you) will be notified by email to both of us.")),
+                           Field("enabled", 'boolean', default=True, label=T("Enable User?"), 
+                                 comment=T("If you enable the user he will be capable of using the system and make modifications like you do. \
+                                 He will be notified by email. Any modifications made in registration process (by him or you) will be notified\
+                                 by email to both of us.")),
                            submit_button=T("Insert Data")
                            )
 
+    ## Gender form personalization
     if auth.user.gender == GENDER_LIST[1][0]:
         form.vars.gender = GENDER_LIST[0][0]
-        form.add_button(T("Skip Father"), URL('skip_parent_data_2'))
+        form.add_button(T("Skip Mother"), URL('_skip_spouse_data'))
     else:
         form.vars.gender = GENDER_LIST[1][0]
-        form.add_button(T("Skip Mother"), URL('skip_parent_data_2'))
+        form.add_button(T("Skip Father"), URL('_skip_spouse_data'))
 
+    ## AL PEDO??????
     if db.parent(db.parent.uid==auth.user.id).state != PARENT_STATE[2]:
         response.flash = ""
 
     if form.process().accepted:
+        ## We get the current parent record.
         parent = db.parent(db.parent.uid==auth.user.id)
+
+        ## new_parent_id would be the spouse's logged parent.
         new_parent_id = db.auth_user.insert(password=str(CRYPT()(form.vars.doc)[0]),
                                             **db.auth_user._filter_fields(form.vars))
         db.personal_data.insert(uid=new_parent_id,
@@ -177,30 +240,47 @@ def spouse_data():
                          )
         db.auth_membership.insert(user_id=new_parent_id,
                           group_id=db.auth_group(role='padre').id)
+
+        ## Updated parent spouse with the new_parent_id
         parent.spouse = new_parent_id
         parent.update_record()
+
         auth.log_event(description="%s - created new parent: %s" % (fullname(auth.user.id), fullname(new_parent_id)))
-        change_parent_state(auth.user.id)
+
+        __change_parents_state(auth.user.id)
+
+        ## Enable/Disable spouse's user.
         if not form.vars.enabled:
             db(db.auth_user.id==new_parent_id).update(registration_key="disabled")
             auth.log_event(description="%s - disabled parent: %s" % (fullname(auth.user.id), fullname(new_parent_id)))
         else:
             send_welcome_mail(form, new_parent_id)
             db(db.parent.uid==new_parent_id).update(state=PARENT_STATE[0])
+
         redirect(URL('index'))
     return locals()
 
-def skip_parent_data_2():
-    change_parent_state(auth.user.id)
+def _skip_spouse_data():
+    """
+    Skips the spouse's data form, advances the current parent state and logs the event.
+    """
+    __change_parents_state(auth.user.id)
     auth.log_event(description="Parent %s skipped spouse data" % (fullname(auth.user.id)))
     redirect(URL('index'))
 
 @auth.requires_membership('padre')
 def candidate_data():
+    """
+    Inserts new candidate data.
+    """
     form = SQLFORM.factory(db.auth_user.first_name,
                            db.auth_user.middle_name,
                            db.auth_user.last_name,
-                           Field('has_email', 'boolean', default=False, label=T("Has email?"), comment=T("If you want your children gets notified, check this and fill below with a valid email address")),
+                           db.auth_user.gender,
+                           Field('has_email', 'boolean', default=False, label=T("Has email?"), 
+                                 comment=T("If you want your children gets notified, check this and fill below with a valid email address")),
+                           ## We use a new field for email because the parent maybe doesn't provide a mail.
+                           ## If that the case, the mail would be 'parent_#id@nomail.com'.
                            Field('email', 'string', length=128, requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Email")),
                            #db.auth_user.email,
                            db.personal_data.doc_type,
@@ -208,6 +288,10 @@ def candidate_data():
                            db.personal_data.nac,
                            db.personal_data.cuil,
                            db.personal_data.dob,
+                           db.personal_data.tel1_type,
+                           db.personal_data.tel1,
+                           db.personal_data.tel2_type,
+                           db.personal_data.tel2,
                            db.personal_data.photo,
                            db.personal_data.avatar,
                            db.personal_data.twitter,
@@ -218,9 +302,14 @@ def candidate_data():
                            submit_button=T("Insert Data")
                            )
 
+    form.vars.tel1_type = db.personal_data(db.personal_data.uid==auth.user.id).tel1_type
+    form.vars.tel1 = db.personal_data(db.personal_data.uid==auth.user.id).tel1
+
     if form.process().accepted:
         if not form.vars.has_email:
             form.vars.email = 'parent_'+str(auth.user.id)+'@nomail.com'
+
+        ## Insert the new candidate.
         new_user_id = db.auth_user.insert(password=str(CRYPT()(form.vars.doc)[0]),
                                             **db.auth_user._filter_fields(form.vars))
         db.personal_data.insert(uid=new_user_id,
@@ -232,43 +321,74 @@ def candidate_data():
                             )
         db.auth_membership.insert(user_id=new_user_id,
                                   group_id=db.auth_group(role='candidato').id)
+
+        ## Associate parent with new candidate.
         parent = db.parent(uid=auth.user.id)
         parent.student_id=new_user_id
         parent.update_record()
+
+        ## Associate spouse with new candidate.
         if parent.spouse:
             spouse = db.parent(spouse=auth.user.id)
             spouse.student_id=new_user_id
             spouse.update_record()
         auth.log_event(description="%s - created new candidate: %s" % (fullname(auth.user.id), fullname(new_user_id)))
+
+        ## Enable/Disable candidate user.
         if not form.vars.has_email:
             db(db.auth_user.id==new_user_id).update(registration_key="disabled")
             auth.log_event(description="%s - disabled candidate: %s" % (fullname(auth.user.id), fullname(new_user_id)))
         else:
             send_welcome_mail(form, new_user_id)
-        change_parent_state(auth.user.id)
+
+        __change_parents_state(auth.user.id)
         redirect(URL('index'))
     return locals()
 
 @auth.requires_membership('padre')
 def school_data():
-    query = (auth.user.id == db.parent.uid) & (db.parent.student_id == db.candidate.uid) & (db.auth_user.id == db.candidate.uid)
-    form = SQLFORM.factory(Field('school_id', 'string', length=128, requires=IS_EMPTY_OR(IS_IN_DB(db, 'school.id', '(%(number)s) %(name)s', zero=T("Select one from list or \"Add new school\""))), label=T("School Name")),
-                           Field('candidate_id', requires=IS_IN_DB(db(query), 'auth_user.id', '%(first_name)s %(middle_name)s %(last_name)s', zero=None), label=T("Sun/Daughter")),
+    """
+    Associates an school record with a candidate record.
+    """
+    ## We get the candidate UID associated with the logged parent.
+    query = ((auth.user.id == db.parent.uid)
+             &(db.parent.student_id == db.candidate.uid)
+             &(db.auth_user.id == db.candidate.uid)
+             )
+    form = SQLFORM.factory(Field('school_id', 'string', length=128,
+                                 requires=IS_EMPTY_OR(IS_IN_DB(db, 'school.id', '(%(number)s) %(name)s',
+                                                               zero=T("Select one from list or \"Add new school\""))),
+                                 label=T("School Name")),
+                           Field('candidate_id', requires=IS_IN_DB(db(query), 'auth_user.id',
+                                                                   '%(first_name)s %(middle_name)s %(last_name)s',
+                                                                   zero=None),
+                                 label=T("Sun/Daughter")),
                            submit_button=T("Insert Data")
-                                    )
+                           )
     form.add_button('Add new school', URL('add_new_school'))
+
     if form.process().accepted:
+        ## We get the school record.
         school = db.school(db.school.id == form.vars.school_id)
+        ## We get the candidate record.
         candidate = db.candidate(db.candidate.uid == form.vars.candidate_id)
+
+        ## Update candidate school.
         candidate.school = school.id
         candidate.update_record()
-        change_parent_state(auth.user.id)
+
+        __change_parents_state(auth.user.id)
+
         auth.log_event(description="%s - link candidate %s with school %s" % (fullname(auth.user.id), fullname(candidate.uid), school.number))
+
         redirect(URL(index))
     return locals()
 
 @auth.requires_membership('padre')
 def add_new_school():
+    """
+    Inserts a new school.
+    """
     form = SQLFORM.factory(db.school.name,
                            db.school.number,
                            db.school.district,
@@ -276,73 +396,120 @@ def add_new_school():
                            db.address.building,
                            db.address.loc,
                            db.address.prov,
+                           db.address.zip_code,
                            submit_button=T("Insert Data")
                           )
+
     if form.process().accepted:
+        ## Inserts the new address
         new_address_id = db.address.insert(**db.address._filter_fields(form.vars))
+        ## Inserts the new school
         new_school_id = db.school.insert(address_id=new_address_id,
                                          **db.school._filter_fields(form.vars)
                                          )
+
         auth.log_event(description="%s - created new school: %s" % (fullname(auth.user.id), form.vars.name+"("+form.vars.number+")"))
+
         redirect(URL(school_data))
     return locals()
 
 @auth.requires_membership('padre')
 def parent_address_data():
+    """
+    Updates parent address data.
+    """
     form = SQLFORM(db.address,
                    submit_button=T("Insert Data"))
+
     if form.process().accepted:
-        new_address_id = form.vars.id
-        db(db.personal_data.uid==auth.user.id).update(address_id=new_address_id)
-        change_parent_state(auth.user.id)
-        auth.log_event(description="%s - stored own address (%s)" % (fullname(auth.user.id), new_address_id))
+        #new_address_id = form.vars.id
+        ## Update the parent address data.
+        db(db.personal_data.uid==auth.user.id).update(address_id=form.vars.id)
+
+        __change_parents_state(auth.user.id)
+
+        auth.log_event(description="%s - stored own address (%s)" % (fullname(auth.user.id), form.vars.id))
+
         redirect(URL('index'))
     return locals()
 
 @auth.requires_membership('padre')
 def spouse_address_data():
+    """
+    Inserts new spouse's address data.
+    """
     form = SQLFORM(db.address,
                    submit_button=T("Insert Data")
                    )
-    form.add_button(T("My spouse lives with me"), URL('spouses_lives_together'))
-
-    if auth.user.gender == GENDER_LIST[1][0]:
-        form.add_button(T("Skip Father Address"), URL('skip_spouse_address'))
-    else:
-        form.add_button(T("Skip Mother Address"), URL('skip_spouse_address'))
+    form.add_button(T("We live together"), URL('_spouses_lives_together'))
+    form.add_button(T("Skip Address"), URL('_skip_spouse_address'))
 
     if form.process().accepted:
-        new_address_id = form.vars.id
+        #new_address_id = form.vars.id
+        ## Get parent record.
         parent = db.parent(db.parent.uid==auth.user.id)
-        db((db.personal_data.uid==parent.spouse)).update(address_id=new_address_id)
-        change_parent_state(auth.user.id)
-        auth.log_event(description="%s - stored spouse address (%s)" % (fullname(auth.user.id), new_address_id))
+        ## Update parent address record.
+        db((db.personal_data.uid==parent.spouse)).update(address_id=form.vars.id)
+
+        __change_parents_state(auth.user.id)
+
+        auth.log_event(description="%s - stored spouse address (%s)" % (fullname(auth.user.id), form.vars.id))
+
         redirect(URL('index'))
     return locals()
 
-def spouses_lives_together():
+def _spouses_lives_together():
+    """
+    Sets spouse's address data to matches parent address data.
+    """
+    ## Get logged parent address_id.
     address_id = db.personal_data(db.personal_data.uid==auth.user.id).address_id
+    ## Get logged parent spouse_id.
     spouse_id = db.parent(db.parent.uid==auth.user.id).spouse
+    ## Update spouse address_id with parent address_id.
     db(db.personal_data.uid==spouse_id).update(address_id=address_id)
-    change_parent_state(auth.user.id)
+
+    __change_parents_state(auth.user.id)
     auth.log_event(description="%s - lives with spouse" % (fullname(auth.user.id)))
     redirect(URL('index'))
 
-def skip_spouse_address():
-    change_parent_state(auth.user.id)
+def _skip_spouse_address():
+    """
+    Leaves spouse's address data on blank and logs the event.
+    """
+    __change_parents_state(auth.user.id)
     auth.log_event(description="%s - skip spouse address" % (fullname(auth.user.id)))
     redirect(URL('index'))
 
 @auth.requires_membership('padre')
 def candidate_address_data():
-    parent = db((db.auth_user.id==auth.user.id)&(db.personal_data.uid==db.auth_user.id)&(db.parent.uid==db.auth_user.id)).select().first()
-    candidate = db((db.auth_user.id==parent.parent.student_id)&(db.personal_data.uid==db.auth_user.id)).select().first()
+    """
+    Associates candidate's address data with parent address data or a new address.
+    """
+    ## Get parent record.
+    parent = db((db.auth_user.id==auth.user.id)
+                &(db.personal_data.uid==db.auth_user.id)
+                &(db.parent.uid==db.auth_user.id)
+                ).select().first()
+    ## Get candidate record.
+    candidate = db((db.auth_user.id==parent.parent.student_id)
+                   &(db.personal_data.uid==db.auth_user.id)
+                   ).select().first()
     spouse = None
+
+    ## Default LIVES_WITH list, includes Parent and "Doesn't live with parents" options
     LIVES_WITH = ((parent.auth_user.id, simple_fullname(parent.auth_user.id)),
                   ("0", T("Doesn't live with parents")))
+
+    ## If the spouse is registered on the system
     if parent.parent.spouse:
-        spouse = db((db.auth_user.id==parent.parent.spouse)&(db.personal_data.uid==db.auth_user.id)&(db.parent.uid==db.auth_user.id)).select().first()
-        if parent.personal_data.address_id != spouse.personal_data.address_id:
+        ## Get spouse record.
+        spouse = db((db.auth_user.id==parent.parent.spouse)
+                    &(db.personal_data.uid==db.auth_user.id)
+                    &(db.parent.uid==db.auth_user.id)
+                    ).select().first()
+        ## If parents lives in different addresses, the candidate may live with father or mother.
+        if parent.personal_data.address_id != spouse.personal_data.address_id and spouse.personal_data.address_id != None: 
             LIVES_WITH = ((parent.auth_user.id, simple_fullname(parent.auth_user.id)),
                           (spouse.auth_user.id, simple_fullname(spouse.auth_user.id)),
                           ("0", T("Doesn't live with parents")))
@@ -351,15 +518,17 @@ def candidate_address_data():
                            db.address,
                            submit_button=T("Insert Data")
                            )
+
     if form.process().accepted:
+        ## For log
         addr_id = None
+
+        ## We store the address according to selection.
         if form.vars.lives_with == str(parent.auth_user.id):
-            #db(db.personal_data.uid==candidate.auth_user.id).update(address_id=parent.personal_data.id)
             candidate.personal_data.address_id=parent.personal_data.address_id
             candidate.personal_data.update_record()
             addr_id = parent.personal_data.address_id
         elif spouse and form.vars.lives_with == str(spouse.auth_user.id):
-            #db(db.personal_data.uid==candidate.auth_user.id).update(address_id=spouse.personal_data.id)
             candidate.personal_data.address_id=spouse.personal_data.address_id
             candidate.personal_data.update_record()
             addr_id = spouse.personal_data.address_id
@@ -367,18 +536,27 @@ def candidate_address_data():
             new_address_id = db.address.insert(**db.address._filter_fields(form.vars))
             db(db.personal_data.uid==candidate.auth_user.id).update(address_id=new_address_id)
             addr_id = new_address_id
-        change_parent_state(auth.user.id)
+
+        __change_parents_state(auth.user.id)
+
         auth.log_event(description="%s - candidate %s in address (%s)" % (simple_fullname(auth.user.id), simple_fullname(candidate.auth_user.id), addr_id))
+
         redirect(URL('index'))
     return locals()
 
 @auth.requires_membership('padre')
 def survey():
+    ## Get the active survey.
     survey = db(db.survey.is_active==True).select().first()
-    sas = db((db.sa.survey==survey.id)&(db.sa.uid==auth.user.id)).select().first()
+
+    ## Get survey answers.
+    sas = db((db.sa.survey==survey.id)
+             &(db.sa.uid==auth.user.id)
+             ).select().first()
+
     if sas:
         if sas.completed:
-                change_parent_state(auth.user.id)
+                __change_parents_state(auth.user.id)
                 auth.log_event(description="%s - completed parent survey" % (fullname(auth.user.id)))
                 redirect(URL('index'))
         else:
@@ -386,24 +564,34 @@ def survey():
     else:
         redirect(URL(c='survey', f='take', args=survey.code_take, vars={'caller':request.url}))
 
+###################################################################################################
 @auth.requires_membership('padre')
 def review_data():
     ## Obtenemos el regitro del padre que está conectado
     parent = db((db.auth_user.id==auth.user.id)&
                 (db.parent.uid==db.auth_user.id)&
                 (db.personal_data.uid==db.auth_user.id)&
-                (db.address.id==db.personal_data.address_id)).select().first()
+                (db.address.id==db.personal_data.address_id)
+                ).select().first()
     ## Obtenemos el regitro del cónyuge del padre que está conectado
-    spouse = db((db.auth_user.id==parent.parent.spouse)&
-                (db.parent.uid==parent.parent.spouse)&
-                (db.personal_data.uid==parent.parent.spouse)&
-                (db.address.id==db.personal_data.address_id)).select().first()
+    if db.personal_data(db.personal_data.uid==parent.parent.spouse).address_id:
+        spouse = db((db.auth_user.id==parent.parent.spouse)&
+                    (db.parent.uid==parent.parent.spouse)&
+                    (db.personal_data.uid==parent.parent.spouse)&
+                    (db.address.id==db.personal_data.address_id)
+                    ).select().first()
+    else:
+        spouse = db((db.auth_user.id==parent.parent.spouse)&
+                    (db.parent.uid==parent.parent.spouse)&
+                    (db.personal_data.uid==parent.parent.spouse)
+                    ).select().first()
     ## Obtenemos el regitro del hijo del padre que está conectado
     candidate = db((db.auth_user.id==parent.parent.student_id)&
                 (db.candidate.uid==parent.parent.student_id)&
                 (db.personal_data.uid==parent.parent.student_id)&
                 (db.address.id==db.personal_data.address_id)&
-                (db.school.id==db.candidate.school)).select().first()
+                (db.school.id==db.candidate.school)
+                ).select().first()
 
     ## Armamos una lista con los campos comunes, los que vamos a mostrar en la primer tabla. El orden importa!
     common_fields = [db.personal_data.photo, db.auth_user.gender,
@@ -482,20 +670,31 @@ def review_data():
         else:
             row_class = "even"
         if spouse:
-            grid[2].append(TR(
-                              TH(item.label, _id=str(item)+"__label"),
-                              TD(parent[item], _id=str(item)+"__parent"),
-                              TD(spouse[item], _id=str(item)+"__spouse"),
-                              TD(candidate[item], _id=str(item)+"__candidate"),
-                              _class=row_class,
-                              _id=str(item)+"__row"
-                             )
-                          )
+            if 'address' in str(item) and 'address' not in spouse:
+                grid[2].append(TR(
+                                  TH(item.label, _id=str(item)+"__label"),
+                                  TD(parent[item], _id=str(item)+"__parent"),
+                                  TD("no data", _id=str(item)+"__spouse"),
+                                  TD(candidate[item], _id=str(item)+"__candidate"),
+                                  _class=row_class,
+                                  _id=str(item)+"__row"
+                                 )
+                              )
+            else:
+                grid[2].append(TR(
+                                  TH(item.label, _id=str(item)+"__label"),
+                                  TD(parent[item], _id=str(item)+"__parent"),
+                                  TD(spouse[item], _id=str(item)+"__spouse"),
+                                  TD(candidate[item], _id=str(item)+"__candidate"),
+                                  _class=row_class,
+                                  _id=str(item)+"__row"
+                                 )
+                              )
         else:
             grid[2].append(TR(
                               TH(item.label, _id=str(item)+"__label"),
                               TD(parent[item], _id=str(item)+"__parent"),
-                              TD("", _id=str(item)+"__spouse"),
+                              TD("no spouse registered", _id=str(item)+"__spouse"),
                               TD(candidate[item], _id=str(item)+"__candidate"),
                               _class=row_class,
                               _id=str(item)+"__row"
@@ -616,6 +815,7 @@ def review_data():
     ## Agregamos las filas con los datos que armamos en la lista de campos: candidate_fields.
     for i,item in enumerate(candidate_fields):
         school_address = db.address((db.school.id==candidate.candidate.school)&(db.school.address_id==db.address.id)).address
+
         if is_odd(i):
             row_class = "odd"
         else:
@@ -660,7 +860,7 @@ def review_data():
                )
 
     if form.process().accepted:
-        change_parent_state(auth.user.id)
+        __change_parents_state(auth.user.id)
         auth.log_event(description="%s - has verified data registered" % (simple_fullname(auth.user.id)))
         redirect(URL('index'))
     return dict(grid=grid, parent_grid=parent_grid, candidate_grid=candidate_grid, form=form)
@@ -674,16 +874,26 @@ def modify():
     parent = db((db.auth_user.id==auth.user.id)&
                 (db.parent.uid==db.auth_user.id)&
                 (db.personal_data.uid==db.auth_user.id)&
-                (db.address.id==db.personal_data.address_id)).select().first()
-    spouse = db((db.auth_user.id==parent.parent.spouse)&
-                (db.parent.uid==parent.parent.spouse)&
-                (db.personal_data.uid==parent.parent.spouse)&
-                (db.address.id==db.personal_data.address_id)).select().first()
+                (db.address.id==db.personal_data.address_id)
+                ).select().first()
+    ## Obtenemos el regitro del cónyuge del padre que está conectado
+    if db.personal_data(db.personal_data.uid==parent.parent.spouse).address_id:
+        spouse = db((db.auth_user.id==parent.parent.spouse)&
+                    (db.parent.uid==parent.parent.spouse)&
+                    (db.personal_data.uid==parent.parent.spouse)&
+                    (db.address.id==db.personal_data.address_id)
+                    ).select().first()
+    else:
+        spouse = db((db.auth_user.id==parent.parent.spouse)&
+                    (db.parent.uid==parent.parent.spouse)&
+                    (db.personal_data.uid==parent.parent.spouse)
+                    ).select().first()
     candidate = db((db.auth_user.id==parent.parent.student_id)&
                 (db.candidate.uid==parent.parent.student_id)&
                 (db.personal_data.uid==parent.parent.student_id)&
                 (db.address.id==db.personal_data.address_id)&
-                (db.school.id==db.candidate.school)).select().first()
+                (db.school.id==db.candidate.school)
+                ).select().first()
 
     if request.args[0] == 'parent' or request.args[0] == 'parent_work':
         subject = parent
@@ -921,16 +1131,64 @@ def modify():
         redirect(URL('index'))
     return locals()
 
-#@auth.requires_membership('padre')
+@auth.requires_membership('padre')
 def informative_talk():
-    form = SQLFORM.factory(Field('date', requires=IS_IN_DB(db(db.date.type=="informative talk"), 'date.id', '%(date)s %(start_time)s'), label=T("Date"))
+    query = db.date.type=="informative talk"
+    fields = [db.date.date,
+              db.date.start_time,
+              db.date.end_time,
+              db.date.participants,
+              db.date.max_participants,
+              db.date.description,
+              ]
+    grid = SQLFORM.grid(query,
+                        fields,
+                        maxtextlengths={
+                                        'date.description': 250,
+                                        },
+                        create=False,
+                        deletable=False,
+                        details=False,
+                        editable=False,
+                        searchable=False,
+                        csv=False,
+                        paginate=50
+                        )
+    form = SQLFORM.factory(Field('date', requires=IS_IN_DB(db((db.date.type=="informative talk")
+                                                              #&(db.date.max_participants>db.date.participants) ## No me deja comparar con el Virtual Field
+                                                              ), 'date.id', '%(date)s at %(start_time)s | %(participants)s of %(max_participants)s'), label=T("Date")),
+                           submit_button=T("Choose Date")
                            )
-    ## FALTA HACER EL ONVALIDATION PARA QUE CUENTE LOS CUPOS!
-    if form.process().accepted:
+
+    def __validate_booking(form):
+        date = db(db.date.id==form.vars.date).select().first()
+        if date.participants == date.max_participants:
+            form.errors.date= T("This date is full, please choose another one")
+
+    if form.process(onvalidation=__validate_booking).accepted:
         db.turn.insert(uid=auth.user.id,
                        date=form.vars.date)
-        #change_parent_state(auth.user.id)
+        __change_parents_state(auth.user.id)
         auth.log_event(description="%s - choose informative talk on %s at %s" % (simple_fullname(auth.user.id),
                                                                                  db(db.date.id==form.vars.date).select().first().date,
-                       db(db.date.id==form.vars.date).select().first().start_time))
+                                                                                 db(db.date.id==form.vars.date).select().first().start_time))
+        redirect(URL('index'))
+    return dict(grid=grid, form=form)
+
+
+@auth.requires_membership('padre')
+def terms_and_conditions():
+    form = SQLFORM.factory(Field('accept', 'boolean', requires=IS_NOT_EMPTY(), label=T("I accept the terms and conditions")),
+                           submit_button=T("Accept"))
+    if form.process().accepted:
+        parent = db(db.parent.uid==auth.user.id).select().first().update_record(accepted_terms=request.now)
+        if parent.spouse:
+            db((db.parent.spouse==auth.user.id)).select().first().update_record(accepted_terms=request.now)
+        __change_parents_state(auth.user.id)
+        auth.log_event(description="%s - accepted Terms&Conditions (%s)" % (simple_fullname(auth.user.id), request.now))
+        redirect(URL('index'))
+    return dict(form=form)
+
+@auth.requires_membership('padre')
+def exam_payment():
     return locals()

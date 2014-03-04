@@ -1,4 +1,4 @@
-# coding: utf8
+# coding: utf-8
 import cPickle, re, shutil, os, uuid
 
 @auth.requires_login()
@@ -181,16 +181,16 @@ def take():
         session.order_question=range(len(options))
         stuff=UL(*[LI(item,_class=i) for i,item in enumerate(options)])
     if question.comments_enabled:
-        form=FORM(H2('Your answer'),stuff,BR(),BR(),A('add a comment',_onclick="$('#comment_slide').slideToggle();"),
+        form=FORM(H2(T("Your answer")),stuff,BR(),BR(),A(T("add a comment"),_onclick="$('#comment_slide').slideToggle();"),
                   DIV(TEXTAREA(_name='comment',value=answer_comment,_id='answer_comment'),_id='comment_slide'),BR(),BR(),
-                  INPUT(_type='image',_src=URL(r=request,c='static',f='submit.png')))
+                  INPUT(_type='submit', _value=T("Continue"))) #'image',_src=URL(r=request,c='static',f='submit.png')))
     else:
-        form=FORM(H2('Your answer'),stuff,BR(),BR(),
-                  INPUT(_type='image',_src=URL(r=request,c='static',f='submit.png')))
+        form=FORM(H2(T("Your answer")),stuff,BR(),BR(),
+                  INPUT(_type='submit', _value=T("Continue"))) #'image',_src=URL(r=request,c='static',f='submit.png')))
     if form.accepts(request,session):
         if not form.vars.value and question.type[:8]=='multiple' and \
            question.required:
-            response.flash='an answer is required'
+            response.flash=T("an answer is required")
             return dict(questions=questions,survey=survey,
                         form=form,question=question)
         if question.type=='upload':
@@ -214,11 +214,11 @@ def take():
                 .update(value=cPickle.dumps(form.vars.value),\
                 comment=form.vars.comment)
         db(db.sa.session_id==response.session_id).update(modified_on=NOW)
-        session.flash=T('answer recorded')
+        session.flash=T("answer recorded")
         if next: redirect(URL(r=request,args=[request.args[0],next], vars={'caller':caller}))
         else: redirect(URL('done',args=request.args[:1], vars={'caller':caller}))
     elif form.errors:
-        response.flash='invalid value'
+        response.flash=T("invalid value")
     return dict(questions=questions,survey=survey,form=form,question=question,caller=caller)
 
 def done():

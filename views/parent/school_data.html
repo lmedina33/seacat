@@ -1,6 +1,28 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
 <h5>
-    Por favor complete los datos de la escuela en la que se encuentra su hijo cursando 7º grado. Busque una de la lista o agregue nuevos datos.
+    Por favor seleccione la escuela en la que se encuentra su
+    {{if db((db.parent.uid==auth.user.id)&(db.parent.student_id==db.auth_user.id)).select().first().auth_user.gender == "M":}}
+    {{=T("son")}}
+    {{else:}}
+    {{=T("daugther")}}
+    {{pass}}
+    cursando 7º grado.
 </h5>
+Si la escuela no se encuentra en la lista podrá agregarla presionando en <b>"Agregar Nueva Escuela"</b>
+<hr>
 {{=form}}
+
+<script>
+    jQuery(document).ready(function(){
+        var gender = "{{=db((db.parent.uid==auth.user.id)&(db.parent.student_id==db.auth_user.id)).select().first().auth_user.gender}}";
+        if(gender == "M")
+        {
+            jQuery('#no_table_candidate_id__label').text("{{=T("Son")}}");
+        }
+        else
+        {
+            jQuery('#no_table_candidate_id__label').text("{{=T("Daughter")}}");
+        }
+    });
+</script>

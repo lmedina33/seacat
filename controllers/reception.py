@@ -1,4 +1,4 @@
-# coding: utf8
+# coding: utf-8
 # intente algo como
 @auth.requires_membership('derivaciones')
 def index():

@@ -140,3 +140,12 @@ def email(sender,to,subject='test',message='test',server='localhost:25',auth=Non
 
 def is_odd(num):
     return num & 0x1
+
+def calculate_participants(date_id):
+    """
+    This functin receives a date ID an returns the amount of row in the table turn with the given ID
+    """
+    count_id = db.turn.uid.count()
+    registro = db((db.date.id==db.turn.date)
+                  &(db.date.id==date_id)).select(count_id, groupby=[db.date.id, db.date.date]).first()
+    return registro._extra[count_id]
