@@ -65,7 +65,7 @@ def send_welcome_mail(form, id):
     mensaje += """ %(first_name)s,
 gracias por registrarte en el Pío IX, estamos muy contentos de nos hayas elegido.
 
-Para continuar tienes que hacer click sobre el siguiente link: http://inscripciones.pioix.edu.ar/
+Para continuar tienes que hacer click sobre el siguiente link: https://10.1.0.21:8000/SEACAT_ingresos
 e ingresar al sitio con tu dirección de correo electrónico: %(email)s
 Tu contraseña será tu número de documento: %(doc)s
 (No te preocupes! Te vamos a pedir que cambies tu contraseña inmediatamente después de que ingreses por primera vez).

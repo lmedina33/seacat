@@ -151,20 +151,18 @@ def parent_data():
             ## If the parent was inserted and activated by his/her spouse, first must change his/her
             ## password, then updates his/her personal data. The spouse and candidate data has been
             ## already completed by his/her spouse. So that's why he/she must advances two states.
-            __change_parent_state(auth.user.id)
-            __change_parent_state(auth.user.id)
+            #__change_parent_state(auth.user.id)
+            #__change_parent_state(auth.user.id)
+            spouse_state = db.parent(db.parent.uid==parent_data.spouse).state
+            db(db.parent.uid==auth.user.id).update(state=spouse_state)
+            auth.log_event(description="%s - advanced to spouse state \"%s\"" % (fullname(auth.user.id), spouse_state))
+            session.flash=T("Your are here because your spouse completed some data before.")
         else:
             ## If the parent doesn't have spouse, means that he/she is the first one doing the
             ## registration.
             __change_parents_state(auth.user.id)
 
-        auth.log_event(description="Parent %s updated data" % (fullname(auth.user.id)))
-
-        if parent_data.spouse:
-            #####################################################
-            ## REVISAR ESTO, ME PARECE QUE ESTÁ MAL O DEMÁS....
-            #####################################################
-            db(db.parent.id==auth.user.id).update(state=db.parent(uid=parent_data.spouse).state)
+        auth.log_event(description="%s - updated personal data" % (fullname(auth.user.id)))
 
         redirect(URL('index'))
     return dict(form=form, name=simple_fullname(auth.user.id))
@@ -574,7 +572,7 @@ def review_data():
                 (db.address.id==db.personal_data.address_id)
                 ).select().first()
     ## Obtenemos el regitro del cónyuge del padre que está conectado
-    if db.personal_data(db.personal_data.uid==parent.parent.spouse).address_id:
+    if parent.parent.spouse and db.personal_data(db.personal_data.uid==parent.parent.spouse).address_id:
         spouse = db((db.auth_user.id==parent.parent.spouse)&
                     (db.parent.uid==parent.parent.spouse)&
                     (db.personal_data.uid==parent.parent.spouse)&
@@ -594,7 +592,8 @@ def review_data():
                 ).select().first()
 
     ## Armamos una lista con los campos comunes, los que vamos a mostrar en la primer tabla. El orden importa!
-    common_fields = [db.personal_data.photo, db.auth_user.gender,
+    common_fields = [#db.personal_data.photo,
+                     db.auth_user.gender,
                      db.auth_user.last_name, db.auth_user.first_name, db.auth_user.middle_name,
                      db.auth_user.email, db.personal_data.mail2,
                      db.personal_data.doc_type, db.personal_data.doc, db.personal_data.nac,
@@ -694,7 +693,7 @@ def review_data():
             grid[2].append(TR(
                               TH(item.label, _id=str(item)+"__label"),
                               TD(parent[item], _id=str(item)+"__parent"),
-                              TD("no spouse registered", _id=str(item)+"__spouse"),
+                              TD("", _id=str(item)+"__spouse"),
                               TD(candidate[item], _id=str(item)+"__candidate"),
                               _class=row_class,
                               _id=str(item)+"__row"
@@ -716,12 +715,12 @@ def review_data():
     ###############################
     ## LA FOTO NO FUNCIONA!!!!!!!!!!!!!!!!!!!!!
     ###############################
-    """
+
     grid[2][0][1]= TD(IMG(_src=URL('download', args=[parent.personal_data.photo]), _alt=simple_fullname(parent.auth_user.id)+" Photo"), _id='personal_data.photo__parent')
     if spouse:
         grid[2][0][2] = TD(IMG(_src=URL('download', args=spouse.personal_data.photo), _alt=simple_fullname(spouse.auth_user.id)+" Photo"), _id='personal_data.photo__spouse')
     grid[2][0][3] = TD(IMG(_src=URL('download', args=candidate.personal_data.photo), _alt=simple_fullname(candidate.auth_user.id)+" Photo"), _id='personal_data.photo__candidate')
-
+    """
     ## Armamos una lista con los campos exclusivos de los padres. El orden importa!
     parent_fields = [db.parent.work, db.parent.works_in]
     ## Construimos la tabla de Padres
@@ -779,17 +778,20 @@ def review_data():
     ## Acomodamos los títulos de las columnas acorde al sexo del usuario que está conectado:
     if auth.user.gender == 'M':
         grid[1][0][1] = TH(T("Father"), _id="parent_header")
-        parent_grid[1][0][1] = TH(T("Father")+": "+simple_fullname(parent.auth_user.id), _id="parent_header")
         grid[1][0][2] = TH(T("Mother"), _id="spouse_header")
+        parent_grid[1][0][1] = TH(T("Father")+": "+simple_fullname(parent.auth_user.id), _id="parent_header")
         if spouse:
             parent_grid[1][0][2] = TH(T("Mother")+": "+simple_fullname(spouse.auth_user.id), _id="spouse_header")
         else:
             parent_grid[1][0][2] = TH(T("Mother"), _id="spouse_header")
     else:
         grid[1][0][1] = TH(T("Mother"), _id="parent_header")
-        parent_grid[1][0][1] = TH(T("Mother")+": "+simple_fullname(parent.auth_user.id), _id="parent_header")
         grid[1][0][2] = TH(T("Father"), _id="spouse_header")
-        parent_grid[1][0][2] = TH(T("Father")+": "+simple_fullname(spouse.auth_user.id), _id="spouse_header")
+        parent_grid[1][0][1] = TH(T("Mother")+": "+simple_fullname(parent.auth_user.id), _id="parent_header")
+        if spouse:
+            parent_grid[1][0][2] = TH(T("Father")+": "+simple_fullname(spouse.auth_user.id), _id="spouse_header")
+        else:
+            parent_grid[1][0][2] = TH(T("Mother"), _id="spouse_header")
 
     ## Armamos una lista con los campos exclusivos de los padres. El orden importa!
     candidate_fields = [db.candidate.course,
@@ -877,7 +879,7 @@ def modify():
                 (db.address.id==db.personal_data.address_id)
                 ).select().first()
     ## Obtenemos el regitro del cónyuge del padre que está conectado
-    if db.personal_data(db.personal_data.uid==parent.parent.spouse).address_id:
+    if parent.parent.spouse and db.personal_data(db.personal_data.uid==parent.parent.spouse).address_id:
         spouse = db((db.auth_user.id==parent.parent.spouse)&
                     (db.parent.uid==parent.parent.spouse)&
                     (db.personal_data.uid==parent.parent.spouse)&
@@ -1023,6 +1025,19 @@ def modify():
             form.vars.gender = 'M'
         form.vars.email = 'spouse_'+str(auth.user.id)+'@nomail.com'
         form.vars.prov = parent.address.prov
+    
+    if request.args[0] == 'candidate_school':
+        school_address = db.address((db.school.id==candidate.candidate.school)&(db.school.address_id==db.address.id)).address
+        form.vars.street = school_address.street
+        form.vars.building = school_address.building
+        form.vars.floor = school_address.floor
+        form.vars.apartment = school_address.apartment
+        form.vars.door = school_address.door
+        form.vars.street1 = school_address.street1
+        form.vars.street2 = school_address.street2
+        form.vars.prov = school_address.prov
+        form.vars.loc = school_address.loc
+        form.vars.zip_code = school_address.zip_code
 
     if form.process(dbio=False).accepted:
         """

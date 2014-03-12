@@ -300,3 +300,6 @@ def new_general_dates():
                                              end_time=end_time)
         response.flash = T("New set of records inserted for year %s" % form.vars.selected_year)
     return dict(find_form=find_form, form=form)
+
+def help():
+    return locals()
