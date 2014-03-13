@@ -1,4 +1,4 @@
-﻿# coding: utf8
+# coding: utf8
 import datetime
 import locale
 import hashlib
@@ -49,13 +49,13 @@ def diff_in_years(date):
     Calculate the difference in years between date and now.
     If "date" isn't an instance of datetime.date it returns None.
     """
-    #    try:
+    try:
+        return datetime.date.today().year - date.year    
     #        return rdelta.relativedelta(datetime.datetime.today().date(), date).years
     #return rdelta.relativedelta(datetime.datetime.today().date(), row['personal_data']['dob']).years
-    #    except:
-    #        return None
+    except:
+        return None
 
-    return datetime.date.today().year - date.year
 
 def send_welcome_mail(form, id):
     mensaje = "Estimad"
