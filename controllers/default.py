@@ -133,41 +133,6 @@ def data():
     """
     return dict(form=crud())
 
-@auth.requires_permission('create new father', db.auth_user)
-def new_father():
-    form = SQLFORM.factory(db.auth_user.first_name,
-                           db.auth_user.middle_name,
-                           db.auth_user.last_name,
-                           db.auth_user.gender,
-                           db.auth_user.email,
-                           db.personal_data.doc,
-                           db.father.children_in_school,
-                           db.father.children_name,
-                           db.father.student_network,
-                           db.father.student_school,
-                           submit_button=T("Create New Father")
-                           )
-    if form.process().accepted:
-        new_user_id = db.auth_user.insert(password=str(CRYPT()(form.vars.doc)[0]),
-                                          **db.auth_user._filter_fields(form.vars))
-        db.auth_membership.insert(user_id=new_user_id,
-                                  group_id=db.auth_group(role='padre').id)
-        db.father.insert(uid=new_user_id,
-                         is_alive=True,
-                         state=FATHER_STATE[0],
-                         **db.father._filter_fields(form.vars)
-                         )
-        db.personal_data.insert(uid=new_user_id,
-                                doc=form.vars.doc
-                                )
-        db.auth_user[new_user_id]=dict(created_on=request.now)
-        auth.log_event(description="New Father Created: %s" % (fullname(new_user_id)))
-        send_welcome_mail(form, new_user_id)
-        session.flash = T("New record inserted")+" & "+T("Email sent")
-        redirect(URL('start'))
-    elif form.errors:
-        response.flash = T("Form has errors")
-    return dict(form=form)
 
 @auth.requires(auth.has_permission('view fathers list', db.auth_user) or auth.has_permission('view users list', db.auth_user))
 def fathers_list():
