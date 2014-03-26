@@ -79,7 +79,7 @@ def password_change():
         __change_parents_state(auth.user.id)
 
     form = auth.change_password(onvalidation=__validate_password, next=URL('index'))
-
+    test=""
     return dict(form=form)
 
 def __change_parents_state(uid):

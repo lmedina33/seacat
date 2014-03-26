@@ -69,7 +69,10 @@ db.define_table(auth.settings.table_user_name,
 
 auth.settings.table_user = db[auth.settings.table_user_name]
 ## create all tables needed by auth if not custom tables
-auth.define_tables(username=False, signature=True, migrate=True)
+auth.define_tables(username=False,
+                   signature=True,
+                   migrate=True
+                   )
 
 ## Defining new table for Images:
 db.define_table('image',
