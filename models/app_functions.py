@@ -42,17 +42,20 @@ def fullname(id):
     return fullname
 
 ## To install dateutil: sudo pip install python-dateutil.
-from dateutil import relativedelta as rdelta
+## from dateutil import relativedelta as rdelta
+
 def diff_in_years(date):
     """
     Calculate the difference in years between date and now.
     If "date" isn't an instance of datetime.date it returns None.
     """
     try:
-        return rdelta.relativedelta(datetime.datetime.today().date(), date).years
-        #return rdelta.relativedelta(datetime.datetime.today().date(), row['personal_data']['dob']).years
+        return datetime.date.today().year - date.year    
+    #        return rdelta.relativedelta(datetime.datetime.today().date(), date).years
+    #return rdelta.relativedelta(datetime.datetime.today().date(), row['personal_data']['dob']).years
     except:
         return None
+
 
 def send_welcome_mail(form, id):
     mensaje = "Estimad"

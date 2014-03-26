@@ -228,8 +228,9 @@ def done():
     db(db.sa.session_id==response.session_id).update(completed=True,modified_on=NOW,uid=auth.user.id)
     form = FORM(TAG.BUTTON(T("Continue")))
     if form.process().accepted:
-        app, controller, function = caller[1:].split("/")
-        redirect(URL(a=app, c=controller, f=function))
+#        app, controller, function = caller[1:].split("/")
+#        redirect(URL(a=app, c=controller, f=function))
+         redirect(URL('index'))
     return locals()
 
 def match(a,b):
