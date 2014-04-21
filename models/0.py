@@ -6,11 +6,11 @@
 ####################################################################################################
 
 #DBURI='\'postgres://user:password@host/database\', check_reserved=[\'postgres\']'
-DB_ENGINE='postgres'
-DB_USER='yaki'
-DB_PASSWORD='marce2013'
-DB_HOST='190.220.8.178'
-DB_DB='seacat'
+DB_ENGINE=''
+DB_USER=''
+DB_PASSWORD=''
+DB_HOST=''
+DB_DB=''
 DBURI=DB_ENGINE+'://'+DB_USER+':'+DB_PASSWORD+'@'+DB_HOST+'/'+DB_DB
 
 ####################################################################################################
