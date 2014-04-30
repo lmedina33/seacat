@@ -182,7 +182,11 @@ def spouse_data():
                            db.personal_data.nac,
                            db.personal_data.cuil,
                            db.personal_data.dob,
-                           db.auth_user.email,
+                           Field("enabled", 'boolean', default=True, label=T("Enable User?"),
+                                 comment=T("If you enable the user he will be capable of using the system and make modifications like you do. \
+                                 He will be notified by email. Any modifications made in registration process (by him or you) will be notified\
+                                 by email to both of us.")),
+                           Field('email', 'string', length=128, requires=IS_EMPTY_OR(IS_EMAIL()), label=T("Email")),
                            db.personal_data.mail2,
                            db.personal_data.tel1_type,
                            db.personal_data.tel1,
@@ -195,10 +199,6 @@ def spouse_data():
                            db.personal_data.twitter,
                            db.personal_data.facebook,
                            db.personal_data.obs,
-                           Field("enabled", 'boolean', default=True, label=T("Enable User?"), 
-                                 comment=T("If you enable the user he will be capable of using the system and make modifications like you do. \
-                                 He will be notified by email. Any modifications made in registration process (by him or you) will be notified\
-                                 by email to both of us.")),
                            submit_button=T("Insert Data")
                            )
 
@@ -215,6 +215,8 @@ def spouse_data():
         response.flash = ""
 
     if form.process().accepted:
+        if not form.vars.enabled:
+            form.vars.email = 'spouse_'+str(auth.user.id)+'@nomail.com'
         ## We get the current parent record.
         parent = db.parent(db.parent.uid==auth.user.id)
 
@@ -354,8 +356,8 @@ def school_data():
              &(db.auth_user.id == db.candidate.uid)
              )
     form = SQLFORM.factory(Field('school_id', 'string', length=128,
-                                 requires=IS_EMPTY_OR(IS_IN_DB(db, 'school.id', '(%(number)s) %(name)s',
-                                                               zero=T("Select one from list or \"Add new school\""))),
+                                 requires=IS_IN_DB(db, 'school.id', '(%(number)s) %(name)s',
+                                                               zero=T("Select one from list or \"Add new school\"")),
                                  label=T("School Name")),
                            Field('candidate_id', requires=IS_IN_DB(db(query), 'auth_user.id',
                                                                    '%(first_name)s %(middle_name)s %(last_name)s',

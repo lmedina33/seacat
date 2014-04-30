@@ -14,6 +14,7 @@ def new_parent():
                            db.auth_user.last_name,
                            db.auth_user.gender,
                            db.auth_user.email,
+                           Field('send_mail', 'boolean', default=True, label=T("Send email?")),
                            db.personal_data.doc,
                            db.parent.children_in_school,
                            db.parent.children_name,
@@ -38,8 +39,11 @@ def new_parent():
                                 )
         db.auth_user[new_user_id]=dict(created_on=request.now)
         auth.log_event(description="New Parent Created: %s" % (fullname(new_user_id)))
-        send_welcome_mail(form, new_user_id)
-        session.flash = T("New record inserted")+" & "+T("Email sent")
+        message = T("New record inserted")
+        if form.vars.send_mail:
+            send_welcome_mail(form, new_user_id)
+            message += " & "+T("Email sent")
+        session.flash = message
         redirect(URL('index'))
     elif form.errors:
         response.flash = T("Form has errors")

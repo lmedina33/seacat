@@ -13,6 +13,7 @@ def new_survey():
     if form.process().accepted:
         code_edit=str(uuid.uuid4())
         code_take=str(uuid.uuid4())
+        ## Setear en TRUE la activación si es la primer encuesta!
         survey_id = db.survey.insert(title=form.vars.survey_name,
                                      code_edit=code_edit,
                                      code_take=code_take)
@@ -35,7 +36,7 @@ def survey_list():
             db(db.survey.code_edit==form.vars.survey).update(is_active=True)
         else:
             redirect(URL(form.vars.action, args=form.vars.survey))
-    return locals()
+    return dict(form=form)
 
 def user():
     redirect(URL('default','index'))
