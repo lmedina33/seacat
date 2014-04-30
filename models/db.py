@@ -11,7 +11,7 @@
 
 db = DAL(DBURI,
          check_reserved=[DB_ENGINE],
-         #migrate_enabled=False  ## Comment this line if your DB already exists.
+         migrate_enabled=False  ## Comment this line if your DB already exists.
          )
 
 #if not request.env.web2py_runtime_gae:

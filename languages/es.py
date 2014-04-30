@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 {
 '!=': '!=',
 '!langcode!': 'es',
@@ -262,10 +262,12 @@
 'End': 'Fin',
 'End Time': 'Hora de Fin',
 'Enrollment Deadline': 'Cierre de Inscripciones',
+'Enter a number between %(min)g and %(max)g': 'Enter a number between %(min)g and %(max)g',
 'enter a number between %(min)g and %(max)g': 'ingrese un número entre %(min)g y %(max)g',
 'enter a valid email address': 'escriba una dirección de correo válida',
 'enter a valid URL': 'ingrese una URL válida',
 'enter a value': 'no puede dejar este campo vacío',
+'Enter an integer between %(min)g and %(max)g': 'Enter an integer between %(min)g and %(max)g',
 'enter an integer between %(min)g and %(max)g': 'inrgese un entero entre %(min)g y %(max)g',
 'enter date and time as %(format)s': 'enter date and time as %(format)s',
 'enter date as %(format)s': 'Ingrese la fecha como %(format)s',
