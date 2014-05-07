@@ -231,7 +231,7 @@ def done():
     if form.process().accepted:
 #        app, controller, function = caller[1:].split("/")
 #        redirect(URL(a=app, c=controller, f=function))
-         redirect(URL('index'))
+         redirect(URL('default', 'index'))
     return locals()
 
 def match(a,b):

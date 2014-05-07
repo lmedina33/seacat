@@ -14,3 +14,11 @@
             else jQuery('#no_table_email__row').hide();});
     });
 </script>
+<script>
+	{{## Oculta los campos de Avatar, Perfil de Twitter y Perfil de Facebook}}
+    jQuery(document).ready(function(){
+        jQuery('#no_table_avatar__row').hide();
+        jQuery('#no_table_twitter__row').hide();
+		jQuery('#no_table_facebook__row').hide();
+	})
+</script>

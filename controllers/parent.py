@@ -205,10 +205,12 @@ def spouse_data():
     ## Gender form personalization
     if auth.user.gender == GENDER_LIST[1][0]:
         form.vars.gender = GENDER_LIST[0][0]
-        form.add_button(T("Skip Mother"), URL('_skip_spouse_data'))
+		#form.add_button(T("Skip Mother"), URL('_skip_spouse_data'))
+        button = A(T("Skip Mother"), _href=URL('_skip_spouse_data'), _class='btn')
     else:
         form.vars.gender = GENDER_LIST[1][0]
-        form.add_button(T("Skip Father"), URL('_skip_spouse_data'))
+        #form.add_button(T("Skip Father"), URL('_skip_spouse_data'))
+        button = A(T("Skip Father"), _href=URL('_skip_spouse_data'), _class='btn')
 
     ## AL PEDO??????
     if db.parent(db.parent.uid==auth.user.id).state != PARENT_STATE[2]:
@@ -365,7 +367,7 @@ def school_data():
                                  label=T("Sun/Daughter")),
                            submit_button=T("Insert Data")
                            )
-    form.add_button('Add new school', URL('add_new_school'))
+    form.add_button(T('Add new school'), URL('add_new_school'))
 
     if form.process().accepted:
         ## We get the school record.
@@ -399,6 +401,7 @@ def add_new_school():
                            db.address.zip_code,
                            submit_button=T("Insert Data")
                           )
+    form.add_button(T("Back"), URL("school_data"))
 
     if form.process().accepted:
         ## Inserts the new address
@@ -441,8 +444,9 @@ def spouse_address_data():
     form = SQLFORM(db.address,
                    submit_button=T("Insert Data")
                    )
-    form.add_button(T("We live together"), URL('_spouses_lives_together'))
-    form.add_button(T("Skip Address"), URL('_skip_spouse_address'))
+
+    button1 = A(T("We live together"), _href=URL('_spouses_lives_together'), _class='btn')
+    button2 = A(T("Skip Address"), _href=URL('_skip_spouse_address'), _class='btn')
 
     if form.process().accepted:
         #new_address_id = form.vars.id
@@ -514,7 +518,7 @@ def candidate_address_data():
                           (spouse.auth_user.id, simple_fullname(spouse.auth_user.id)),
                           ("0", T("Doesn't live with parents")))
 
-    form = SQLFORM.factory(Field("lives_with", requires=IS_IN_SET(LIVES_WITH, zero=None)),
+    form = SQLFORM.factory(Field("lives_with", requires=IS_IN_SET(LIVES_WITH, zero=None), label=T("Lives with")),
                            db.address,
                            submit_button=T("Insert Data")
                            )
@@ -603,7 +607,8 @@ def review_data():
                      db.personal_data.tel1_type, db.personal_data.tel1,
                      db.personal_data.tel2_type, db.personal_data.tel2,
                      db.address.street, db.address.building, db.address.floor, db.address.apartment,
-                     db.address.door, db.address.street1, db.address.street2,
+                     #db.address.door,
+                     db.address.street1, db.address.street2,
                      db.address.prov, db.address.loc, db.address.zip_code,
                      db.personal_data.facebook, db.personal_data.twitter]
     ## Construimos la tabla Común
@@ -640,7 +645,10 @@ def review_data():
                 if isinstance(parent[table][field], datetime.date):
                     parent[table][field] = parent[table][field].strftime(DATE_FORMAT)
                 if field == 'cuil':
-                    parent[table][field] = parent[table][field][:2]+"-"+parent[table][field][2:-1]+"-"+parent[table][field][-1]
+					if parent[table][field] == "":
+						parent[table][field]
+					else:
+						parent[table][field] = parent[table][field][:2]+"-"+parent[table][field][2:-1]+"-"+parent[table][field][-1]
                 if field == 'tel1':
                     parent[table][field] = parent[table][field][:-4]+"-"+parent[table][field][4:]
                 if field == 'tel2' and parent[table][field] != None:
@@ -799,7 +807,8 @@ def review_data():
     candidate_fields = [db.candidate.course,
                         db.school.name, db.school.number, db.school.district,
                         db.address.street, db.address.building, db.address.floor, db.address.apartment,
-                        db.address.door, db.address.street1, db.address.street2,
+                        #db.address.door,
+						db.address.street1, db.address.street2,
                         db.address.prov, db.address.loc, db.address.zip_code]
     ## Construimos la tabla de la escuela del Candidato
     candidate_grid = TABLE(COLGROUP(
@@ -930,7 +939,7 @@ def modify():
                                db.personal_data.cuil, db.personal_data.dob, #db.personal_data.age,
                                db.personal_data.tel1_type, db.personal_data.tel1, db.personal_data.tel2_type, db.personal_data.tel2,
                                Field("lives_with", requires=IS_EMPTY_OR(IS_IN_SET(LIVES_WITH, zero=None))),
-                               db.address.street, db.address.building, db.address.floor, db.address.apartment, db.address.door,
+                               db.address.street, db.address.building, db.address.floor, db.address.apartment, #db.address.door,
                                db.address.street1, db.address.street2, db.address.prov, db.address.loc, db.address.zip_code,
                                db.personal_data.photo, db.personal_data.facebook, db.personal_data.twitter,
                                submit_button=T("Update Data")
@@ -978,10 +987,12 @@ def modify():
         form = SQLFORM.factory(db.candidate.course,
                                Field('school_id', 'string', length=128,
                                      requires=IS_EMPTY_OR(IS_IN_DB(db(db.school.id==subject.candidate.school), 'school.id', '(%(number)s) %(name)s', zero=T("Add new school"))),
+									 default=subject.candidate.school,
                                      label=T("Select School"), comment=T("Change the actual school selected or create a new one.")),
                                db.school.name, db.school.number, db.school.district,
                                db.address.street, db.address.building, db.address.floor, db.address.apartment,
-                               db.address.door, db.address.street1, db.address.street2,
+                               #db.address.door,
+							   db.address.street1, db.address.street2,
                                db.address.prov, db.address.loc, db.address.zip_code,
                                submit_button=T("Update Data")
                                )
@@ -1027,14 +1038,14 @@ def modify():
             form.vars.gender = 'M'
         form.vars.email = 'spouse_'+str(auth.user.id)+'@nomail.com'
         form.vars.prov = parent.address.prov
-    
+
     if request.args[0] == 'candidate_school':
         school_address = db.address((db.school.id==candidate.candidate.school)&(db.school.address_id==db.address.id)).address
         form.vars.street = school_address.street
         form.vars.building = school_address.building
         form.vars.floor = school_address.floor
         form.vars.apartment = school_address.apartment
-        form.vars.door = school_address.door
+        #form.vars.door = school_address.door
         form.vars.street1 = school_address.street1
         form.vars.street2 = school_address.street2
         form.vars.prov = school_address.prov

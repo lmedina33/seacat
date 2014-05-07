@@ -3,7 +3,7 @@ import datetime
 import locale
 import hashlib
 import os
-locale.setlocale(locale.LC_TIME, '')
+locale.setlocale(locale.LC_TIME, 'es_AR.UTF-8')
 
 NOW = now = datetime.datetime.now()
 
@@ -146,7 +146,7 @@ def is_odd(num):
 
 def calculate_participants(date_id):
     """
-    This functin receives a date ID an returns the amount of row in the table turn with the given ID
+    This function receives a date ID an returns the amount of row in the table turn with the given ID
     """
     count_id = db.turn.uid.count()
     registro = db((db.date.id==db.turn.date)

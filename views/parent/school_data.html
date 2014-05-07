@@ -1,5 +1,5 @@
 {{extend 'layout.html'}}
-<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<h2>{{=T("Primary " + request.function.replace('_',' ').capitalize() )}}</h2>
 <h5>
     Por favor seleccione la escuela en la que se encuentra su
     {{if db((db.parent.uid==auth.user.id)&(db.parent.student_id==db.auth_user.id)).select().first().auth_user.gender == "M":}}

@@ -1,8 +1,7 @@
 # coding: utf-8
-# intente algo como
 @auth.requires_membership('derivaciones')
 def index():
-    return dict(message="hello from reception.py")
+    return dict()
 
 def user():
     redirect(URL('default','index'))

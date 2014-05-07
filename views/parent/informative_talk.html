@@ -1,5 +1,8 @@
 {{extend 'layout.html'}}
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<h2>
+	<em>Acá vendría la pantalla de impresión del PDF donde le indica al padre que tiene que llevar X cantidad de copias y tiene tiempo hasta el día DD/MM/AAAA.</em>
+</h2>
 {{=grid}}
 <hr>
 {{=form}}
