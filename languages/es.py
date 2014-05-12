@@ -118,6 +118,7 @@
 'Cache Keys': 'Llaves de la Cache',
 'cache, errors and sessions cleaned': 'cache, errores y sesiones eliminados',
 'Calification Test': 'Examen de Ingreso',
+'Cambiar password': 'Cambiar password',
 'Candidate': 'Postulante',
 'candidate': 'postulante',
 'Candidate address data': 'Dirección del postulante',
