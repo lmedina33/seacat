@@ -151,4 +151,7 @@ def calculate_participants(date_id):
     count_id = db.turn.uid.count()
     registro = db((db.date.id==db.turn.date)
                   &(db.date.id==date_id)).select(count_id, groupby=[db.date.id, db.date.date]).first()
-    return registro._extra[count_id]
+    if registro:
+        return registro._extra[count_id]
+    else:
+        return 0

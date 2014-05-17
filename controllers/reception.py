@@ -21,9 +21,16 @@ def new_parent():
                            db.parent.children_course,
                            db.parent.student_network,
                            db.parent.student_school,
+                           Field('date', requires=IS_IN_DB(db((db.date.type=="informative talk")
+                                                              #&(db.date.max_participants>db.date.participants) ## No me deja comparar con el Virtual Field
+                                                              ), 'date.id', '%(date)s @ %(start_time)s | %(participants)s / %(max_participants)s'), label=T("Informative Talk")),
                            submit_button=T("Create New Parent")
                            )
-    if form.process().accepted:
+    def __validate_booking(form):
+        date = db(db.date.id==form.vars.date).select().first()
+        if date.participants == date.max_participants:
+            form.errors.date= T("This date is full, please choose another one")
+    if form.process(onvalidation=__validate_booking).accepted:
         new_user_id = db.auth_user.insert(password=str(CRYPT()(form.vars.doc)[0]),
                                           **db.auth_user._filter_fields(form.vars))
         db.auth_membership.insert(user_id=new_user_id,
@@ -38,6 +45,11 @@ def new_parent():
                                 )
         db.auth_user[new_user_id]=dict(created_on=request.now)
         auth.log_event(description="New Parent Created: %s" % (fullname(new_user_id)))
+        db.turn.insert(uid=auth.user.id,
+                       date=form.vars.date)
+        auth.log_event(description="%s - choose informative talk on %s at %s" % (simple_fullname(auth.user.id),
+                                                                                 db(db.date.id==form.vars.date).select().first().date,
+                                                                                 db(db.date.id==form.vars.date).select().first().start_time))
         message = T("New record inserted")
         if form.vars.send_mail:
             send_welcome_mail(form, new_user_id)

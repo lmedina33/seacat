@@ -3650,3 +3650,15 @@
 [2014-05-07 16:38:04] EDIT seacat/controllers/parent.py: 0
 [2014-05-07 16:38:44] EDIT seacat/views/parent/spouse_address_data.html: 2
 [2014-05-07 16:40:45] EDIT seacat/views/parent/spouse_address_data.html: 0
+[2014-05-16 20:58:53] EDIT seacat/views/default/new_turn.html: 0
+[2014-05-16 21:04:34] EDIT seacat/controllers/reception.py: 3
+[2014-05-16 21:04:41] EDIT seacat/controllers/reception.py: 0
+[2014-05-16 21:08:38] EDIT seacat/controllers/reception.py: 4
+[2014-05-16 21:08:56] EDIT seacat/controllers/reception.py: 0
+[2014-05-16 21:09:05] EDIT seacat/controllers/reception.py: 0
+[2014-05-16 21:17:50] EDIT seacat/models/app_functions.py: 3
+[2014-05-16 21:19:24] EDIT seacat/models/app_functions.py: 0
+[2014-05-16 21:27:48] EDIT seacat/models/app_functions.py: 0
+[2014-05-16 21:28:56] EDIT seacat/controllers/reception.py: 0
+[2014-05-16 21:29:35] EDIT seacat/controllers/reception.py: 0
+[2014-05-16 21:32:08] EDIT seacat/controllers/reception.py: 5
