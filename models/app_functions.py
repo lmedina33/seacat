@@ -50,7 +50,7 @@ def diff_in_years(date):
     If "date" isn't an instance of datetime.date it returns None.
     """
     try:
-        return datetime.date.today().year - date.year    
+        return datetime.date.today().year - date.year
     #        return rdelta.relativedelta(datetime.datetime.today().date(), date).years
     #return rdelta.relativedelta(datetime.datetime.today().date(), row['personal_data']['dob']).years
     except:
@@ -65,18 +65,28 @@ def send_welcome_mail(form, id):
     else:
         mensaje += "o"
 
-    mensaje += """ %(first_name)s,
-gracias por registrarte en el Pío IX, estamos muy contentos de nos hayas elegido.
+    mensaje += """  %(first_name)s,
 
-Para continuar tienes que hacer click sobre el siguiente link: https://inscripciones.pioix.edu.ar
-e ingresar al sitio con tu dirección de correo electrónico: %(email)s
-Tu contraseña será tu número de documento: %(doc)s
-(No te preocupes! Te vamos a pedir que cambies tu contraseña inmediatamente después de que ingreses por primera vez).
+le damos la bienvenida al proceso de preinscripción para primer año en el Colegio Pío IX.
 
-Tenés una semana para completar este primer paso de la inscripción. Después de ese tiempo tendrás que acercarte de nuevo al colegio o llamar para renovar tu usuario.
+El primer paso es asistir a una charla informativa el día %(day)s a las %(time)s a fin de informarse sobre el proceso de prescripción.
 
-Saludos,
-La Comunidad del Pío IX.""" % {'first_name': form.vars.first_name, 'email': form.vars.email, 'doc': form.vars.doc}
+Rectoría Pío IX.""" % {'first_name': form.vars.first_name,
+                       'day': db(db.date.id==form.vars.date).select().first().date.strftime(DATE_FORMAT),
+                       'time': db(db.date.id==form.vars.date).select().first().start_time}
+
+#    mensaje1 += """ %(first_name)s,
+#gracias por registrarte en el Pío IX, estamos muy contentos de nos hayas elegido.
+#
+#Para continuar tienes que hacer click sobre el siguiente link: https://inscripciones.pioix.edu.ar
+#e ingresar al sitio con tu dirección de correo electrónico: %(email)s
+#Tu contraseña será tu número de documento: %(doc)s
+#(No te preocupes! Te vamos a pedir que cambies tu contraseña inmediatamente después de que ingreses por primera vez).
+#
+#Tenés una semana para completar este primer paso de la inscripción. Después de ese tiempo tendrás que acercarte de nuevo al colegio o llamar para renovar tu usuario.
+#
+#Saludos,
+#La Comunidad del Pío IX.""" % {'first_name': form.vars.first_name, 'email': form.vars.email, 'doc': form.vars.doc}
 
     message = """
 Dear %(first_name)s,
