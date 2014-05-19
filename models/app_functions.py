@@ -71,7 +71,16 @@ le damos la bienvenida al proceso de preinscripción para primer año en el Cole
 
 El primer paso es asistir a una charla informativa el día %(day)s a las %(time)s a fin de informarse sobre el proceso de prescripción.
 
-Rectoría Pío IX.""" % {'first_name': form.vars.first_name,
+Rectoría Pío IX.
+
+
+
+
+
+
+--------------------------------------------------------------------------------------
+SEACAT: Sistema Escolar de Administración de Calificaciones y Acompañamiento Tutorial
+""" % {'first_name': form.vars.first_name,
                        'day': db(db.date.id==form.vars.date).select().first().date.strftime(DATE_FORMAT),
                        'time': db(db.date.id==form.vars.date).select().first().start_time}
 
@@ -105,7 +114,8 @@ The Pío IX Community.""" % {'first_name': form.vars.first_name, 'email': form.v
     mail.send(to=[form.vars.email],
               subject=T("Welcome to Pío IX registration system (SEACAT)"),
               reply_to='no_responder@pioix.edu.ar',
-              message=mensaje
+              message=mensaje,
+              sender="Colegio Pío IX (SEACAT)"
     )
     auth.log_event(description="Mail sent to %s" % fullname(id))
 
