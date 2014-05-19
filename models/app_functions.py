@@ -65,7 +65,7 @@ def send_welcome_mail(form, id):
     else:
         mensaje += "o"
 
-    mensaje += """  %(first_name)s,
+    mensaje += """ %(first_name)s,
 
 le damos la bienvenida al proceso de preinscripción para primer año en el Colegio Pío IX.
 
