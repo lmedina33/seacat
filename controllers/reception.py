@@ -45,9 +45,9 @@ def new_parent():
                                 )
         db.auth_user[new_user_id]=dict(created_on=request.now)
         auth.log_event(description="New Parent Created: %s" % (fullname(new_user_id)))
-        db.turn.insert(uid=auth.user.id,
+        db.turn.insert(uid=new_user_id,
                        date=form.vars.date)
-        auth.log_event(description="%s - choose informative talk on %s at %s" % (simple_fullname(auth.user.id),
+        auth.log_event(description="%s - choose informative talk on %s at %s" % (simple_fullname(new_user_id),
                                                                                  db(db.date.id==form.vars.date).select().first().date,
                                                                                  db(db.date.id==form.vars.date).select().first().start_time))
         message = T("New record inserted")
