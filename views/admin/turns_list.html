@@ -1,0 +1,8 @@
+{{extend 'layout.html'}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+{{=form}}
+<h3>
+    Información para: {{=turn}}
+</h3>
+{{=grid}}
+<!--{{=BEAUTIFY(response._vars)}}-->

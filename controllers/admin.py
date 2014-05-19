@@ -88,7 +88,9 @@ def upload_image():
 
 @auth.requires_permission('read', db.auth_user)
 def users_list():
-    form = SQLFORM.factory(Field('role', requires=IS_EMPTY_OR(IS_IN_DB(db, 'auth_group.role', '%(description)s', zero=T("All"))), label=T("Filter")))
+    form = SQLFORM.factory(Field('role', requires=IS_EMPTY_OR(IS_IN_DB(db, 'auth_group.role', '%(description)s', zero=T("All"))),
+                                 label=T("Filter")),
+                           submit_button=T("Find"))
     query =  (db.auth_membership.group_id==db.auth_group.id)&(db.auth_membership.user_id==db.auth_user.id)
     if form.process().accepted:
         if form.vars.role != None:
@@ -164,3 +166,44 @@ def general_dates_list():
                              csv=False,
                              )
     return locals()
+
+@auth.requires_permission('read', db.turn)
+def turns_list():
+    form = SQLFORM.factory(Field('turn', requires=IS_IN_DB(db((db.date.type=="informative talk")),
+                                                           'date.id', '%(date)s @ %(start_time)s | %(participants)s / %(max_participants)s'),
+                                 label=T("Turn Filter")),
+                           submit_button=T("Find"))
+    query = (db.turn.date==db.date.id)&(db.auth_user.id==db.turn.uid)
+    turn = ""
+    if form.process().accepted:
+        if form.vars.turn != None:
+            query &= (db.turn.date==request.vars.turn)
+            turn = db(db.date.id==request.vars.turn).select().first()
+            turn = turn.date.strftime(DATE_FORMAT)+" @ "+turn.start_time.strftime(TIME_FORMAT)
+        response.flash = ""
+    fields = [db.auth_user.id,
+              db.auth_user.first_name,
+              db.auth_user.middle_name,
+              db.auth_user.last_name,
+              db.auth_user.email,
+              db.auth_user.created_on,
+              db.auth_user.last_login,
+              db.auth_group.description]
+    #rows = db(query).select()
+    grid = SQLFORM.grid(query,
+                        fields=fields,
+                        maxtextlengths={'auth_user.id': 5,
+                                        'auth_user.first_name': 20,
+                                        'auth_user.middle_name': 20,
+                                        'auth_user.last_name': 20,
+                                        'auth_user.email': 50,
+                                        'auth_user.created_on': 20,
+                                        'auth_user.last_login': 20},
+                        create=False,
+                        deletable=False,
+                        details=False,
+                        editable=False,
+                        searchable=False,
+                        csv=False,
+                        paginate=50)
+    return dict(form=form, grid=grid, turn=turn)

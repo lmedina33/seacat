@@ -30,6 +30,7 @@ def new_parent():
         date = db(db.date.id==form.vars.date).select().first()
         if date.participants == date.max_participants:
             form.errors.date= T("This date is full, please choose another one")
+
     if form.process(onvalidation=__validate_booking).accepted:
         new_user_id = db.auth_user.insert(password=str(CRYPT()(form.vars.doc)[0]),
                                           **db.auth_user._filter_fields(form.vars))

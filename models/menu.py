@@ -63,6 +63,9 @@ if auth.has_permission('create', db.date):
 if auth.has_permission('read', db.auth_user):
     response.menu[2][3].insert(0, [T("Users List"), False, URL(request.application, 'admin', 'users_list')])
 
+if auth.has_permission('read', db.turn):
+    response.menu[2][3].insert(0, [T("Turns List"), False, URL(request.application, 'admin', 'turns_list')])
+
 if auth.has_permission('read', db.date):
     response.menu[2][3].append([T("Dates List"), False, URL('admin','dates_list')])
 
