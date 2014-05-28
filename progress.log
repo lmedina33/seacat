@@ -3809,3 +3809,17 @@
 [2014-05-28 15:47:31] EDIT seacat/controllers/survey.py: 1
 [2014-05-28 15:50:58] EDIT seacat/views/survey/results.html: 1
 [2014-05-28 15:51:24] EDIT seacat/views/survey/results.html: 2
+[2014-05-28 16:02:11] EDIT seacat/models/db.py: 0
+[2014-05-28 16:03:54] EDIT seacat/models/db.py: 1
+[2014-05-28 16:08:58] EDIT seacat/controllers/parent.py: 1
+[2014-05-28 16:09:55] EDIT seacat/controllers/parent.py: 0
+[2014-05-28 16:10:08] EDIT seacat/controllers/parent.py: 2
+[2014-05-28 16:11:38] EDIT seacat/controllers/parent.py: 0
+[2014-05-28 16:14:51] EDIT seacat/controllers/parent.py: 0
+[2014-05-28 16:19:13] EDIT seacat/controllers/parent.py: 3
+[2014-05-28 16:19:32] EDIT seacat/controllers/parent.py: 0
+[2014-05-28 16:20:11] EDIT seacat/controllers/parent.py: 0
+[2014-05-28 16:20:29] EDIT seacat/controllers/parent.py: -1
+[2014-05-28 16:23:00] EDIT seacat/controllers/parent.py: 5
+[2014-05-28 16:24:09] EDIT seacat/controllers/parent.py: 1
+[2014-05-28 16:24:41] EDIT seacat/controllers/parent.py: 0

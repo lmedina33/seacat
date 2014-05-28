@@ -391,7 +391,12 @@ def add_new_school():
     """
     Inserts a new school.
     """
-    form = SQLFORM.factory(db.school.name,
+    school_type = (("public", T("Public School")),
+                   ("private", T("Private School"))
+                   )
+    form = SQLFORM.factory(Field("administration", 'string', requires=IS_IN_SET(school_type, zero=T("Choose one...")),
+                                 label=T("School Administration")),
+                           db.school.name,
                            db.school.number,
                            db.school.district,
                            db.address.street,
@@ -404,10 +409,16 @@ def add_new_school():
     form.add_button(T("Back"), URL("school_data"))
 
     if form.process().accepted:
+        if form.vars.administration == "public":
+            public = True
+        else:
+            public = False
+            form.vars.number = "A-"+form.vars.number
         ## Inserts the new address
         new_address_id = db.address.insert(**db.address._filter_fields(form.vars))
         ## Inserts the new school
         new_school_id = db.school.insert(address_id=new_address_id,
+                                         is_public=public,
                                          **db.school._filter_fields(form.vars)
                                          )
 

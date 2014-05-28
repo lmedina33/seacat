@@ -125,8 +125,9 @@ db.define_table('personal_data',
 db.personal_data.age = Field.Virtual('age', lambda row: diff_in_years(row.personal_data.dob))
 
 db.define_table('school',
+                Field('is_public', 'boolean', label=T("Is Public?")),
                 Field('name', 'string', length=50, requires=IS_NOT_EMPTY(), label=T("School Name")),
-                Field('number', 'string', requires=IS_MATCH('^A-\d{2,4}$', error_message=T("The format must be A-#, like A-1024")), length=10, label=T("Number"), comment=T("School code.")+" i.e.: A-66"),
+                Field('number', 'string', requires=IS_MATCH('\d{,4}$', error_message=T("You must use numbers, 4 digits max")), length=10, label=T("Number"), comment=T("School code.")),
                 Field('district', 'string', length=6, requires=IS_NOT_EMPTY(), label=T("District")),
                 Field('address_id', 'reference address', writable=False, readable=False, requires=IS_IN_DB(db, 'address.id'), label=T("Address ID")),
                 Field('verified', 'boolean', default=False, label=T("Verified")),
