@@ -37,17 +37,45 @@ if not SETTED_UP:
     db.auth_group.insert(role='caja', description='Caja')
     db.auth_group.insert(role='padre', description='Padre o Madre')
     db.auth_group.insert(role='candidato', description='Ingresante')
+
     ## And then the membership on root Group to First User:
     print "Adding Root to Superadministrator group..."
     auth.add_membership(root_gid, root_uid)
+
     ## Later we add permissions:
     print "Adding permissions..."
-    auth.add_permission(db.auth_group(role='root').id, 'create', db.auth_user, 0)
-    auth.add_permission(db.auth_group(role='root').id, 'view', db.auth_user, 0)
-    auth.add_permission(db.auth_group(role="derivaciones").id, 'create new father', db.auth_user, 0)
-    auth.add_permission(db.auth_group(role="derivaciones").id, 'view fathers list', db.auth_user, 0)
+    print "... setting all permissions (CRUD) to all tables for root"
+    actions = ['create', 'read', 'update', 'delete']
+    for action in actions:
+        for table in db.tables:
+            auth.add_permission(db.auth_group(role='root').id, action, "db."+table, 0)
+    auth.add_permission(db.auth_group(role="root").id, 'create new father', db.auth_user, 0)
+    auth.add_permission(db.auth_group(role="root").id, 'view fathers list', db.auth_user, 0)
+
+    groups = ['directivo', 'director', 'rector', 'secretario', 'secretaria', 'derivaciones']
+    for group in groups:
+        print "... setting 'create new father' permission to group %s" % group
+        auth.add_permission(db.auth_group(role=group).id, 'create new father', db.auth_user, 0)
+        print "... setting 'view fathers list' permission to group %s" % group
+        auth.add_permission(db.auth_group(role=group).id, 'view fathers list', db.auth_user, 0)
+
+    for actions in actions:
+        groups = ['rector', 'secretario']
+        for group in groups:
+            print "... setting %s on auth_user table to group %s" % (action, group)
+            auth.add_permission(db.auth_group(role=group).id, action, db.auth_user, 0)
+            print "... setting %s on date table to group %s" % (action, group)
+            auth.add_permission(db.auth_group(role=group).id, action, db.date, 0)
+
+    for actions in actions:
+        groups.append("eoe")
+        for group in groups:
+            print "... setting %s on turn table to group %s" % (action, group)
+            auth.add_permission(db.auth_group(role=group).id, action, db.turn, 0)
+
+    print "Saving configuration status"
     with open(os.path.join(request.folder, 'private', 'seacat.sup'), 'w') as setup_file:
         SETTED_UP = 1
         setup_file.write(str(SETTED_UP))
         setup_file.close()
-    print "Fist setup is done! GOOD JOB!! ;-)"
+    print "First setup is done! GOOD JOB!! ;-)"

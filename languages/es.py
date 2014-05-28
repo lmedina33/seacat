@@ -368,6 +368,7 @@
 'informatics': 'informática',
 'Informative Talk': 'Charla Informativa',
 'Informative talk': 'Charla informativa',
+'Inicio de sesión': 'Inicio de sesión',
 'Insert Data': 'Ingresar Datos',
 'insert new': 'inserte nuevo',
 'insert new %s': 'inserte nuevo %s',
