@@ -79,10 +79,11 @@ Rectoría Pío IX.
 
 
 --------------------------------------------------------------------------------------
-SEACAT: Sistema Escolar de Administración de Calificaciones y Acompañamiento Tutorial
+SEACAT - Casa Salesiana Pío IX
+Sistema Escolar de Administración de Calificaciones y Acompañamiento Tutorial
 """ % {'first_name': form.vars.first_name,
-                       'day': db(db.date.id==form.vars.date).select().first().date.strftime(DATE_FORMAT),
-                       'time': db(db.date.id==form.vars.date).select().first().start_time}
+       'day': db(db.date.id==form.vars.date).select().first().date.strftime(DATE_FORMAT),
+       'time': db(db.date.id==form.vars.date).select().first().start_time.strftime(TIME_FORMAT_SHORT)}
 
 #    mensaje1 += """ %(first_name)s,
 #gracias por registrarte en el Pío IX, estamos muy contentos de nos hayas elegido.

@@ -1,8 +1,8 @@
 # coding: utf8
 ## configure email
-MAIL_USER="soportetecnico"
+MAIL_USER="seacat"
 MAIL_DOMAIN="pioix.edu.ar"
-MAIL_PASSWORD="deagostini"
+MAIL_PASSWORD="mbqsjpqla2014"
 ## configure email
 mail = auth.settings.mailer
 mail.settings.server = 'logging' or 'smtp.gmail.com:587'

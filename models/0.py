@@ -92,8 +92,8 @@ PARENT_STATE = ("Password Change",       ## 0   - Cambio de Password
 COURSE = (("electronics", T("Electronics")),
           ("informatics", T("Informatics")),
           ("comunication", T("Comunication")),
-          ("bachelor", T("Bachelor")),
-          ("not sure", T("Not Sure"))
+          #("bachelor", T("Bachelor")),
+          #("not sure", T("Not Sure"))
           )
 
 DOC_TYPE_SET = ('DNI',
@@ -144,6 +144,8 @@ GENERAL_DATE_TYPE = ("Open Enrollment",                    ## Apertura del Perí
 DATE_FORMAT = '%d-%m-%Y'
 
 TIME_FORMAT = '%H:%M:%S'
+
+TIME_FORMAT_SHORT = '%H:%M'
 
 MONTH_TR = {'January':'Enero',
             'Febrary':'Febrero',
