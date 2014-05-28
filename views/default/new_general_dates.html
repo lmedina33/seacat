@@ -2,6 +2,9 @@
 <h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
 <div id='filter'> {{=find_form}} </div>
 <hr>
+<h3>
+    {{=T("%s Registration General Dates" % ("  " if not form.vars.selected_year else str(int(form.vars.selected_year)+1)))}}
+</h3>
 <div id='new_date'> {{=form}} </div>
 <script>
 $(document).ready(function(){
