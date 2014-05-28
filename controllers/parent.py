@@ -441,24 +441,34 @@ def spouse_address_data():
     """
     Inserts new spouse's address data.
     """
-    form = SQLFORM(db.address,
-                   submit_button=T("Insert Data")
-                   )
+    parent = db((db.auth_user.id==auth.user.id)
+                &(db.personal_data.uid==db.auth_user.id)
+                &(db.parent.uid==db.auth_user.id)
+                ).select().first()
 
-    button1 = A(T("We live together"), _href=URL('_spouses_lives_together'), _class='btn')
-    button2 = A(T("Skip Address"), _href=URL('_skip_spouse_address'), _class='btn')
+    if parent.parent.spouse:
+        form = SQLFORM(db.address,
+                       submit_button=T("Insert Data")
+                       )
 
-    if form.process().accepted:
-        #new_address_id = form.vars.id
-        ## Get parent record.
-        parent = db.parent(db.parent.uid==auth.user.id)
-        ## Update parent address record.
-        db((db.personal_data.uid==parent.spouse)).update(address_id=form.vars.id)
+        button1 = A(T("We live together"), _href=URL('_spouses_lives_together'), _class='btn')
+        button2 = A(T("Skip Address"), _href=URL('_skip_spouse_address'), _class='btn')
 
+        if form.process().accepted:
+            #new_address_id = form.vars.id
+            ## Get parent record.
+            parent = db.parent(db.parent.uid==auth.user.id)
+            ## Update parent address record.
+            db((db.personal_data.uid==parent.spouse)).update(address_id=form.vars.id)
+
+            __change_parents_state(auth.user.id)
+
+            auth.log_event(description="%s - stored spouse address (%s)" % (fullname(auth.user.id), form.vars.id))
+
+            redirect(URL('index'))
+    else:
         __change_parents_state(auth.user.id)
-
-        auth.log_event(description="%s - stored spouse address (%s)" % (fullname(auth.user.id), form.vars.id))
-
+        auth.log_event(description="%s - spouse omitted, spouse address omitted too" % (fullname(auth.user.id)))
         redirect(URL('index'))
     return locals()
 

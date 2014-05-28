@@ -1,5 +1,11 @@
 {{extend 'layout.html'}}
-<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+<h2>
+{{if auth.user.gender == "F":}}
+{{=T("Mother Address Data")}}
+{{else:}}
+{{=T("Father Address Data")}}
+{{pass}}
+</h2>
 <h5>
     Por favor complete los datos referentes a sus direcciones postales.
 </h5>

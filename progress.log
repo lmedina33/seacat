@@ -3785,3 +3785,5 @@
 [2014-05-28 12:55:13] EDIT seacat/models/db.py: 0
 [2014-05-28 12:55:49] EDIT seacat/models/db.py: 0
 [2014-05-28 12:56:21] EDIT seacat/models/db.py: 0
+[2014-05-28 15:10:45] EDIT seacat/controllers/parent.py: 9
+[2014-05-28 15:13:47] EDIT seacat/views/parent/parent_address_data.html: 6
