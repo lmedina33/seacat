@@ -163,7 +163,7 @@ def fathers_list():
                         paginate=50)
     return dict(grid=grid)
 
-@auth.requires_permission('create', db.date)
+@auth.requires(auth.has_permission('create', db.date) or auth.has_permission('create', db.turn))
 def new_turn():
     form = SQLFORM(db.date)
     if form.process().accepted:

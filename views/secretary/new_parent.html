@@ -1,0 +1,28 @@
+{{extend 'layout.html'}}
+<h2>{{=T( request.function.replace('_',' ').capitalize() )}}</h2>
+{{=form}}
+
+<script>
+    jQuery(document).ready(function(){
+        jQuery('#no_table_children_name__row').hide();
+        jQuery('#no_table_children_registration_year__row').hide();
+        jQuery('#no_table_children_course__row').hide();
+        jQuery('#no_table_children_in_school').change(function(){
+            if(jQuery('#no_table_children_in_school').is(':checked')){
+                jQuery('#no_table_children_name__row').show();
+                jQuery('#no_table_children_registration_year__row').show();
+                jQuery('#no_table_children_course__row').show();}
+            else {jQuery('#no_table_children_name__row').hide();
+                 jQuery('#no_table_children_registration_year__row').hide();
+                 jQuery('#no_table_children_course__row').hide();}});
+    });
+</script>
+<script>
+    jQuery(document).ready(function(){
+        jQuery('#no_table_student_school__row').hide();
+        jQuery('#no_table_student_network').change(function(){
+            if(jQuery('#no_table_student_network').is(':checked'))
+                jQuery('#no_table_student_school__row').show();
+            else jQuery('#no_table_student_school__row').hide();});
+    });
+</script>

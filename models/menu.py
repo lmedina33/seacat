@@ -54,11 +54,14 @@ if auth.is_logged_in():
 if auth.has_permission('create new father', db.auth_user):
     response.menu[1][3].insert(0, [T("Parent"), False, URL('new_parent')])
 
+if auth.has_permission('create', db.turn) or auth.has_permission('create', db.date):
+    response.menu[1][3].append([T("Date"), False, None, []])
+
+if auth.has_permission('create', db.turn):
+    response.menu[1][3][1][3].append([T("Turns"), False, URL('new_turn')])
+
 if auth.has_permission('create', db.date):
-    response.menu[1][3].append([T("Date"), False, None, [
-                                                         ["General", False, URL('default','new_general_dates')],
-                                                         [T("Turns"), False, URL('default','new_turn')],
-                                                         ]])
+    response.menu[1][3][1][3].append(["General", False, URL('default','new_general_dates')])
 
 if auth.has_permission('read', db.auth_user):
     response.menu[2][3].insert(0, [T("Users List"), False, URL(request.application, 'admin', 'users_list')])

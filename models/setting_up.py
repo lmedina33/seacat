@@ -46,11 +46,16 @@ if not SETTED_UP:
     print "Adding permissions..."
     print "... setting all permissions (CRUD) to all tables for root"
     actions = ['create', 'read', 'update', 'delete']
+    count = 0
     for action in actions:
         for table in db.tables:
-            auth.add_permission(db.auth_group(role='root').id, action, "db."+table, 0)
+            auth.add_permission(db.auth_group(role='root').id, action, table, 0)
+            count = count + 1
     auth.add_permission(db.auth_group(role="root").id, 'create new father', db.auth_user, 0)
+    count = count + 1
     auth.add_permission(db.auth_group(role="root").id, 'view fathers list', db.auth_user, 0)
+    count = count + 1
+    print "\t\t %d permission added for root" % count
 
     groups = ['directivo', 'director', 'rector', 'secretario', 'secretaria', 'derivaciones']
     for group in groups:
@@ -59,7 +64,7 @@ if not SETTED_UP:
         print "... setting 'view fathers list' permission to group %s" % group
         auth.add_permission(db.auth_group(role=group).id, 'view fathers list', db.auth_user, 0)
 
-    for actions in actions:
+    for action in actions:
         groups = ['rector', 'secretario']
         for group in groups:
             print "... setting %s on auth_user table to group %s" % (action, group)
@@ -67,8 +72,8 @@ if not SETTED_UP:
             print "... setting %s on date table to group %s" % (action, group)
             auth.add_permission(db.auth_group(role=group).id, action, db.date, 0)
 
-    for actions in actions:
-        groups.append("eoe")
+    for action in actions:
+        groups = ['rector', 'secretario', 'secretaria', 'derivaciones', 'eoe']
         for group in groups:
             print "... setting %s on turn table to group %s" % (action, group)
             auth.add_permission(db.auth_group(role=group).id, action, db.turn, 0)
