@@ -13,7 +13,9 @@ def barchart(data,width=400,height=15,scale=None,
 }}
 
 <h1>Stats</h1>
-
+<p>
+{{=A(T("Go Back"), _href=URL('survey', 'survey_list'), _class='btn', _style='margin-top: 1em;')}}
+</p>
 <p>{{=len(sas)}} visitors have completed the survey: 
 {{for k,item in enumerate(sas):}}{{=A(k+1,_href=URL('answer',args=[request.args[0],item.id]))}} {{pass}}
 </p>

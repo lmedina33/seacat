@@ -71,6 +71,8 @@ if not SETTED_UP:
             auth.add_permission(db.auth_group(role=group).id, action, db.auth_user, 0)
             print "... setting %s on date table to group %s" % (action, group)
             auth.add_permission(db.auth_group(role=group).id, action, db.date, 0)
+            print "... setting %s on surveys table to group %s" % (action, group)
+            auth.add_permission(db.auth_group(role=group).id, action, db.survey, 0)
 
     for action in actions:
         groups = ['rector', 'secretario', 'secretaria', 'derivaciones', 'eoe']

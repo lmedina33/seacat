@@ -5,7 +5,7 @@ import cPickle, re, shutil, os, uuid
 def index():
     redirect(URL('new_survey'))
 
-@auth.requires_membership('root')
+@auth.requires_permission('create', db.survey)
 def new_survey():
     form = SQLFORM.factory(Field('survey_name', 'string', length=64, requires=IS_NOT_EMPTY(), label=T("Survey Name")),
                            submit_button=T("Add Survey")
@@ -17,11 +17,15 @@ def new_survey():
         survey_id = db.survey.insert(title=form.vars.survey_name,
                                      code_edit=code_edit,
                                      code_take=code_take)
-        auth.log_event(description="%s - created new survey %s"% (simple_fullname(auth.user.id), survey_id))
+        # We deactivate all surveys
+        db(db.survey.is_active==True).update(is_active=False)
+        # and then we activate the new one
+        db(db.survey.id==survey_id).update(is_active=True)
+        auth.log_event(description="%s - created and activated new survey %s"% (simple_fullname(auth.user.id), survey_id))
         redirect(URL('edit', args=code_edit))
     return locals()
 
-@auth.requires_membership('root')
+@auth.requires_permission('create', db.survey)
 def survey_list():
     ACTION_LIST = (('edit', T("Edit")),
                    ('activate', T("Activate")),
@@ -56,7 +60,7 @@ def __take_survey():
         redirect(URL('index'))
     return surveys[0]
 
-@auth.requires_membership('root')
+@auth.requires_permission('update', db.survey)
 def edit():
     survey=__edit_survey()
 #    response.title=survey.title
@@ -82,7 +86,8 @@ def edit():
         if not qrows or qrows[0].survey!=survey.id: redirect(r=request,f='index')
         if len(qrows):
             form=SQLFORM(db.question,qrows[0],showid=False,
-                         fields=question_fields,deletable=True)
+                         fields=question_fields,deletable=True,
+                         submit_button=T("Save Changes"))
             if form.accepts(request,session):
                 if request.vars.delete_this_record:
                     session.flash='question deleted'
@@ -248,7 +253,7 @@ def aggregate(items):
        pass
    return [[c,'#4E7DD1',v] for c,v in d.items()]
 
-@auth.requires_membership('root')
+@auth.requires_permission('read', db.survey)
 def results():
     import cPickle, re
     def normalize(text): return re.sub('\s+',' ',text.strip()).lower()
@@ -285,7 +290,7 @@ def results():
     if previous: d.append([previous,aggregate(values)])
     return dict(rows=d,survey=survey,sas=sas)
 
-@auth.requires_membership('root')
+@auth.requires_permission('create', db.survey)
 def answer():
     import cPickle
     survey=__edit_survey()

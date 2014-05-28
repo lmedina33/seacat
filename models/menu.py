@@ -90,7 +90,7 @@ if auth.has_membership('root'):
                                                        [T("Users Memberships"), False, URL(request.application, 'admin', 'admin_user_memberships')],
                                                        [T("Users Permissions"), False, URL(request.application, 'admin', 'admin_user_permissions')],
                                                        ]])
-if auth.has_membership('root'):
+if auth.has_permission('create', db.survey):
     response.menu.insert(-1, [T("Surveys"), False, None, [
                                                          [T("New Survey"), False, URL('survey','new_survey')],
                                                          [T("Survey List"), False, URL('survey','survey_list')],
