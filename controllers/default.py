@@ -79,7 +79,9 @@ def info():
 
 @auth.requires_login()
 def start():
-    return dict()
+    membership = auth.user_groups.values()[0]
+    pass
+    return dict(membership=membership)
 
 def user():
     """

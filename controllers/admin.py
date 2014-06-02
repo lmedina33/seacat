@@ -123,9 +123,20 @@ def users_list():
                         paginate=50)
     return dict(form=form, grid=grid)
 
-@auth.requires_permission('read', db.date)
+@auth.requires_permission('read', db.turn)
 def dates_list():
-    grid = SQLFORM.grid(db.date,
+    form = SQLFORM.factory(Field('type', requires=IS_EMPTY_OR(IS_IN_DB(db, 'date.type', zero=T("All"), distinct=True)), label=T("Filter")), submit_button=T("Find"))
+
+    query = db.date
+
+    if form.process().accepted:
+        if form.vars.type != None:
+            query = db.date.type==request.vars.type
+            response.flash = T("Showing data for %s", request.vars.type)
+        else:
+            response.flash = T("Showing data for all dates")
+
+    grid = SQLFORM.grid(query,
                         create=False,
                         deletable=False,
                         details=False,
@@ -134,9 +145,10 @@ def dates_list():
                         csv=False,
                         paginate=50
                         )
-    return dict(grid=grid)
 
-@auth.requires_membership('root')
+    return dict(form=form, grid=grid)
+
+@auth.requires_permission('read', db.date)
 def general_dates_list():
     form = SQLFORM.factory(Field('year', requires=IS_EMPTY_OR(IS_IN_DB(db, 'general_date.year', zero=T("All"), distinct=True)), label=T("Filter")), submit_button=T("Find"))
 
@@ -165,7 +177,7 @@ def general_dates_list():
                              searchable=False,
                              csv=False,
                              )
-    return locals()
+    return dict(form=form, grid=grid)
 
 @auth.requires_permission('read', db.turn)
 def turns_list():

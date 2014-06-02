@@ -41,10 +41,10 @@ response.meta.generator = 'Web2py Web Framework'
 ## Top level Menu:
 if auth.is_logged_in():
     response.menu = [
-                     [T('Home'), False, URL('default', 'index'), []],
-                     [T('New'), False, None, []],
-                     [T('View'), False, None, []],
-                     [T('Help'), False, URL('default', 'help'), []],
+                     [T('Home'), False, URL('default', 'index'), []], ## response.menu[0] to insert always on [3]
+                     [T('New'), False, None, []], ## response.menu[1] to insert always on [3]
+                     [T('View'), False, None, []], ## response.menu[2] to insert always on [3]
+                     [T('Help'), False, URL('default', 'help'), []], ## response.menu[3] to insert always on [3]
     ]
 
 ## EXAMPLES:
@@ -52,13 +52,16 @@ if auth.is_logged_in():
 #response.menu[2][3].insert(0, [T('test1'), False, None, []])
 #response.menu[2][3].insert(1, [T('test2'), False, None, []])
 if auth.has_permission('create new father', db.auth_user):
-    response.menu[1][3].insert(0, [T("Parent"), False, URL('new_parent')])
+    if auth.has_membership('derivaciones'):
+        response.menu[1][3].insert(0, [T("Parent"), False, URL('new_parent')])
+    else:
+        response.menu[1][3].insert(0, [T("Parent"), False, URL('secretary', 'new_parent')])
 
 if auth.has_permission('create', db.turn) or auth.has_permission('create', db.date):
     response.menu[1][3].append([T("Date"), False, None, []])
 
 if auth.has_permission('create', db.turn):
-    response.menu[1][3][1][3].append([T("Turns"), False, URL('new_turn')])
+    response.menu[1][3][1][3].append([T("Turns"), False, URL('secretary', 'new_turn')])
 
 if auth.has_permission('create', db.date):
     response.menu[1][3][1][3].append(["General", False, URL('default','new_general_dates')])
@@ -76,7 +79,7 @@ if auth.has_permission('read', db.date):
     response.menu[2][3].append([T("General Dates List"), False, URL('admin','general_dates_list')])
 
 if auth.has_permission('view fathers list', db.auth_user):
-    response.menu[2][3].insert(0, [T("Parents List"), False, URL('parents_list')])
+    response.menu[2][3].insert(0, [T("Parents List"), False, URL('reception', 'parents_list')])
 
 if auth.has_permission('create', db.auth_user):
     response.menu[1][3].append([T("User"), False, URL(request.application, 'admin', 'new_user')])

@@ -122,7 +122,7 @@ db.define_table('personal_data',
                 #Field.Virtual('age', lambda row: diff_in_years(row.dob)),
                 format='%(doc)s'
                 )
-db.personal_data.age = Field.Virtual('age', lambda row: diff_in_years(row.personal_data.dob))
+db.personal_data.age = Field.Virtual('age', lambda row: diff_in_years(row.personal_data.dob), label=T("Age"))
 
 db.define_table('school',
                 Field('is_public', 'boolean', label=T("Is Public?")),
@@ -175,7 +175,7 @@ db.define_table('date',
                 Field('max_participants', 'integer', requires=IS_INT_IN_RANGE(0, 100), label=T("Participants")),
                 auth.signature
                 )
-db.date.participants = Field.Virtual('participants', lambda row: calculate_participants(row.date.id))
+db.date.participants = Field.Virtual('participants', lambda row: calculate_participants(row.date.id), label=T("Registered Participants"))
 
 db.define_table('general_date',
                 Field('type', 'string', length=64, requires=IS_IN_SET(GENERAL_DATE_TYPE), label=T("Date Type")),
