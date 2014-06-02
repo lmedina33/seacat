@@ -3846,3 +3846,16 @@
 [2014-06-02 11:56:02] EDIT seacat/controllers/default.py: 0
 [2014-06-02 11:57:58] EDIT seacat/views/default/start.html: 0
 [2014-06-02 11:58:15] EDIT seacat/views/default/start.html: 0
+[2014-06-02 12:26:31] EDIT seacat/controllers/admin.py: 1
+[2014-06-02 12:27:47] CREATE admin/admin_user.html: 0
+[2014-06-02 12:28:16] EDIT seacat/views/admin/admin_user.html: 0
+[2014-06-02 12:34:21] CREATE admin/upload_image.html: 0
+[2014-06-02 12:34:55] EDIT seacat/views/admin/upload_image.html: 0
+[2014-06-02 12:35:24] CREATE admin/admin_user_groups.html: 0
+[2014-06-02 12:35:40] EDIT seacat/views/admin/admin_user_groups.html: 0
+[2014-06-02 12:36:08] CREATE admin/admin_user_memberships.html: 0
+[2014-06-02 12:36:28] EDIT seacat/views/admin/admin_user_memberships.html: 0
+[2014-06-02 12:38:37] EDIT seacat/models/menu.py: 2
+[2014-06-02 12:39:03] EDIT seacat/models/menu.py: 0
+[2014-06-02 12:39:52] EDIT seacat/models/menu.py: 0
+[2014-06-02 12:40:31] EDIT seacat/models/menu.py: 0

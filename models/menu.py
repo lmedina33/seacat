@@ -85,16 +85,19 @@ if auth.has_permission('create', db.auth_user):
     response.menu[1][3].append([T("User"), False, URL(request.application, 'admin', 'new_user')])
 
 if auth.has_membership('root'):
-    response.menu.insert(2, [SPAN(T("Admin"), _class='highlighted'), False, None, [
-                                                       [T("Database"), False, URL(request.application, 'appadmin', 'index')],
-                                                       [T("Upload Image"), False, URL(request.application, 'admin', 'upload_image')],
-                                                       [T("Users"), False, URL(request.application, 'admin', 'admin_users')],
-                                                       [T("Users Groups"), False, URL(request.application, 'admin', 'admin_user_groups')],
-                                                       [T("Users Memberships"), False, URL(request.application, 'admin', 'admin_user_memberships')],
-                                                       [T("Users Permissions"), False, URL(request.application, 'admin', 'admin_user_permissions')],
-                                                       ]])
+    response.menu.append([SPAN(T("Admin"), _class='highlighted'), False, None, [
+                                                                                [SPAN(T("Database"), _class='highlighted'), False, URL(request.application, 'appadmin', 'index')],
+                                                                                [T("Upload Image"), False, URL(request.application, 'admin', 'upload_image')],
+                                                                                [T("Users"), False, URL(request.application, 'admin', 'admin_users')],
+                                                                                [T("Users Groups"), False, URL(request.application, 'admin', 'admin_user_groups')],
+                                                                                [T("Users Memberships"), False, URL(request.application, 'admin', 'admin_user_memberships')],
+                                                                                [T("Users Permissions"), False, URL(request.application, 'admin', 'admin_user_permissions')],
+                                                                                ]
+                          ]
+                         )
+
 if auth.has_permission('create', db.survey):
-    response.menu.insert(-1, [T("Surveys"), False, None, [
+    response.menu.insert(3, [T("Surveys"), False, None, [
                                                          [T("New Survey"), False, URL('survey','new_survey')],
                                                          [T("Survey List"), False, URL('survey','survey_list')],
                                                          ]])

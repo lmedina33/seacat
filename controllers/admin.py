@@ -19,7 +19,8 @@ def admin_users():
                              orderby='auth_user.last_name',
                              paginate=50,
                              links_in_grid=False,
-                             exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True))
+                             exportclasses=dict(csv=True, csv_with_hidden_cols=False, json=False, tsv=False, tsv_with_hidden_cols=False, xml=True)
+                             )
     return locals()
 
 @auth.requires_membership('root')
